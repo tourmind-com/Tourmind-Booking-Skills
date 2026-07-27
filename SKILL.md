@@ -94,7 +94,7 @@ Never invent coordinates, geocode from model memory or substitute a city-wide se
    - **Hard constraints:** dates, occupancy, room count, explicit radius, strict budget, required star level, required facilities or property type.
    - **Soft preferences:** closer, cheaper, higher star level, breakfast, free cancellation, preferred facilities or room type.
 2. Call `search_hotels` with the applicable hard search fields. Preserve the complete raw candidate pool and `distance_km` values so a later "show all" request can be fulfilled.
-   - Preserve `presentation.view_url` and include it as a clickable hotel-results link in the response. Do not expose the underlying token or alter the URL.
+   - Preserve the top-level `web_url` and include it as a clickable read-only hotel-results link. Do not expose the underlying token or alter the URL. The linked session only permits hotel lists, hotel details and room quotes; it does not permit verification, booking, payment, `/book/*`, order, finance or account-management pages.
 3. Exclude obvious hard-constraint failures from the recommendation/ranking pool, but retain them in the raw pool with every failed constraint recorded.
 4. Call `query_room_rates` for every remaining candidate needed to rank the recommendation pool fairly, in controlled batches. Do not stop at the first five cached-price results. Exclude candidates with no matching live product from recommendations, but retain their no-live-product status in the raw pool.
    - `is_on_request=false` is immediately bookable inventory.
@@ -132,7 +132,7 @@ Stay: {check_in_date} to {check_out_date}, {night_count} nights
 Guests: {adults} adults per room, {room_count} rooms
 Filters and ranking: {hard_constraints_and_sort}
 Price basis: live room-rate products from query_room_rates; final price and inventory remain subject to availability verification
-View hotel results: {presentation.view_url}
+View hotel results: {web_url}
 
 ### 1. {hotel_name}
 
@@ -165,7 +165,7 @@ Adjust the sentence when fewer than five qualify or when all results are already
 
 When the user chooses or asks about one hotel, call `get_hotel_detail` and `query_room_rates` and return the hotel summary, room images and matching live quotes together. Do not wait for separate follow-up questions.
 
-Include `query_room_rates.data.presentation.view_url` as a clickable room-rate page. Explain that the page supports live price verification; after verification, the user can copy the checked quote and return to the authenticated AI conversation to continue booking. Never claim that the temporary public page creates an order directly.
+Include `query_room_rates.data.web_url` as a clickable read-only hotel and room-rate page. The linked page only displays hotel details and room quotes. It does not support price verification, booking, payment, `/book/*`, order management, finance or account management. Continue those actions in the authenticated AI conversation through the Skill APIs.
 
 1. Show the hotel hero image and concise address, star, distance, check-in/out and facilities. Include a fee summary only when the API explicitly returns a fee or the user asks about fees.
 2. Rank live room products by the user's request; show up to five distinct products by default and offer all remaining products.
