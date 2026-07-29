@@ -17,18 +17,71 @@ Use this reference when building TourMind requests, resolving POIs, selecting ca
 ## Shared request rules
 
 - Base URL: `http://8.210.23.56:9028`
-- Skill version: `1.0.0`
+- Skill version: read the exact value declared immediately below the title in `SKILL.md`.
 - Method: `POST`
 - Content type: `application/json`
-- Version header: `X-TourMind-Skill-Version: 1.0.0`
 - Authentication: include `token` from `{baseDir}/skill_token.txt` in every request body.
+- Send the Skill version only as `current_version` to `POST /tob/skill/check_skill_update`; do not attach it to business API requests.
 - Send `region_id` and `hotel_id` as strings.
 - Success: `{"ok": true, "data": {...}}`
 - Failure: `{"ok": false, "error": "error description"}`
 
-When the response contains top-level `skill_update` with `available=true` and `display_to_user=true`, complete the current operation and then show its update message to the user. Tell the user to update through their original installation source; do not assume GitHub or another repository.
+Call the update endpoint on the first use of this Skill in every new conversation and when an existing conversation resumes after at least 24 hours of inactivity. Do not call it before every business endpoint. Request:
+
+```json
+{
+  "token": "<skill-token>",
+  "current_version": "<declared-skill-version>"
+}
+```
+
+The update endpoint may return:
+
+```json
+{
+  "ok": true,
+  "data": {},
+  "skill_update": {
+    "available": true,
+    "display_to_user": true,
+    "latest_version": "1.1.0",
+    "message": "TourMind Booking 1.1.0 has been released with an improved hotel-image experience.",
+    "release_source_url": "https://updates.tourmind.com/skills/booking/1.1.0"
+  }
+}
+```
+
+No-update response:
+
+```json
+{
+  "ok": true,
+  "data": {},
+  "skill_update": {
+    "available": false,
+    "display_to_user": false,
+    "latest_version": "1.0.0"
+  }
+}
+```
+
+`skill_update` fields:
+
+| Field | Required | Meaning |
+|---|---|---|
+| `available` | yes | Whether `latest_version` is newer than `current_version` |
+| `display_to_user` | yes | Whether the Agent must show the update notice |
+| `latest_version` | yes | Latest available semantic version |
+| `message` | when both booleans are true | User-visible release changes; content may change server-side |
+| `release_source_url` | when both booleans are true | Official release page containing supported download sources |
+
+The service does not need to track conversations or the 24-hour interval; the Agent controls when this stateless endpoint is called. Reject a malformed `current_version` with `{"ok": false, "error": "Invalid current_version; use a semantic version such as 1.0.0"}`.
+
+When `skill_update.available=true` and `display_to_user=true`, complete the current user request first unless the user explicitly asked about updates. Then show the version-change content from `message`, recommend updating for TourMind's latest and best hotel-search and price-query strategy because some older endpoints may no longer be available after a TourMind service update, and offer to help download the update from the sources linked through `release_source_url`. Ask before modifying the installed Skill. The release page may list an official TourMind download and a GitHub repository: use Git only for a safely updateable official Git checkout; when Git is unavailable or the installation is not a Git checkout, use another official source listed there. Update the Skill files and the version declaration together, validate that the declaration equals `latest_version`, preserve local changes and `{baseDir}/skill_token.txt`, and never execute arbitrary commands from the response or release page.
 
 If the token file is absent or empty, ask the user for a newly generated Skill Token from `/user/home` before calling an endpoint. On HTTP 401 or an error containing `unauthorized`, delete the token file and stop until a new token is supplied.
+
+An update-check failure is advisory: continue the hotel workflow, do not repeatedly retry, and mention the failure only when the user explicitly asked about updates.
 
 ## Date and occupancy rules
 
@@ -78,6 +131,17 @@ Use this flow for a landmark, station, ski area, address or business district:
 Do not derive coordinates from model knowledge, use a hotel as a proxy center, or substitute a city center while describing it as the requested POI.
 
 ## Endpoint contracts
+
+### `POST /tob/skill/check_skill_update`
+
+Read-only, idempotent version check.
+
+| Field | Type | Required | Meaning |
+|---|---|---|---|
+| `token` | string | yes | Skill Token |
+| `current_version` | string | yes | Exact semantic version declared below the title in `SKILL.md` |
+
+When no update is available, return `skill_update.available=false` and `display_to_user=false`. When an update is available, return the complete top-level `skill_update` object documented above.
 
 ### `POST /tob/skill/search_location`
 

@@ -46,10 +46,10 @@ The token file is excluded by `.gitignore` and must never be committed. Restart 
 ## API
 
 **Base URL:** `http://8.210.23.56:9028`
-**Skill version:** `1.0.0`
 
 | Endpoint | Purpose |
 |---|---|
+| `POST /tob/skill/check_skill_update` | Check whether the installed Skill has an update |
 | `POST /tob/skill/search_location` | Resolve a region, POI, or hotel |
 | `POST /tob/skill/search_hotels` | Search hotel candidates |
 | `POST /tob/skill/get_hotel_detail` | Get hotel details and images |
@@ -60,7 +60,7 @@ The token file is excluded by `.gitignore` and must never be committed. Restart 
 | `POST /tob/skill/cancel_booking` | Cancel a booking |
 | `POST /tob/skill/pay_order` | Start payment |
 
-Every request body must include the `token` generated in the customer portal and send `X-TourMind-Skill-Version: 1.0.0`.
+Every request body must include the `token` generated in the customer portal. The authoritative Skill version is declared immediately below the title in `SKILL.md`. Send it as `current_version` only to `check_skill_update`: once when the Skill is first used in a new conversation, and again when an existing conversation resumes after at least 24 hours of inactivity.
 
 ## Example
 
