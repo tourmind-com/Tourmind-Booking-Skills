@@ -17,12 +17,16 @@ Use this reference when building TourMind requests, resolving POIs, selecting ca
 ## Shared request rules
 
 - Base URL: `http://8.210.23.56:9028`
+- Skill version: `1.0.0`
 - Method: `POST`
 - Content type: `application/json`
+- Version header: `X-TourMind-Skill-Version: 1.0.0`
 - Authentication: include `token` from `{baseDir}/skill_token.txt` in every request body.
 - Send `region_id` and `hotel_id` as strings.
 - Success: `{"ok": true, "data": {...}}`
 - Failure: `{"ok": false, "error": "error description"}`
+
+When the response contains top-level `skill_update` with `available=true` and `display_to_user=true`, complete the current operation and then show its update message to the user. Tell the user to update through their original installation source; do not assume GitHub or another repository.
 
 If the token file is absent or empty, ask the user for a newly generated Skill Token from `/user/home` before calling an endpoint. On HTTP 401 or an error containing `unauthorized`, delete the token file and stop until a new token is supplied.
 
@@ -116,7 +120,7 @@ Priced-search fields:
 
 The endpoint returns at most 20 hotels. Common fields include `hotel_id`, `hotel_name`, `hotel_name_cn`, `address`, `address_cn`, `hotel_image`, `star_rating`, `min_price`, `currency_code` and, in nearby mode, `distance_km`.
 
-Priced searches also return `search_scope`, top-level `web_url`, `web_url_expires_at` and `web_url_one_time`. Include `web_url` in the user-facing response. It opens a one-time authenticated TourMind session marked `accessMode=skill_readonly` and does not expose the Skill token. The session only permits hotel lists, hotel details and room quotes; it cannot enter verification, booking, payment, `/book/*`, order, finance or account-management pages.
+Priced searches also return `search_scope`, top-level `web_url`, `web_url_expires_at` and `web_url_one_time`. Include `web_url` in the user-facing response. The link can be opened repeatedly until `web_url_expires_at`; it establishes an authenticated TourMind session marked `accessMode=skill_readonly` without exposing the Skill token. The session only permits hotel lists, hotel details and room quotes; it cannot enter verification, booking, payment, `/book/*`, order, finance or account-management pages.
 
 `min_price` is a recent cached candidate signal. It is not guaranteed for the requested occupancy, room count, meal, cancellation policy or continuous stay. Never present it as a live bookable price.
 
@@ -193,7 +197,7 @@ Use only products whose occupancy and other hard requirements match the user. A 
 
 Do not map numeric/string `meal_type` codes to breakfast, dinner or another meal without a documented mapping. `meal_count=0` may be shown as no included meal; when positive but the type is unknown, say `Meal included for {meal_count} guests; type not specified`.
 
-The response also includes top-level `web_url`, `web_url_expires_at` and `web_url_one_time`. The linked TourMind page displays the hotel and returned room quotes in read-only mode. It does not support verification, booking, payment, `/book/*`, order management, finance or account management. Use the Skill APIs in the authenticated AI conversation for those actions.
+The response also includes top-level `web_url`, `web_url_expires_at` and `web_url_one_time`. The link can be opened repeatedly until `web_url_expires_at`. The linked TourMind page displays the hotel and returned room quotes in read-only mode. It does not support verification, booking, payment, `/book/*`, order management, finance or account management. Use the Skill APIs in the authenticated AI conversation for those actions.
 
 ### `POST /tob/skill/check_room_availability`
 

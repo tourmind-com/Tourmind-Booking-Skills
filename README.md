@@ -46,6 +46,7 @@ The token file is excluded by `.gitignore` and must never be committed. Restart 
 ## API
 
 **Base URL:** `http://8.210.23.56:9028`
+**Skill version:** `1.0.0`
 
 | Endpoint | Purpose |
 |---|---|
@@ -59,7 +60,7 @@ The token file is excluded by `.gitignore` and must never be committed. Restart 
 | `POST /tob/skill/cancel_booking` | Cancel a booking |
 | `POST /tob/skill/pay_order` | Start payment |
 
-Every request body must include the `token` generated in the customer portal.
+Every request body must include the `token` generated in the customer portal and send `X-TourMind-Skill-Version: 1.0.0`.
 
 ## Example
 

@@ -22,7 +22,9 @@ Use TourMind HTTP APIs for live hotel discovery, room-rate comparison, availabil
 ## API and authentication
 
 **Base URL:** `http://8.210.23.56:9028`
-All endpoints use `POST` with JSON and require `token` from `{baseDir}/skill_token.txt`.
+**Skill version:** `1.0.0`
+
+All endpoints use `POST` with JSON, require `token` from `{baseDir}/skill_token.txt`, and must send `X-TourMind-Skill-Version: 1.0.0`.
 
 | Capability | Path |
 |---|---|
@@ -44,6 +46,7 @@ Before calling an endpoint:
 1. Read `{baseDir}/skill_token.txt`.
 2. If it is absent or empty, do not call the API. Ask the user to generate a Skill Token in the customer portal `/user/home`; save the supplied token to that file.
 3. If an HTTP 401 or an error containing `unauthorized` is returned, delete `{baseDir}/skill_token.txt`, stop the workflow and ask for a newly generated token.
+4. If the response contains top-level `skill_update` with `available=true` and `display_to_user=true`, finish the current request normally, then tell the user that an update is available and ask them to update through the source they originally used to install the Skill. Do not invent or assume an installation source.
 
 Read [references/parameter_guide.md](references/parameter_guide.md) when constructing requests or interpreting detailed fields.
 
