@@ -35,7 +35,7 @@ mkdir -p ~/.codex/skills
 git clone https://github.com/tourmind-com/Tourmind-Booking-Skill.git ~/.codex/skills/tourmind-booking
 ```
 
-Generate a Skill Token in the customer portal at `/user/home`, save it as `skill_token.txt` in the installed skill directory, and restrict its permissions:
+Generate a Skill Token at `https://tourmind.com/user/skill-token`, save it as `skill_token.txt` in the installed skill directory, and restrict its permissions:
 
 ```bash
 chmod 600 ~/.codex/skills/tourmind-booking/skill_token.txt

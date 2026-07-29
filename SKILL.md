@@ -46,7 +46,7 @@ Failure: `{"ok": false, "error": "..."}`
 Before calling an endpoint:
 
 1. Read `{baseDir}/skill_token.txt`.
-2. If it is absent or empty, do not call the API. Ask the user to generate a Skill Token in the customer portal `/user/home`; save the supplied token to that file.
+2. If it is absent or empty, do not call the API. Ask the user to generate a Skill Token at `https://tourmind.com/user/skill-token`; save the supplied token to that file.
 3. If an HTTP 401 or an error containing `unauthorized` is returned, delete `{baseDir}/skill_token.txt`, stop the workflow and ask for a newly generated token.
 
 ## Skill version and update check
