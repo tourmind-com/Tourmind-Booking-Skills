@@ -45,20 +45,20 @@ The token file is excluded by `.gitignore` and must never be committed. Restart 
 
 ## API
 
-**Base URL:** `http://8.210.23.56:9028`
+**Base URL:** `https://api.tourmind.com`
 
 | Endpoint | Purpose |
 |---|---|
-| `POST /tob/skill/check_skill_update` | Check whether the installed Skill has an update |
-| `POST /tob/skill/search_location` | Resolve a region, POI, or hotel |
-| `POST /tob/skill/search_hotels` | Search hotel candidates |
-| `POST /tob/skill/get_hotel_detail` | Get hotel details and images |
-| `POST /tob/skill/query_room_rates` | Get live rooms and rates |
-| `POST /tob/skill/check_room_availability` | Recheck price and availability |
-| `POST /tob/skill/create_booking` | Create a booking |
-| `POST /tob/skill/query_booking` | Query a booking |
-| `POST /tob/skill/cancel_booking` | Cancel a booking |
-| `POST /tob/skill/pay_order` | Start payment |
+| `POST /skill/tob/check_skill_update` | Check whether the installed Skill has an update |
+| `POST /skill/tob/search_location` | Resolve a region, POI, or hotel |
+| `POST /skill/tob/search_hotels` | Search hotel candidates |
+| `POST /skill/tob/get_hotel_detail` | Get hotel details and images |
+| `POST /skill/tob/query_room_rates` | Get live rooms and rates |
+| `POST /skill/tob/check_room_availability` | Recheck price and availability |
+| `POST /skill/tob/create_booking` | Create a booking |
+| `POST /skill/tob/query_booking` | Query a booking |
+| `POST /skill/tob/cancel_booking` | Cancel a booking |
+| `POST /skill/tob/pay_order` | Start payment |
 
 Every request body must include the `token` generated in the customer portal. The authoritative Skill version is declared immediately below the title in `SKILL.md`. Send it as `current_version` only to `check_skill_update`: once when the Skill is first used in a new conversation, and again when an existing conversation resumes after at least 24 hours of inactivity.
 

@@ -23,22 +23,22 @@ Use TourMind HTTP APIs for live hotel discovery, room-rate comparison, availabil
 
 ## API and authentication
 
-**Base URL:** `http://8.210.23.56:9028`
+**Base URL:** `https://api.tourmind.com`
 
 All endpoints use `POST` with JSON and require `token` from `{baseDir}/skill_token.txt`.
 
 | Capability | Path |
 |---|---|
-| Check for a Skill update | `/tob/skill/check_skill_update` |
-| Resolve region, POI or hotel | `/tob/skill/search_location` |
-| Search hotel candidates | `/tob/skill/search_hotels` |
-| Get hotel details and images | `/tob/skill/get_hotel_detail` |
-| Get live rooms and rates | `/tob/skill/query_room_rates` |
-| Recheck rate and availability | `/tob/skill/check_room_availability` |
-| Create booking | `/tob/skill/create_booking` |
-| Query booking | `/tob/skill/query_booking` |
-| Cancel booking | `/tob/skill/cancel_booking` |
-| Start payment | `/tob/skill/pay_order` |
+| Check for a Skill update | `/skill/tob/check_skill_update` |
+| Resolve region, POI or hotel | `/skill/tob/search_location` |
+| Search hotel candidates | `/skill/tob/search_hotels` |
+| Get hotel details and images | `/skill/tob/get_hotel_detail` |
+| Get live rooms and rates | `/skill/tob/query_room_rates` |
+| Recheck rate and availability | `/skill/tob/check_room_availability` |
+| Create booking | `/skill/tob/create_booking` |
+| Query booking | `/skill/tob/query_booking` |
+| Cancel booking | `/skill/tob/cancel_booking` |
+| Start payment | `/skill/tob/pay_order` |
 
 Success: `{"ok": true, "data": {...}}`
 Failure: `{"ok": false, "error": "..."}`
@@ -53,7 +53,7 @@ Before calling an endpoint:
 
 Use the version declared immediately below this document's title as the installed `current_version`. Do not send it with hotel, rate, booking, order, cancellation or payment requests.
 
-Call `POST /tob/skill/check_skill_update` with:
+Call `POST /skill/tob/check_skill_update` with:
 
 ```json
 {

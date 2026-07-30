@@ -16,12 +16,12 @@ Use this reference when building TourMind requests, resolving POIs, selecting ca
 
 ## Shared request rules
 
-- Base URL: `http://8.210.23.56:9028`
+- Base URL: `https://api.tourmind.com`
 - Skill version: read the exact value declared immediately below the title in `SKILL.md`.
 - Method: `POST`
 - Content type: `application/json`
 - Authentication: include `token` from `{baseDir}/skill_token.txt` in every request body.
-- Send the Skill version only as `current_version` to `POST /tob/skill/check_skill_update`; do not attach it to business API requests.
+- Send the Skill version only as `current_version` to `POST /skill/tob/check_skill_update`; do not attach it to business API requests.
 - Send `region_id` and `hotel_id` as strings.
 - Success: `{"ok": true, "data": {...}}`
 - Failure: `{"ok": false, "error": "error description"}`
@@ -132,7 +132,7 @@ Do not derive coordinates from model knowledge, use a hotel as a proxy center, o
 
 ## Endpoint contracts
 
-### `POST /tob/skill/check_skill_update`
+### `POST /skill/tob/check_skill_update`
 
 Read-only, idempotent version check.
 
@@ -143,7 +143,7 @@ Read-only, idempotent version check.
 
 When no update is available, return `skill_update.available=false` and `display_to_user=false`. When an update is available, return the complete top-level `skill_update` object documented above.
 
-### `POST /tob/skill/search_location`
+### `POST /skill/tob/search_location`
 
 Request:
 
@@ -160,7 +160,7 @@ Response data:
 
 For a nearby request, use `place` directly. The current API intentionally selects the first Google result.
 
-### `POST /tob/skill/search_hotels`
+### `POST /skill/tob/search_hotels`
 
 Three location modes are supported:
 
@@ -188,7 +188,7 @@ Priced searches also return `search_scope`, top-level `web_url`, `web_url_expire
 
 `min_price` is a recent cached candidate signal. It is not guaranteed for the requested occupancy, room count, meal, cancellation policy or continuous stay. Never present it as a live bookable price.
 
-### `POST /tob/skill/get_hotel_detail`
+### `POST /skill/tob/get_hotel_detail`
 
 Request: `token`, string `hotel_id`.
 
@@ -213,7 +213,7 @@ Hero-image priority for a displayed hotel:
 
 When the final list contains five hotels, call this endpoint for those five so the required hero image, address, facilities and fee disclosures can be rendered. Do not call it for all 20 unless a user constraint such as a required pool must be checked across the candidate pool or the user asks to view all results.
 
-### `POST /tob/skill/query_room_rates`
+### `POST /skill/tob/query_room_rates`
 
 Request:
 
@@ -263,7 +263,7 @@ Do not map numeric/string `meal_type` codes to breakfast, dinner or another meal
 
 The response also includes top-level `web_url`, `web_url_expires_at` and `web_url_one_time`. The link can be opened repeatedly until `web_url_expires_at`. The linked TourMind page displays the hotel and returned room quotes in read-only mode. It does not support verification, booking, payment, `/book/*`, order management, finance or account management. Use the Skill APIs in the authenticated AI conversation for those actions.
 
-### `POST /tob/skill/check_room_availability`
+### `POST /skill/tob/check_room_availability`
 
 Request: `token`, string `hotel_id`, `rate_code`, dates, `adults`, `room_count`.
 
@@ -271,7 +271,7 @@ Use the selected `query_room_rates` rate code. The checked response may return a
 
 In legacy `cancelPolicyInfos`, `refundable: true` means refundable/cancellable. `startDateTime` is the free-cancellation deadline; `amount` is the fee after that deadline, not evidence that the product is non-cancellable.
 
-### `POST /tob/skill/create_booking`
+### `POST /skill/tob/create_booking`
 
 Request fields:
 
@@ -290,19 +290,19 @@ The backend may technically accept an omitted email, but this skill must not cal
 
 Return `data.agent_ref_id` as the TourMind order number.
 
-### `POST /tob/skill/query_booking`
+### `POST /skill/tob/query_booking`
 
 Request: `token`, `agent_ref_id`.
 
 Use for current order status and confirmation details. Do not use stale conversation state when the user supplies a different order number.
 
-### `POST /tob/skill/cancel_booking`
+### `POST /skill/tob/cancel_booking`
 
 Request: `token`, `agent_ref_id`. Confirm the exact order number before calling.
 
 The response may include `status`, `cancel_fee`, `refund_amount` and `currency`.
 
-### `POST /tob/skill/pay_order`
+### `POST /skill/tob/pay_order`
 
 Request: `token`, `agent_ref_id`, and the public `payment_method` API value: `Stripe`, `微信支付` (WeChat Pay), or `支付宝` (Alipay).
 
