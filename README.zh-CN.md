@@ -22,26 +22,45 @@
 
 | 客户端 | 支持方式 |
 |---|---|
-| OpenAI Codex | 作为本地 Skill 安装到 `~/.codex/skills` |
+| WorkBuddy | 将本仓库安装或导入为用户 Skill |
+| OpenAI Codex | 通过 Skills 界面或当前版本支持的本地 Skill 目录安装 |
+| Claude Code | 作为个人 Skill 安装到 `~/.claude/skills` |
 | 兼容 Agent Skills 的客户端 | 客户端能够加载根目录 `SKILL.md` 并发起 HTTPS `POST` 请求时可用 |
 | 支持 MCP 的 AI 客户端 | 使用配套的 [TourMind Booking MCP](https://github.com/tourmind-com/Tourmind-Booking-MCP) |
 
 ## 1 分钟安装
 
-1. 将 Skill 克隆到 Codex：
+1. 前往 [tourmind.com/user/skill-token](https://tourmind.com/user/skill-token) 生成 Skill Token。
 
-   ```bash
-   mkdir -p ~/.codex/skills
-   git clone https://github.com/tourmind-com/Tourmind-Booking-Skill.git ~/.codex/skills/tourmind-booking
+2. 在你的 AI 客户端 Skills 界面中，安装或导入这个 GitHub 仓库：
+
+   ```text
+   https://github.com/tourmind-com/Tourmind-Booking-Skill.git
    ```
 
-2. 前往 [tourmind.com/user/skill-token](https://tourmind.com/user/skill-token) 生成 Skill Token，将原始 Token 保存为 `~/.codex/skills/tourmind-booking/skill_token.txt`，然后限制文件权限：
+   如果客户端从本地目录加载 Skill，将仓库克隆到它的个人 Skill 目录：
 
    ```bash
-   chmod 600 ~/.codex/skills/tourmind-booking/skill_token.txt
+   CLIENT_SKILLS_DIR="<你的客户端 Skill 目录>"
+   mkdir -p "$CLIENT_SKILLS_DIR"
+   git clone https://github.com/tourmind-com/Tourmind-Booking-Skill.git "$CLIENT_SKILLS_DIR/tourmind-booking"
    ```
 
-3. 重启 AI 客户端并提出酒店需求。无需在本地运行 MCP 服务，本 Skill 会通过 HTTPS 直接调用 TourMind API。
+   常见的个人 Skill 目录：
+
+   | 客户端 | 目录 |
+   |---|---|
+   | WorkBuddy | `~/.workbuddy/skills` |
+   | OpenAI Codex | 使用 Skills 界面，或使用当前 Codex 版本支持的本地目录 |
+   | Claude Code | `~/.claude/skills` |
+
+3. 在安装后的 `tourmind-booking` 目录中新建 `skill_token.txt`，文件内只粘贴原始 Token。在 macOS 或 Linux 上限制文件权限：
+
+   ```bash
+   chmod 600 skill_token.txt
+   ```
+
+重新加载 Skills 或重启 AI 客户端，然后提出酒店需求。无需在本地运行 MCP 服务，本 Skill 会通过 HTTPS 直接调用 TourMind API。
 
 切勿提交 `skill_token.txt`；该文件已经被 `.gitignore` 排除。
 

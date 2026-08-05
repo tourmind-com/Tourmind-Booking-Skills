@@ -22,26 +22,45 @@
 
 | クライアント | 対応方法 |
 |---|---|
-| OpenAI Codex | `~/.codex/skills` にローカル Skill としてインストール |
+| WorkBuddy | このリポジトリをユーザー Skill としてインストールまたはインポート |
+| OpenAI Codex | Skills 画面、または現在のバージョンが対応するローカル Skill ディレクトリからインストール |
+| Claude Code | `~/.claude/skills` に個人 Skill としてインストール |
 | Agent Skills 互換クライアント | ルートの `SKILL.md` を読み込み、HTTPS `POST` リクエストを送信できる場合に利用可能 |
 | MCP 対応 AI クライアント | 付属の [TourMind Booking MCP](https://github.com/tourmind-com/Tourmind-Booking-MCP) パッケージを使用 |
 
 ## 1分でインストール
 
-1. Skill を Codex にクローンします。
+1. [tourmind.com/user/skill-token](https://tourmind.com/user/skill-token) で Skill Token を生成します。
 
-   ```bash
-   mkdir -p ~/.codex/skills
-   git clone https://github.com/tourmind-com/Tourmind-Booking-Skill.git ~/.codex/skills/tourmind-booking
+2. AI クライアントの Skills 画面で、次の GitHub リポジトリをインストールまたはインポートします。
+
+   ```text
+   https://github.com/tourmind-com/Tourmind-Booking-Skill.git
    ```
 
-2. [tourmind.com/user/skill-token](https://tourmind.com/user/skill-token) で Skill Token を生成し、トークン本体を `~/.codex/skills/tourmind-booking/skill_token.txt` に保存して、アクセス権を制限します。
+   クライアントがファイルシステムから Skill を読み込む場合は、個人 Skill ディレクトリにリポジトリをクローンします。
 
    ```bash
-   chmod 600 ~/.codex/skills/tourmind-booking/skill_token.txt
+   CLIENT_SKILLS_DIR="<クライアントのSkillディレクトリ>"
+   mkdir -p "$CLIENT_SKILLS_DIR"
+   git clone https://github.com/tourmind-com/Tourmind-Booking-Skill.git "$CLIENT_SKILLS_DIR/tourmind-booking"
    ```
 
-3. AI クライアントを再起動し、ホテルを依頼します。ローカル MCP サーバーは不要で、この Skill は HTTPS で TourMind API を直接呼び出します。
+   一般的な個人 Skill ディレクトリ：
+
+   | クライアント | ディレクトリ |
+   |---|---|
+   | WorkBuddy | `~/.workbuddy/skills` |
+   | OpenAI Codex | Skills 画面、または現在の Codex バージョンが対応するローカルディレクトリを使用 |
+   | Claude Code | `~/.claude/skills` |
+
+3. インストールした `tourmind-booking` フォルダ内に `skill_token.txt` を作成し、Token 本体だけを貼り付けます。macOS または Linux ではアクセス権を制限します。
+
+   ```bash
+   chmod 600 skill_token.txt
+   ```
+
+Skills を再読み込みするか AI クライアントを再起動して、ホテルを依頼します。ローカル MCP サーバーは不要で、この Skill は HTTPS で TourMind API を直接呼び出します。
 
 `skill_token.txt` は絶対にコミットしないでください。このファイルは `.gitignore` で除外されています。
 
