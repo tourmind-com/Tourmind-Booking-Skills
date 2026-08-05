@@ -1,0 +1,4 @@
+interface:
+  display_name: "TourMind Hotel Booking"
+  short_description: "Live hotel search, rates, booking, and payment"
+  default_prompt: "Use $tourmind-booking to find and book a hotel for my trip."
