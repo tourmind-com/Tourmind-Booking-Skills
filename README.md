@@ -66,20 +66,22 @@ Never commit `skill_token.txt`. It is excluded by `.gitignore`.
 
 ## Example prompts
 
+These examples combine the agent's own research and itinerary-planning abilities with TourMind's live hotel search, rate verification, booking, payment, and order-management workflow.
+
 ```text
-Find a hotel near Shenzhen Xili Metro Station for two adults from September 12 to September 14, within 3 km.
+I’m planning a four-night trip for two to Osaka (Japan) from April 9 to April 13, 2027, flying in and out of Kansai International Airport. We want one or two days of sea fishing around Osaka Bay or Awaji Island and will not rent a car. First use your own web research and itinerary-planning abilities to compare practical fishing areas, seasonal considerations, licensed charter options, and public-transport times, then propose a relaxed day-by-day itinerary. For the best base, use TourMind to search live hotel inventory. Keep the average room price under JPY 18,000 per night; prefer a twin room near a station, practical early-morning transport to the fishing meeting point, free cancellation, and breakfast when it fits the departure time. Show the five best verified options with room photos, total stay price and currency, taxes and fees when returned, cancellation terms, breakfast, the transfer plan to the fishing point, key trade-offs, and a repeatable result link. Do not book yet.
 ```
 
 ```text
-Show the best five hotels with verified live room rates, breakfast, cancellation terms, and stay totals.
+Plan a six-night ski trip to the Dolomites (Italy) for two adults from February 6 to February 12, 2027. We will arrive at Venice Marco Polo Airport, will not drive, and are intermediate skiers. First compare Cortina d’Ampezzo, Val Gardena, and Alta Badia for airport transfers, ski terrain, dining, and value, then recommend the best base and a realistic day-by-day plan. Use TourMind to find available hotels averaging no more than EUR 250 per night, preferably within a 10-minute walk or shuttle ride of a lift, with ski storage, breakfast, free cancellation, and a sauna if possible. Return the five best verified live options with room and bed type, photos, nightly and stay-total prices, cancellation deadlines, meals, inventory status, distance to the lift, and any constraint each option misses. After I choose one, recheck its live price and availability, summarize the exact final amount and policy, and wait for my explicit confirmation before booking or starting payment.
 ```
 
 ```text
-Show every candidate returned by the hotel search and clearly label any option that failed my hard constraints.
+Use the second hotel from the comparison. Show the hotel details and every currently bookable room product that fits two adults, including room photos, bed type, meals, cancellation policy, on-request status, nightly price, and total price. Recommend the best-value rate and explain why. Then recheck that exact rate. If anything changed, show the old and new values clearly; otherwise give me the final booking summary and ask for confirmation. Do not create the booking or payment until I explicitly say “confirm booking.”
 ```
 
 ```text
-Recheck the selected room, then help me book and pay after I confirm the final price and cancellation policy.
+Look up my booking using agent reference ID <AGENT_REF_ID>. Explain the current booking and payment status in plain language. If it is cancellable, show the cancellation deadline, penalty, and expected refundable amount before doing anything. Cancel only after I explicitly confirm, then query the booking again and show the final status. Never expose my Skill Token in the response or result link.
 ```
 
 ## Workflow
