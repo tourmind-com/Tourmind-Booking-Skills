@@ -22,26 +22,45 @@ Convierte cualquier agente de IA en un asistente integral de reservas de hotel: 
 
 | Cliente | Compatibilidad |
 |---|---|
-| OpenAI Codex | Compatible como Skill local instalado en `~/.codex/skills` |
+| WorkBuddy | Instala o importa este repositorio como Skill de usuario |
+| OpenAI Codex | Instala desde la interfaz de Skills o un directorio local compatible con tu versión |
+| Claude Code | Instala como Skill personal en `~/.claude/skills` |
 | Clientes compatibles con Agent Skills | Compatible cuando el cliente puede cargar un `SKILL.md` en la raíz y realizar solicitudes HTTPS `POST` |
 | Clientes de IA compatibles con MCP | Utiliza el paquete complementario [TourMind Booking MCP](https://github.com/tourmind-com/Tourmind-Booking-MCP) |
 
 ## Instalación en 1 minuto
 
-1. Clona el Skill en Codex:
+1. Genera un Skill Token en [tourmind.com/user/skill-token](https://tourmind.com/user/skill-token).
 
-   ```bash
-   mkdir -p ~/.codex/skills
-   git clone https://github.com/tourmind-com/Tourmind-Booking-Skill.git ~/.codex/skills/tourmind-booking
+2. En la interfaz de Skills de tu cliente de IA, instala o importa este repositorio de GitHub:
+
+   ```text
+   https://github.com/tourmind-com/Tourmind-Booking-Skill.git
    ```
 
-2. Genera un Skill Token en [tourmind.com/user/skill-token](https://tourmind.com/user/skill-token), guarda el token sin modificar como `~/.codex/skills/tourmind-booking/skill_token.txt` y restringe el acceso:
+   Si el cliente carga Skills desde el sistema de archivos, clona el repositorio en su directorio de Skills personales:
 
    ```bash
-   chmod 600 ~/.codex/skills/tourmind-booking/skill_token.txt
+   CLIENT_SKILLS_DIR="<directorio-de-skills-del-cliente>"
+   mkdir -p "$CLIENT_SKILLS_DIR"
+   git clone https://github.com/tourmind-com/Tourmind-Booking-Skill.git "$CLIENT_SKILLS_DIR/tourmind-booking"
    ```
 
-3. Reinicia el cliente de IA y solicita un hotel. No se necesita un servidor MCP local; este Skill llama directamente a la API de TourMind mediante HTTPS.
+   Directorios personales habituales:
+
+   | Cliente | Directorio |
+   |---|---|
+   | WorkBuddy | `~/.workbuddy/skills` |
+   | OpenAI Codex | Usa la interfaz de Skills o el directorio local compatible con tu versión de Codex |
+   | Claude Code | `~/.claude/skills` |
+
+3. En la carpeta `tourmind-booking` instalada, crea `skill_token.txt` y pega únicamente el Token original. En macOS o Linux, restringe el acceso:
+
+   ```bash
+   chmod 600 skill_token.txt
+   ```
+
+Recarga los Skills o reinicia el cliente de IA y solicita un hotel. No se necesita un servidor MCP local; este Skill llama directamente a la API de TourMind mediante HTTPS.
 
 Nunca confirmes `skill_token.txt` en Git. El archivo está excluido por `.gitignore`.
 

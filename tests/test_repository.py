@@ -60,6 +60,16 @@ class RepositoryContractTests(unittest.TestCase):
                 for repository in REPOSITORIES:
                     self.assertIn(repository, text)
 
+    def test_installation_is_client_neutral(self) -> None:
+        for readme in READMES:
+            with self.subTest(readme=readme.name):
+                text = readme.read_text(encoding="utf-8")
+                self.assertIn("WorkBuddy", text)
+                self.assertIn("OpenAI Codex", text)
+                self.assertIn("Claude Code", text)
+                self.assertIn("CLIENT_SKILLS_DIR", text)
+                self.assertNotIn("~/.codex/skills/tourmind-booking", text)
+
     def test_openai_interface_metadata(self) -> None:
         metadata = (ROOT / "agents" / "openai.yaml").read_text(encoding="utf-8")
         self.assertIn('display_name: "TourMind Hotel Booking"', metadata)
