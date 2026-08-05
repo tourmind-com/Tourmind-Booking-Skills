@@ -1,0 +1,100 @@
+from __future__ import annotations
+
+import re
+import subprocess
+import unittest
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+SKILL = ROOT / "SKILL.md"
+READMES = (
+    ROOT / "README.md",
+    ROOT / "README.zh-CN.md",
+    ROOT / "README.ja.md",
+    ROOT / "README.es.md",
+)
+REPOSITORIES = (
+    "tourmind-com/Hotel-Booking-AI",
+    "tourmind-com/Tourmind-Booking-Skill",
+    "tourmind-com/Hotel-Booking-AI-MCP",
+    "tourmind-com/Tourmind-Booking-MCP",
+)
+
+
+class RepositoryContractTests(unittest.TestCase):
+    def test_skill_frontmatter_and_version(self) -> None:
+        text = SKILL.read_text(encoding="utf-8")
+        self.assertTrue(text.startswith("---\n"))
+        frontmatter = text.split("---", 2)[1]
+        top_level_keys = {
+            match.group(1)
+            for line in frontmatter.splitlines()
+            if (match := re.match(r"^([a-z][a-z0-9_-]*):", line))
+        }
+        self.assertEqual(top_level_keys, {"name", "description"})
+        self.assertRegex(frontmatter, r"(?m)^name: tourmind-booking$")
+        self.assertRegex(text, r"\*\*Skill version:\*\* `\d+\.\d+\.\d+`")
+        self.assertLess(len(text.splitlines()), 500)
+
+    def test_skill_references_exist(self) -> None:
+        text = SKILL.read_text(encoding="utf-8")
+        local_markdown_links = re.findall(r"\[[^]]+\]\(([^):]+\.md)\)", text)
+        self.assertTrue(local_markdown_links)
+        for relative_path in local_markdown_links:
+            with self.subTest(relative_path=relative_path):
+                self.assertTrue((ROOT / relative_path).is_file())
+
+    def test_localized_readmes_and_navigation(self) -> None:
+        expected_links = (
+            "README.md",
+            "README.zh-CN.md",
+            "README.ja.md",
+            "README.es.md",
+        )
+        for readme in READMES:
+            with self.subTest(readme=readme.name):
+                text = readme.read_text(encoding="utf-8")
+                for link in expected_links:
+                    self.assertIn(f"]({link})", text)
+                for repository in REPOSITORIES:
+                    self.assertIn(repository, text)
+
+    def test_openai_interface_metadata(self) -> None:
+        metadata = (ROOT / "agents" / "openai.yaml").read_text(encoding="utf-8")
+        self.assertIn('display_name: "TourMind Hotel Booking"', metadata)
+        self.assertIn("short_description:", metadata)
+        self.assertIn("$tourmind-booking", metadata)
+
+    def test_required_endpoints_are_documented(self) -> None:
+        text = SKILL.read_text(encoding="utf-8")
+        endpoints = (
+            "check_skill_update",
+            "search_location",
+            "search_hotels",
+            "get_hotel_detail",
+            "query_room_rates",
+            "check_room_availability",
+            "create_booking",
+            "query_booking",
+            "cancel_booking",
+            "pay_order",
+        )
+        for endpoint in endpoints:
+            with self.subTest(endpoint=endpoint):
+                self.assertIn(endpoint, text)
+
+    def test_credentials_are_not_tracked(self) -> None:
+        tracked = subprocess.run(
+            ["git", "ls-files"],
+            cwd=ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.splitlines()
+        self.assertNotIn("skill_token.txt", tracked)
+        self.assertFalse(any(path.endswith("user_key.txt") for path in tracked))
+
+
+if __name__ == "__main__":
+    unittest.main()
