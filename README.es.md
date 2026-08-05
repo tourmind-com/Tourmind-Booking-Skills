@@ -66,20 +66,22 @@ Nunca confirmes `skill_token.txt` en Git. El archivo está excluido por `.gitign
 
 ## Prompts de ejemplo
 
+Estos ejemplos combinan la investigación y planificación de itinerarios del propio agente con la búsqueda de hoteles, verificación de tarifas, reserva, pago y gestión de pedidos en tiempo real de TourMind.
+
 ```text
-Busca un hotel a menos de 3 km de la estación de metro Xili en Shenzhen para dos adultos, del 12 al 14 de septiembre.
+Estoy planeando un viaje de cuatro noches para dos personas a Osaka (Japón), del 9 al 13 de abril de 2027, con llegada y salida por el Aeropuerto Internacional de Kansai. Queremos dedicar uno o dos días a la pesca en el mar en la bahía de Osaka o cerca de la isla de Awaji y no alquilaremos coche. Primero utiliza tus propias capacidades de investigación web y planificación para comparar zonas de pesca prácticas, condiciones de temporada, opciones legales de barco chárter o pesca compartida y tiempos de transporte público; después propón un itinerario diario relajado. Para la mejor base, usa TourMind para buscar inventario hotelero en tiempo real. Mantén el precio medio por debajo de 18.000 JPY por noche y prioriza una habitación con dos camas, cerca de una estación, con transporte práctico al punto de encuentro de pesca a primera hora, cancelación gratuita y desayuno cuando sea compatible con la hora de salida. Muestra las cinco mejores opciones verificadas con fotos de la habitación, precio total y moneda, impuestos y cargos cuando se devuelvan, condiciones de cancelación, desayuno, traslado al punto de pesca, ventajas e inconvenientes y un enlace de resultados que pueda abrirse varias veces. No reserves todavía.
 ```
 
 ```text
-Muéstrame los cinco mejores hoteles con tarifas de habitación verificadas en tiempo real, desayuno, condiciones de cancelación y total de la estancia.
+Planifica un viaje de esquí de seis noches a los Dolomitas (Dolomites), Italia, para dos adultos, del 6 al 12 de febrero de 2027. Llegaremos al aeropuerto Marco Polo de Venecia, no conduciremos y tenemos nivel intermedio. Primero compara Cortina d’Ampezzo, Val Gardena y Alta Badia por traslado desde el aeropuerto, terreno esquiable, gastronomía y relación calidad-precio; después recomienda la mejor base y un plan diario realista. Usa TourMind para buscar hoteles disponibles con una media máxima de 250 EUR por noche, preferiblemente a menos de 10 minutos a pie o en lanzadera de un remonte, con guardaesquís, desayuno, cancelación gratuita y sauna si es posible. Devuelve las cinco mejores opciones verificadas en tiempo real con tipo de habitación y cama, fotos, precio por noche y total, plazos de cancelación, comidas, estado del inventario, distancia al remonte y cualquier requisito que no cumplan. Cuando elija una, vuelve a verificar su precio y disponibilidad, resume el importe final exacto y las condiciones, y espera mi confirmación explícita antes de reservar o iniciar el pago.
 ```
 
 ```text
-Muestra todos los candidatos devueltos por la búsqueda y marca claramente los que no cumplan mis requisitos obligatorios.
+Usa el segundo hotel de la comparación. Muestra sus detalles y todos los productos de habitación actualmente reservables para dos adultos, incluidas fotos, tipo de cama, comidas, política de cancelación, si está sujeto a petición, precio por noche y precio total. Recomienda la tarifa con mejor relación calidad-precio y explica por qué; después vuelve a verificar esa tarifa exacta. Si algo ha cambiado, muestra claramente los valores anteriores y nuevos. Si no hay cambios, presenta el resumen final de la reserva y pide mi confirmación. No crees la reserva ni inicies el pago hasta que diga explícitamente «confirmar reserva».
 ```
 
 ```text
-Vuelve a verificar la habitación seleccionada y ayúdame a reservar y pagar después de que confirme el precio final y la política de cancelación.
+Consulta mi reserva con el identificador de referencia del agente <AGENT_REF_ID> y explica en lenguaje sencillo el estado actual de la reserva y del pago. Si se puede cancelar, muestra primero la fecha límite, la penalización y el importe de reembolso previsto sin realizar ninguna acción. Cancela solo después de mi confirmación explícita; luego vuelve a consultar la reserva y muestra el estado final. No expongas mi Skill Token en la respuesta ni en el enlace de resultados.
 ```
 
 ## Flujo de trabajo
