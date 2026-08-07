@@ -25,7 +25,7 @@ DEMO_ASSETS = (
     ROOT / "docs" / "assets" / "demo" / "detail-en.gif",
     ROOT / "docs" / "assets" / "demo" / "pay-en.gif",
 )
-DEMO_READMES = (READMES[0], READMES[2], READMES[3])
+DEMO_READMES = READMES
 DEMO_DISPLAY_WIDTH = 720
 DEMO_MAX_ASSET_BYTES = 4_000_000
 DEMO_MAX_TOTAL_BYTES = 10_500_000
@@ -79,7 +79,7 @@ class RepositoryContractTests(unittest.TestCase):
                 self.assertIn("CLIENT_SKILLS_DIR", text)
                 self.assertNotIn("~/.codex/skills/tourmind-booking", text)
 
-    def test_english_demo_assets_exist_and_are_linked(self) -> None:
+    def test_demo_assets_exist_and_are_linked(self) -> None:
         for asset in DEMO_ASSETS:
             with self.subTest(asset=asset.name):
                 self.assertTrue(asset.is_file())
@@ -93,7 +93,7 @@ class RepositoryContractTests(unittest.TestCase):
             DEMO_MAX_TOTAL_BYTES,
         )
 
-    def test_english_demos_are_centered_and_resized(self) -> None:
+    def test_demos_are_centered_and_resized(self) -> None:
         for readme in DEMO_READMES:
             text = readme.read_text(encoding="utf-8")
             with self.subTest(readme=readme.name):
