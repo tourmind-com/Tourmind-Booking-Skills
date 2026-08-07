@@ -8,15 +8,27 @@ Turn any AI agent into an end-to-end hotel booking assistant—search global inv
 
 ### 1. Search live hotels
 
-![TourMind hotel search demo](docs/assets/demo/search-en.gif)
+<div align="center">
+  <a href="docs/assets/demo/search-en.gif">
+    <img src="docs/assets/demo/search-en.gif" alt="TourMind hotel search demo" width="720" />
+  </a>
+</div>
 
 ### 2. Compare real room options
 
-![TourMind room detail demo](docs/assets/demo/detail-en.gif)
+<div align="center">
+  <a href="docs/assets/demo/detail-en.gif">
+    <img src="docs/assets/demo/detail-en.gif" alt="TourMind room detail demo" width="720" />
+  </a>
+</div>
 
 ### 3. Verify the final rate and pay
 
-![TourMind rate verification and payment demo](docs/assets/demo/pay-en.gif)
+<div align="center">
+  <a href="docs/assets/demo/pay-en.gif">
+    <img src="docs/assets/demo/pay-en.gif" alt="TourMind rate verification and payment demo" width="720" />
+  </a>
+</div>
 
 ## Core capabilities
 
