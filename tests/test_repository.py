@@ -29,6 +29,8 @@ DEMO_READMES = READMES
 DEMO_DISPLAY_WIDTH = 720
 DEMO_MAX_ASSET_BYTES = 4_000_000
 DEMO_MAX_TOTAL_BYTES = 10_500_000
+HERO_ASSET = ROOT / "docs" / "assets" / "hero" / "tourmind-booking-skills.png"
+HERO_TARGET = "https://tourmind.com/en-US/user/skill-token"
 
 
 class RepositoryContractTests(unittest.TestCase):
@@ -83,6 +85,16 @@ class RepositoryContractTests(unittest.TestCase):
         self.assertIn("ClawHub_installs-1.4k", text)
         self.assertIn("github/v/release/tourmind-com/Tourmind-Booking-Skills", text)
         self.assertIn("github/license/tourmind-com/Tourmind-Booking-Skills", text)
+        self.assertTrue(HERO_ASSET.is_file())
+        self.assertGreater(HERO_ASSET.stat().st_size, 0)
+        self.assertLessEqual(HERO_ASSET.stat().st_size, 1_000_000)
+        hero_path = HERO_ASSET.relative_to(ROOT).as_posix()
+        self.assertRegex(
+            text,
+            rf'(?s)<a href="{re.escape(HERO_TARGET)}">\s*'
+            rf'<img alt="[^"]+" src="{re.escape(hero_path)}" '
+            rf'style="width: 100%"\s*/>\s*</a>',
+        )
 
     def test_installation_is_client_neutral(self) -> None:
         for readme in READMES:
