@@ -57,7 +57,7 @@
 2. AI クライアントの Skills 画面で、次の GitHub リポジトリをインストールまたはインポートします。
 
    ```text
-   https://github.com/tourmind-com/Tourmind-Booking-Skill.git
+   https://github.com/tourmind-com/Tourmind-Booking-Skills.git
    ```
 
    クライアントがファイルシステムから Skill を読み込む場合は、個人 Skill ディレクトリにリポジトリをクローンします。
@@ -65,7 +65,7 @@
    ```bash
    CLIENT_SKILLS_DIR="<クライアントのSkillディレクトリ>"
    mkdir -p "$CLIENT_SKILLS_DIR"
-   git clone https://github.com/tourmind-com/Tourmind-Booking-Skill.git "$CLIENT_SKILLS_DIR/tourmind-booking"
+   git clone https://github.com/tourmind-com/Tourmind-Booking-Skills.git "$CLIENT_SKILLS_DIR/tourmind-booking"
    ```
 
    一般的な個人 Skill ディレクトリ：
@@ -136,7 +136,7 @@ Skills を再読み込みするか AI クライアントを再起動して、ホ
 | 対象 | 接続方式 | 認証モデル | リポジトリ |
 |---|---|---|---|
 | コンシューマー / ToC | 直接 HTTP Skill | 検索・空室確認は公開、注文操作のみ `user_key` が必要 | [Hotel Booking AI](https://github.com/tourmind-com/Hotel-Booking-AI) |
-| ビジネス / ToB | 直接 HTTP Skill | すべての API 呼び出しに Skill Token が必要 | **[TourMind Booking Skill](https://github.com/tourmind-com/Tourmind-Booking-Skill)** |
+| ビジネス / ToB | 直接 HTTP Skill | すべての API 呼び出しに Skill Token が必要 | **[TourMind Booking Skill](https://github.com/tourmind-com/Tourmind-Booking-Skills)** |
 | コンシューマー / ToC | MCP + 付属 Skill | MCP 接続は公開、注文操作のみ `user_key` が必要 | [Hotel Booking AI MCP](https://github.com/tourmind-com/Hotel-Booking-AI-MCP) |
 | ビジネス / ToB | MCP + 付属 Skill | Bearer 認証された MCP 接続 | [TourMind Booking MCP](https://github.com/tourmind-com/Tourmind-Booking-MCP) |
 
@@ -160,7 +160,7 @@ Skills を再読み込みするか AI クライアントを再起動して、ホ
 - リクエスト項目とレスポンス契約：[references/parameter_guide.md](references/parameter_guide.md)
 - Skill Token：[tourmind.com/user/skill-token](https://tourmind.com/user/skill-token)
 - 製品ページ：[tourmind.com/skill](https://tourmind.com/skill)
-- GitHub サポート：[Issue を作成](https://github.com/tourmind-com/Tourmind-Booking-Skill/issues)
+- GitHub サポート：[Issue を作成](https://github.com/tourmind-com/Tourmind-Booking-Skills/issues)
 - ホテル事業に関するお問い合わせ：`hotel@tourmind.com`
 - ビジネス提携：`bp@tourmind.com`
 

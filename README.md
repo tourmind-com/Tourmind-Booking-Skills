@@ -57,7 +57,7 @@ Turn any AI agent into an end-to-end hotel booking assistant—search global inv
 2. In your AI client's Skills interface, install or import this GitHub repository:
 
    ```text
-   https://github.com/tourmind-com/Tourmind-Booking-Skill.git
+   https://github.com/tourmind-com/Tourmind-Booking-Skills.git
    ```
 
    If your client installs Skills from the filesystem, clone the repository into its personal skills directory:
@@ -65,7 +65,7 @@ Turn any AI agent into an end-to-end hotel booking assistant—search global inv
    ```bash
    CLIENT_SKILLS_DIR="<your-client-skills-directory>"
    mkdir -p "$CLIENT_SKILLS_DIR"
-   git clone https://github.com/tourmind-com/Tourmind-Booking-Skill.git "$CLIENT_SKILLS_DIR/tourmind-booking"
+   git clone https://github.com/tourmind-com/Tourmind-Booking-Skills.git "$CLIENT_SKILLS_DIR/tourmind-booking"
    ```
 
    Common personal Skill locations:
@@ -136,7 +136,7 @@ Cached `search_hotels.min_price` is only a candidate signal. User-visible prices
 | Audience | Integration | Authentication model | Repository |
 |---|---|---|---|
 | Consumer / ToC | Direct HTTP Skill | Public search and availability; `user_key` only for order operations | [Hotel Booking AI](https://github.com/tourmind-com/Hotel-Booking-AI) |
-| Business / ToB | Direct HTTP Skill | Skill Token required for every API call | **[TourMind Booking Skill](https://github.com/tourmind-com/Tourmind-Booking-Skill)** |
+| Business / ToB | Direct HTTP Skill | Skill Token required for every API call | **[TourMind Booking Skill](https://github.com/tourmind-com/Tourmind-Booking-Skills)** |
 | Consumer / ToC | MCP package + companion Skill | Public MCP connection; `user_key` only for order operations | [Hotel Booking AI MCP](https://github.com/tourmind-com/Hotel-Booking-AI-MCP) |
 | Business / ToB | MCP package + companion Skill | Bearer-authenticated MCP connection | [TourMind Booking MCP](https://github.com/tourmind-com/Tourmind-Booking-MCP) |
 
@@ -160,7 +160,7 @@ Cached `search_hotels.min_price` is only a candidate signal. User-visible prices
 - Request fields and response contracts: [references/parameter_guide.md](references/parameter_guide.md)
 - Skill Token: [tourmind.com/user/skill-token](https://tourmind.com/user/skill-token)
 - Product page: [tourmind.com/skill](https://tourmind.com/skill)
-- GitHub support: [open an issue](https://github.com/tourmind-com/Tourmind-Booking-Skill/issues)
+- GitHub support: [open an issue](https://github.com/tourmind-com/Tourmind-Booking-Skills/issues)
 - Hotel business inquiry: `hotel@tourmind.com`
 - Business cooperation: `bp@tourmind.com`
 

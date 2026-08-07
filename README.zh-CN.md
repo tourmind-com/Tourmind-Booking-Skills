@@ -35,7 +35,7 @@
 2. 在你的 AI 客户端 Skills 界面中，安装或导入这个 GitHub 仓库：
 
    ```text
-   https://github.com/tourmind-com/Tourmind-Booking-Skill.git
+   https://github.com/tourmind-com/Tourmind-Booking-Skills.git
    ```
 
    如果客户端从本地目录加载 Skill，将仓库克隆到它的个人 Skill 目录：
@@ -43,7 +43,7 @@
    ```bash
    CLIENT_SKILLS_DIR="<你的客户端 Skill 目录>"
    mkdir -p "$CLIENT_SKILLS_DIR"
-   git clone https://github.com/tourmind-com/Tourmind-Booking-Skill.git "$CLIENT_SKILLS_DIR/tourmind-booking"
+   git clone https://github.com/tourmind-com/Tourmind-Booking-Skills.git "$CLIENT_SKILLS_DIR/tourmind-booking"
    ```
 
    常见的个人 Skill 目录：
@@ -114,7 +114,7 @@
 | 用户类型 | 接入方式 | 鉴权模式 | 仓库 |
 |---|---|---|---|
 | 消费者 / ToC | 直连 HTTP Skill | 搜索与验价公开；订单操作才需要 `user_key` | [Hotel Booking AI](https://github.com/tourmind-com/Hotel-Booking-AI) |
-| 企业 / ToB | 直连 HTTP Skill | 每次 API 调用都需要 Skill Token | **[TourMind Booking Skill](https://github.com/tourmind-com/Tourmind-Booking-Skill)** |
+| 企业 / ToB | 直连 HTTP Skill | 每次 API 调用都需要 Skill Token | **[TourMind Booking Skill](https://github.com/tourmind-com/Tourmind-Booking-Skills)** |
 | 消费者 / ToC | MCP + 配套 Skill | MCP 连接公开；订单操作才需要 `user_key` | [Hotel Booking AI MCP](https://github.com/tourmind-com/Hotel-Booking-AI-MCP) |
 | 企业 / ToB | MCP + 配套 Skill | MCP 连接使用 Bearer 鉴权 | [TourMind Booking MCP](https://github.com/tourmind-com/Tourmind-Booking-MCP) |
 
@@ -138,7 +138,7 @@
 - 请求字段与响应契约：[references/parameter_guide.md](references/parameter_guide.md)
 - 获取 Skill Token：[tourmind.com/user/skill-token](https://tourmind.com/user/skill-token)
 - 产品页面：[tourmind.com/skill](https://tourmind.com/skill)
-- GitHub 支持：[提交 Issue](https://github.com/tourmind-com/Tourmind-Booking-Skill/issues)
+- GitHub 支持：[提交 Issue](https://github.com/tourmind-com/Tourmind-Booking-Skills/issues)
 - 酒店业务咨询：`hotel@tourmind.com`
 - 商务合作：`bp@tourmind.com`
 

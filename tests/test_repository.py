@@ -16,7 +16,7 @@ READMES = (
 )
 REPOSITORIES = (
     "tourmind-com/Hotel-Booking-AI",
-    "tourmind-com/Tourmind-Booking-Skill",
+    "tourmind-com/Tourmind-Booking-Skills",
     "tourmind-com/Hotel-Booking-AI-MCP",
     "tourmind-com/Tourmind-Booking-MCP",
 )
