@@ -27,6 +27,8 @@ DEMO_ASSETS = (
 )
 DEMO_READMES = (READMES[0], READMES[2], READMES[3])
 DEMO_DISPLAY_WIDTH = 720
+DEMO_MAX_ASSET_BYTES = 4_000_000
+DEMO_MAX_TOTAL_BYTES = 10_500_000
 
 
 class RepositoryContractTests(unittest.TestCase):
@@ -82,10 +84,14 @@ class RepositoryContractTests(unittest.TestCase):
             with self.subTest(asset=asset.name):
                 self.assertTrue(asset.is_file())
                 self.assertGreater(asset.stat().st_size, 0)
-                self.assertLessEqual(asset.stat().st_size, 8_000_000)
+                self.assertLessEqual(asset.stat().st_size, DEMO_MAX_ASSET_BYTES)
                 relative_path = asset.relative_to(ROOT).as_posix()
                 for readme in DEMO_READMES:
                     self.assertIn(relative_path, readme.read_text(encoding="utf-8"))
+        self.assertLessEqual(
+            sum(asset.stat().st_size for asset in DEMO_ASSETS),
+            DEMO_MAX_TOTAL_BYTES,
+        )
 
     def test_english_demos_are_centered_and_resized(self) -> None:
         for readme in DEMO_READMES:
