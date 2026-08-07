@@ -57,7 +57,7 @@ Convierte cualquier agente de IA en un asistente integral de reservas de hotel: 
 2. En la interfaz de Skills de tu cliente de IA, instala o importa este repositorio de GitHub:
 
    ```text
-   https://github.com/tourmind-com/Tourmind-Booking-Skill.git
+   https://github.com/tourmind-com/Tourmind-Booking-Skills.git
    ```
 
    Si el cliente carga Skills desde el sistema de archivos, clona el repositorio en su directorio de Skills personales:
@@ -65,7 +65,7 @@ Convierte cualquier agente de IA en un asistente integral de reservas de hotel: 
    ```bash
    CLIENT_SKILLS_DIR="<directorio-de-skills-del-cliente>"
    mkdir -p "$CLIENT_SKILLS_DIR"
-   git clone https://github.com/tourmind-com/Tourmind-Booking-Skill.git "$CLIENT_SKILLS_DIR/tourmind-booking"
+   git clone https://github.com/tourmind-com/Tourmind-Booking-Skills.git "$CLIENT_SKILLS_DIR/tourmind-booking"
    ```
 
    Directorios personales habituales:
@@ -136,7 +136,7 @@ El valor almacenado en caché `search_hotels.min_price` es únicamente una seña
 | Audiencia | Integración | Modelo de autenticación | Repositorio |
 |---|---|---|---|
 | Consumidor / ToC | Skill HTTP directo | Búsqueda y disponibilidad públicas; `user_key` solo para operaciones de pedidos | [Hotel Booking AI](https://github.com/tourmind-com/Hotel-Booking-AI) |
-| Empresa / ToB | Skill HTTP directo | Skill Token obligatorio en cada llamada a la API | **[TourMind Booking Skill](https://github.com/tourmind-com/Tourmind-Booking-Skill)** |
+| Empresa / ToB | Skill HTTP directo | Skill Token obligatorio en cada llamada a la API | **[TourMind Booking Skill](https://github.com/tourmind-com/Tourmind-Booking-Skills)** |
 | Consumidor / ToC | MCP + Skill complementario | Conexión MCP pública; `user_key` solo para operaciones de pedidos | [Hotel Booking AI MCP](https://github.com/tourmind-com/Hotel-Booking-AI-MCP) |
 | Empresa / ToB | MCP + Skill complementario | Conexión MCP autenticada mediante Bearer | [TourMind Booking MCP](https://github.com/tourmind-com/Tourmind-Booking-MCP) |
 
@@ -160,7 +160,7 @@ El valor almacenado en caché `search_hotels.min_price` es únicamente una seña
 - Campos y contratos de respuesta: [references/parameter_guide.md](references/parameter_guide.md)
 - Skill Token: [tourmind.com/user/skill-token](https://tourmind.com/user/skill-token)
 - Página del producto: [tourmind.com/skill](https://tourmind.com/skill)
-- Soporte en GitHub: [abrir una incidencia](https://github.com/tourmind-com/Tourmind-Booking-Skill/issues)
+- Soporte en GitHub: [abrir una incidencia](https://github.com/tourmind-com/Tourmind-Booking-Skills/issues)
 - Consultas sobre hoteles: `hotel@tourmind.com`
 - Colaboración comercial: `bp@tourmind.com`
 
