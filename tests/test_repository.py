@@ -83,6 +83,9 @@ class RepositoryContractTests(unittest.TestCase):
         self.assertIn("<span>Live Demo</span>", text)
         self.assertIn('href="https://tourmind.com">Company</a>', text)
         self.assertIn("ClawHub_installs-1.4k", text)
+        self.assertIn(
+            "](https://clawhub.ai/tourmind/skills/hotel-booking-ai)", text
+        )
         self.assertIn("github/v/release/tourmind-com/Tourmind-Booking-Skills", text)
         self.assertIn("github/license/tourmind-com/Tourmind-Booking-Skills", text)
         self.assertTrue(HERO_ASSET.is_file())

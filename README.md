@@ -25,7 +25,7 @@
 
 <br />
 
-[![ClawHub installs](https://img.shields.io/badge/ClawHub_installs-1.4k-F97316)](https://clawhub.ai/tourmind/skills/tourmind-booking)
+[![ClawHub installs](https://img.shields.io/badge/ClawHub_installs-1.4k-F97316)](https://clawhub.ai/tourmind/skills/hotel-booking-ai)
 [![Release](https://img.shields.io/github/v/release/tourmind-com/Tourmind-Booking-Skills?label=release)](https://github.com/tourmind-com/Tourmind-Booking-Skills/releases/latest)
 [![License](https://img.shields.io/github/license/tourmind-com/Tourmind-Booking-Skills)](LICENSE)
 
