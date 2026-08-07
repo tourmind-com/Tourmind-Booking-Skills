@@ -80,6 +80,7 @@ class RepositoryContractTests(unittest.TestCase):
             with self.subTest(asset=asset.name):
                 self.assertTrue(asset.is_file())
                 self.assertGreater(asset.stat().st_size, 0)
+                self.assertLessEqual(asset.stat().st_size, 8_000_000)
                 relative_path = asset.relative_to(ROOT).as_posix()
                 for readme in (READMES[0], READMES[2], READMES[3]):
                     self.assertIn(relative_path, readme.read_text(encoding="utf-8"))
