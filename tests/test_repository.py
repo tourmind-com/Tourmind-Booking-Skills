@@ -25,6 +25,8 @@ DEMO_ASSETS = (
     ROOT / "docs" / "assets" / "demo" / "detail-en.gif",
     ROOT / "docs" / "assets" / "demo" / "pay-en.gif",
 )
+DEMO_READMES = (READMES[0], READMES[2], READMES[3])
+DEMO_DISPLAY_WIDTH = 720
 
 
 class RepositoryContractTests(unittest.TestCase):
@@ -82,8 +84,24 @@ class RepositoryContractTests(unittest.TestCase):
                 self.assertGreater(asset.stat().st_size, 0)
                 self.assertLessEqual(asset.stat().st_size, 8_000_000)
                 relative_path = asset.relative_to(ROOT).as_posix()
-                for readme in (READMES[0], READMES[2], READMES[3]):
+                for readme in DEMO_READMES:
                     self.assertIn(relative_path, readme.read_text(encoding="utf-8"))
+
+    def test_english_demos_are_centered_and_resized(self) -> None:
+        for readme in DEMO_READMES:
+            text = readme.read_text(encoding="utf-8")
+            with self.subTest(readme=readme.name):
+                self.assertEqual(text.count('<div align="center">'), 3)
+                for asset in DEMO_ASSETS:
+                    relative_path = re.escape(asset.relative_to(ROOT).as_posix())
+                    self.assertRegex(
+                        text,
+                        rf'(?s)<div align="center">\s*'
+                        rf'<a href="{relative_path}">\s*'
+                        rf'<img src="{relative_path}" alt="[^"]+" '
+                        rf'width="{DEMO_DISPLAY_WIDTH}"\s*/>\s*'
+                        rf'</a>\s*</div>',
+                    )
 
     def test_openai_interface_metadata(self) -> None:
         metadata = (ROOT / "agents" / "openai.yaml").read_text(encoding="utf-8")
