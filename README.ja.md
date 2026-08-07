@@ -8,15 +8,27 @@
 
 ### 1. リアルタイムでホテルを検索
 
-![TourMind ホテル検索デモ](docs/assets/demo/search-en.gif)
+<div align="center">
+  <a href="docs/assets/demo/search-en.gif">
+    <img src="docs/assets/demo/search-en.gif" alt="TourMind ホテル検索デモ" width="720" />
+  </a>
+</div>
 
 ### 2. 実際の客室を比較
 
-![TourMind 客室詳細デモ](docs/assets/demo/detail-en.gif)
+<div align="center">
+  <a href="docs/assets/demo/detail-en.gif">
+    <img src="docs/assets/demo/detail-en.gif" alt="TourMind 客室詳細デモ" width="720" />
+  </a>
+</div>
 
 ### 3. 最終料金を確認して決済
 
-![TourMind 料金確認・決済デモ](docs/assets/demo/pay-en.gif)
+<div align="center">
+  <a href="docs/assets/demo/pay-en.gif">
+    <img src="docs/assets/demo/pay-en.gif" alt="TourMind 料金確認・決済デモ" width="720" />
+  </a>
+</div>
 
 ## 主な機能
 
