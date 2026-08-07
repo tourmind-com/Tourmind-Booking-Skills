@@ -8,15 +8,27 @@ Convierte cualquier agente de IA en un asistente integral de reservas de hotel: 
 
 ### 1. Buscar hoteles en tiempo real
 
-![Demostración de búsqueda de hoteles con TourMind](docs/assets/demo/search-en.gif)
+<div align="center">
+  <a href="docs/assets/demo/search-en.gif">
+    <img src="docs/assets/demo/search-en.gif" alt="Demostración de búsqueda de hoteles con TourMind" width="720" />
+  </a>
+</div>
 
 ### 2. Comparar habitaciones reales
 
-![Demostración de habitaciones con TourMind](docs/assets/demo/detail-en.gif)
+<div align="center">
+  <a href="docs/assets/demo/detail-en.gif">
+    <img src="docs/assets/demo/detail-en.gif" alt="Demostración de habitaciones con TourMind" width="720" />
+  </a>
+</div>
 
 ### 3. Verificar la tarifa final y pagar
 
-![Demostración de verificación y pago con TourMind](docs/assets/demo/pay-en.gif)
+<div align="center">
+  <a href="docs/assets/demo/pay-en.gif">
+    <img src="docs/assets/demo/pay-en.gif" alt="Demostración de verificación y pago con TourMind" width="720" />
+  </a>
+</div>
 
 ## Capacidades principales
 
