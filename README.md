@@ -5,7 +5,9 @@
   <strong>Let Your Agent Book Hotels Worldwide</strong>
 </h1>
 
-<!-- Hero image placeholder: add the final TourMind Booking Skills artwork here. -->
+<a href="https://tourmind.com/en-US/user/skill-token">
+  <img alt="TourMind Booking Skills — Get Your Token" src="docs/assets/hero/tourmind-booking-skills.png" style="width: 100%" />
+</a>
 
 <br />
 
