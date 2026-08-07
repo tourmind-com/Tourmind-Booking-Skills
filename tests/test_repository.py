@@ -20,6 +20,11 @@ REPOSITORIES = (
     "tourmind-com/Hotel-Booking-AI-MCP",
     "tourmind-com/Tourmind-Booking-MCP",
 )
+DEMO_ASSETS = (
+    ROOT / "docs" / "assets" / "demo" / "search-en.gif",
+    ROOT / "docs" / "assets" / "demo" / "detail-en.gif",
+    ROOT / "docs" / "assets" / "demo" / "pay-en.gif",
+)
 
 
 class RepositoryContractTests(unittest.TestCase):
@@ -69,6 +74,15 @@ class RepositoryContractTests(unittest.TestCase):
                 self.assertIn("Claude Code", text)
                 self.assertIn("CLIENT_SKILLS_DIR", text)
                 self.assertNotIn("~/.codex/skills/tourmind-booking", text)
+
+    def test_english_demo_assets_exist_and_are_linked(self) -> None:
+        for asset in DEMO_ASSETS:
+            with self.subTest(asset=asset.name):
+                self.assertTrue(asset.is_file())
+                self.assertGreater(asset.stat().st_size, 0)
+                relative_path = asset.relative_to(ROOT).as_posix()
+                for readme in (READMES[0], READMES[2], READMES[3]):
+                    self.assertIn(relative_path, readme.read_text(encoding="utf-8"))
 
     def test_openai_interface_metadata(self) -> None:
         metadata = (ROOT / "agents" / "openai.yaml").read_text(encoding="utf-8")
