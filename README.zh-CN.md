@@ -4,9 +4,31 @@
 
 让任何 AI Agent 在一次对话中获得端到端酒店预订能力：搜索全球酒店资源、比较主流 OTA 与酒店供应商的实时价格、核验库存，并通过 TourMind 完成预订、支付、取消和订单管理。
 
-## 示例截图
+## 演示
 
-> **待补充：** 增加一张真实的端到端截图或短 GIF，展示酒店搜索、实时房价、最终库存验价和预订流程。
+### 1. 搜索实时酒店
+
+<div align="center">
+  <a href="docs/assets/demo/search-en.gif">
+    <img src="docs/assets/demo/search-en.gif" alt="TourMind 酒店搜索演示" width="720" />
+  </a>
+</div>
+
+### 2. 对比真实房型
+
+<div align="center">
+  <a href="docs/assets/demo/detail-en.gif">
+    <img src="docs/assets/demo/detail-en.gif" alt="TourMind 酒店房型详情演示" width="720" />
+  </a>
+</div>
+
+### 3. 核验最终价格并支付
+
+<div align="center">
+  <a href="docs/assets/demo/pay-en.gif">
+    <img src="docs/assets/demo/pay-en.gif" alt="TourMind 验价与支付演示" width="720" />
+  </a>
+</div>
 
 ## 核心能力
 
