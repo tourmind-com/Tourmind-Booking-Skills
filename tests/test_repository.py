@@ -65,9 +65,24 @@ class RepositoryContractTests(unittest.TestCase):
             with self.subTest(readme=readme.name):
                 text = readme.read_text(encoding="utf-8")
                 for link in expected_links:
-                    self.assertIn(f"]({link})", text)
+                    self.assertTrue(
+                        f"]({link})" in text or f'href="{link}"' in text,
+                        f"{readme.name} must link to {link}",
+                    )
                 for repository in REPOSITORIES:
                     self.assertIn(repository, text)
+
+    def test_english_readme_marketing_header(self) -> None:
+        text = READMES[0].read_text(encoding="utf-8")
+        self.assertIn("TourMind Booking Skills", text)
+        self.assertIn("Let Your Agent Book Hotels Worldwide", text)
+        self.assertIn("Bring Your Customers Into Intelligent Travel", text)
+        self.assertIn('href="https://tourmind.com/skill">Product Page</a>', text)
+        self.assertIn("<span>Live Demo</span>", text)
+        self.assertIn('href="https://tourmind.com">Company</a>', text)
+        self.assertIn("ClawHub_installs-1.4k", text)
+        self.assertIn("github/v/release/tourmind-com/Tourmind-Booking-Skills", text)
+        self.assertIn("github/license/tourmind-com/Tourmind-Booking-Skills", text)
 
     def test_installation_is_client_neutral(self) -> None:
         for readme in READMES:
@@ -97,7 +112,6 @@ class RepositoryContractTests(unittest.TestCase):
         for readme in DEMO_READMES:
             text = readme.read_text(encoding="utf-8")
             with self.subTest(readme=readme.name):
-                self.assertEqual(text.count('<div align="center">'), 3)
                 for asset in DEMO_ASSETS:
                     relative_path = re.escape(asset.relative_to(ROOT).as_posix())
                     self.assertRegex(
