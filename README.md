@@ -1,6 +1,44 @@
-# TourMind Booking Skill
+<div align="center">
 
-[English](README.md) | [简体中文](README.zh-CN.md) | [日本語](README.ja.md) | [Español](README.es.md)
+<h1 style="border-bottom: none">
+  <b><a href="https://tourmind.com/skill">TourMind Booking Skills</a></b><br />
+  <strong>Let Your Agent Book Hotels Worldwide</strong>
+</h1>
+
+<!-- Hero image placeholder: add the final TourMind Booking Skills artwork here. -->
+
+<br />
+
+<p align="center">
+  Bring Your Customers Into Intelligent Travel
+</p>
+
+<br />
+
+<div align="center">
+  <a href="https://tourmind.com/skill">Product Page</a> |
+  <span>Live Demo</span> |
+  <a href="https://tourmind.com">Company</a>
+</div>
+
+<br />
+
+[![ClawHub installs](https://img.shields.io/badge/ClawHub_installs-1.4k-F97316)](https://clawhub.ai/tourmind/skills/tourmind-booking)
+[![Release](https://img.shields.io/github/v/release/tourmind-com/Tourmind-Booking-Skills?label=release)](https://github.com/tourmind-com/Tourmind-Booking-Skills/releases/latest)
+[![License](https://img.shields.io/github/license/tourmind-com/Tourmind-Booking-Skills)](LICENSE)
+
+</div>
+
+<br />
+
+<div align="center">
+  <a href="README.md">English</a> |
+  <a href="README.zh-CN.md">简体中文</a> |
+  <a href="README.ja.md">日本語</a> |
+  <a href="README.es.md">Español</a>
+</div>
+
+<br />
 
 Turn any AI agent into an end-to-end hotel booking assistant—search global inventory, compare live rates across leading OTAs and hotel suppliers, verify availability, and complete booking, payment, cancellation, and order management in one conversation with TourMind.
 
