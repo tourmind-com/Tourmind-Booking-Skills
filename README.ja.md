@@ -6,7 +6,17 @@
 
 ## デモ
 
-> **追加予定：** ホテル検索、リアルタイム客室料金、最終的な料金・空室確認、予約までを示す実際のスクリーンショットまたは短い GIF を追加します。
+### 1. リアルタイムでホテルを検索
+
+![TourMind ホテル検索デモ](docs/assets/demo/search-en.gif)
+
+### 2. 実際の客室を比較
+
+![TourMind 客室詳細デモ](docs/assets/demo/detail-en.gif)
+
+### 3. 最終料金を確認して決済
+
+![TourMind 料金確認・決済デモ](docs/assets/demo/pay-en.gif)
 
 ## 主な機能
 
