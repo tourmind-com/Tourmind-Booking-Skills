@@ -130,7 +130,7 @@ Never invent coordinates, geocode from model memory or substitute a city-wide se
    - **Hard constraints:** dates, occupancy, room count, explicit radius, strict budget, required star level, required facilities or property type.
    - **Soft preferences:** closer, cheaper, higher star level, breakfast, free cancellation, preferred facilities or room type.
 2. Call `search_hotels` with the applicable hard search fields. Preserve the complete raw candidate pool and `distance_km` values so a later "show all" request can be fulfilled.
-   - Preserve the top-level `web_url` and include it as a clickable read-only hotel-results link. Do not expose the underlying token or alter the URL. The linked session only permits hotel lists, hotel details and room quotes; it does not permit verification, booking, payment, `/book/*`, order, finance or account-management pages.
+   - Preserve the top-level `web_url` and include it as a clickable read-only hotel-results link. Place the link guidance after the search-summary fields and before the first recommended hotel, with one blank line on each side. Tell the user to open a hotel detail page, click the copy button beside the desired room product, and send the copied product information back in the conversation so you can continue verification and booking. Do not expose the underlying token or alter the URL. The linked session only permits hotel lists, hotel details and room quotes; it does not permit verification, booking, payment, `/book/*`, order, finance or account-management pages.
 3. Exclude obvious hard-constraint failures from the recommendation/ranking pool, but retain them in the raw pool with every failed constraint recorded.
 4. Call `query_room_rates` for every remaining candidate needed to rank the recommendation pool fairly, in controlled batches. Do not stop at the first five cached-price results. Exclude candidates with no matching live product from recommendations, but retain their no-live-product status in the raw pool.
    - `is_on_request=false` is immediately bookable inventory.
@@ -160,15 +160,14 @@ Never write vague or unsupported reasons such as "great value," "convenient loca
 Use this structure for every multi-hotel result. Default to five selected hotels. Translate user-facing labels into the user's language while preserving the structure and field meanings.
 
 ```markdown
-Found {candidate_count} candidate hotels and selected the {selected_count} best matches for your request.
+Found {candidate_count} candidate hotels and verified live room products for {verified_scope}; below are the {selected_count} selected based on “{ranking_dimensions}”.
 
-Search center: {region_or_poi}
-Search area: {region_or_radius_and_proxy_note}
+Search area: {region_or_poi_and_radius_resolution_note}
 Stay: {check_in_date} to {check_out_date}, {night_count} nights
-Guests: {adults} adults per room, {room_count} rooms
-Filters and ranking: {hard_constraints_and_sort}
-Price basis: live room-rate products from query_room_rates; final price and inventory remain subject to availability verification
-View hotel results: {web_url}
+Guests: {total_adults} adults, {room_count} rooms ({occupancy_distribution})
+Price basis: TourMind live room rates; the nightly price is per room and the stay total covers all rooms for all nights
+
+👉 More hotels: [View detailed hotel results]({web_url}). Open a hotel, click “Copy” beside the desired room, and send it to me to book.
 
 ### 1. {hotel_name}
 
@@ -184,6 +183,23 @@ Why it matches: {reason_1}; {reason_2}; {optional_reason_3}.
 
 Address: {address}
 ```
+
+Set `{verified_scope}` truthfully. Say `all candidates` only after querying live room products for every candidate; otherwise say `all candidates that passed the hard constraints`. Use the default `{ranking_dimensions}` of `immediate bookability, distance, stay total, cancellation flexibility`, adding or replacing dimensions when the user supplied explicit filters or sorting preferences.
+
+In Chinese, use this exact opening:
+
+```markdown
+找到{candidate_count}家候选酒店，并核验了{verified_scope}的实时房型；以下是综合“{ranking_dimensions}”选出的{selected_count}家。
+
+搜索范围：{region_or_poi_and_radius_resolution_note}
+入住：{check_in_date} 至 {check_out_date}，共{night_count}晚
+住客：{total_adults}位成人、{room_count}间房（{occupancy_distribution}）
+价格口径：TourMind实时房价；每晚价格为每间房价格，总价为{room_count}间房住满{night_count}晚
+
+👉 更多酒店：[查看详细酒店结果]({web_url})。进入详情后，点击房型右侧“复制”并发给我，即可预订。
+```
+
+When the user sends a copied hotel-product block from that page, treat it as a hotel and room selection. Parse the hotel name and address, stay dates, room name, room count, bed and meal information, occupancy, nationality, displayed nightly price, displayed total and cancellation policy when present. Resolve the exact hotel and locate the closest matching live room product through the Skill APIs, then run `check_room_availability` before booking. The copied price and inventory are dynamic reference data, not a substitute for final verification. If multiple live products still match, present the material differences and ask the user to choose; do not guess a rate code.
 
 Hero-image rendering rules for both hotel-list and hotel-detail responses:
 
