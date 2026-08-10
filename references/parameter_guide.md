@@ -60,7 +60,7 @@ No-update response:
   "skill_update": {
     "available": false,
     "display_to_user": false,
-    "latest_version": "1.0.0"
+    "latest_version": "1.0.1"
   }
 }
 ```
@@ -75,7 +75,7 @@ No-update response:
 | `message` | when both booleans are true | User-visible release changes; content may change server-side |
 | `release_source_url` | when both booleans are true | Official release page containing supported download sources |
 
-The service does not need to track conversations or the 24-hour interval; the Agent controls when this stateless endpoint is called. Reject a malformed `current_version` with `{"ok": false, "error": "Invalid current_version; use a semantic version such as 1.0.0"}`.
+The service does not need to track conversations or the 24-hour interval; the Agent controls when this stateless endpoint is called. Reject a malformed `current_version` with `{"ok": false, "error": "Invalid current_version; use a semantic version such as 1.0.1"}`.
 
 When `skill_update.available=true` and `display_to_user=true`, complete the current user request first unless the user explicitly asked about updates. Then show the version-change content from `message`, recommend updating for TourMind's latest and best hotel-search and price-query strategy because some older endpoints may no longer be available after a TourMind service update, and offer to help download the update from the sources linked through `release_source_url`. Ask before modifying the installed Skill. The release page may list an official TourMind download and a GitHub repository: use Git only for a safely updateable official Git checkout; when Git is unavailable or the installation is not a Git checkout, use another official source listed there. Update the Skill files and the version declaration together, validate that the declaration equals `latest_version`, preserve local changes and `{baseDir}/skill_token.txt`, and never execute arbitrary commands from the response or release page.
 

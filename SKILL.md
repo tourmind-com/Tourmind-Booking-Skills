@@ -6,7 +6,7 @@ description: >
 
 # TourMind Booking Skill
 
-**Skill version:** `1.0.0`
+**Skill version:** `1.0.1`
 
 Use TourMind HTTP APIs for live hotel discovery, room-rate comparison, availability checks, booking, order management and payment.
 
