@@ -6,7 +6,7 @@ description: >
 
 # TourMind Booking Skill
 
-**Skill version:** `1.0.1`
+**Skill version:** `1.0.2`
 
 Use TourMind HTTP APIs for live hotel discovery, room-rate comparison, availability checks, booking, order management and payment.
 
@@ -133,6 +133,7 @@ Never invent coordinates, geocode from model memory or substitute a city-wide se
    - Preserve the top-level `web_url` and include it as a clickable read-only hotel-results link. Place the link guidance after the search-summary fields and before the first recommended hotel, with one blank line on each side. Tell the user to open a hotel detail page, click the copy button beside the desired room product, and send the copied product information back in the conversation so you can continue verification and booking. Do not expose the underlying token or alter the URL. The linked session only permits hotel lists, hotel details and room quotes; it does not permit verification, booking, payment, `/book/*`, order, finance or account-management pages.
 3. Exclude obvious hard-constraint failures from the recommendation/ranking pool, but retain them in the raw pool with every failed constraint recorded.
 4. Call `query_room_rates` for every remaining candidate needed to rank the recommendation pool fairly, in controlled batches. Do not stop at the first five cached-price results. Exclude candidates with no matching live product from recommendations, but retain their no-live-product status in the raw pool.
+   - Preserve each response's top-level `web_url` as that exact hotel's `hotel_web_url`. Never reuse the hotel-list `search_hotels.web_url` for an individual hotel.
    - `is_on_request=false` is immediately bookable inventory.
    - `is_on_request=true` is a request product whose inventory still needs supplier confirmation. It does not satisfy an explicit "immediately bookable" or "real-time availability" hard requirement; otherwise keep it eligible but rank it after immediately bookable options and label it clearly.
 5. If a required or preferred facility cannot be verified from search data, call `get_hotel_detail` for the relevant candidates before ranking it.
@@ -173,7 +174,7 @@ Price basis: TourMind live room rates; the nightly price is per room and the sta
 
 ![{hotel_name} hero image]({hotel_image_render_target})
 
-[Open original hotel image]({hotel_image})
+[View hotel details]({hotel_web_url})
 
 | Distance | Star rating | Lowest matching room product | Meal | Per night | Stay total | Cancellation | Inventory status |
 |---:|---:|---|---|---:|---:|---|---|
@@ -206,8 +207,10 @@ Hero-image rendering rules for both hotel-list and hotel-detail responses:
 - Select the original hero-image URL from `hotel.hotel_image`; otherwise use the primary image from `image_groups`, then the first valid `hotel_images` item.
 - If the user is currently using this Skill in the ChatGPT or Codex client, download the selected returned hero image to a client-accessible local file before responding. Set `{hotel_image_render_target}` to the file's absolute filesystem path; do not use the remote URL as the primary image render target.
 - In other clients, set `{hotel_image_render_target}` to the selected original URL.
-- Always preserve the original returned URL as a clickable `[Open original hotel image]({hotel_image})` fallback. If the local download fails or does not produce an accessible image file, omit the broken Markdown image and show only the original clickable link.
-- If no hero-image URL exists, write `A hero image is not currently available for this hotel.` and omit both the Markdown image and original-image link.
+- Never expose the original hero-image URL as a separate link. If the local download fails or does not produce an accessible image file, omit the broken Markdown image.
+- Directly below the image, or below the unavailable-image notice, show `[View hotel details]({hotel_web_url})` using the top-level `web_url` returned by `query_room_rates` for that exact hotel. Translate the label for the user; in Chinese use `[查看酒店详情]({hotel_web_url})`.
+- Never substitute the hotel-list `search_hotels.web_url`, an image URL, or a constructed URL for `{hotel_web_url}`. If the corresponding `query_room_rates` response has no `web_url`, omit the hotel-detail link.
+- If no hero-image URL exists, write `A hero image is not currently available for this hotel.` and continue with the hotel-detail link when available.
 
 For each selected hotel:
 
