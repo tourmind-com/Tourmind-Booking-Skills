@@ -18,7 +18,7 @@ Use TourMind HTTP APIs for live hotel discovery, room-rate comparison, availabil
 4. Respect explicit radius, budget, star, occupancy and facility requirements as hard constraints. Never silently expand a hard radius or budget.
 5. Before every `create_booking`, require the guest's full legal name and a valid `contact_email`. Email is mandatory in this skill even if the backend accepts an omitted value. Never offer a skip option, invent an email or reuse an unconfirmed email. Do not collect a phone number.
 6. Interpret cancellation policies exactly as returned. `non_refundable` or `effective_non_refundable=true` means non-refundable. `free_cancel_before_deadline` means free cancellation only through its deadline.
-7. Do not claim a rate includes all taxes unless the API explicitly says so. Surface mandatory or on-property fees only when the API explicitly returns them; do not add notices about missing fee or tax data unless the user asks. Stripe adds a separate 3.5% processing fee only when the user chooses Stripe.
+7. State in the final booking-confirmation template that the TourMind room price is tax included. Also state that a small number of destinations require hotels to collect city or tourism taxes at check-in; surface any explicit `hotel.fees.mandatory` disclosure separately, and do not invent an amount or charging basis. Stripe adds a separate 3.5% processing fee only when the user chooses Stripe.
 8. If any hotel, rate, booking, order or payment API call fails, report the exact error after the allowed retry. Do not substitute invented results or unrelated recommendations. A scheduled update-check failure follows the non-blocking rule below.
 
 ## API and authentication
@@ -265,18 +265,48 @@ End with a clear next action: the user can choose a room for final availability 
 4. Present five hotels with hero images and match reasons
 5. On hotel selection, return hotel detail + room images + live quotes
 6. check_room_availability for the chosen rate
-7. Collect full legal guest name and mandatory contact_email
-8. create_booking with the checked rate_code and checked total_price
-9. Return agent_ref_id and ask for Stripe, WeChat Pay, or Alipay
-10. pay_order after payment-method confirmation
-11. query_booking or cancel_booking on request
+7. Present the required final booking-confirmation template, including hotel check-in/out times, tax notice, explicit mandatory fees, customer-service contact and the latest checked price/policy
+8. Obtain the user's explicit confirmation plus full legal guest name and mandatory contact_email
+9. create_booking with the checked rate_code and checked total_price
+10. Return agent_ref_id and ask for Stripe, WeChat Pay, or Alipay
+11. pay_order after payment-method confirmation
+12. query_booking or cancel_booking on request
 ```
 
 Before `create_booking`:
 
+- Present the **final booking-confirmation template** below after `check_room_availability`. Obtain an explicit confirmation of the displayed order details; do not treat a room selection alone as confirmation.
 - Ask: `Please provide a contact email. It is required to place the booking and will receive booking-success, booking-failure, and cancellation notifications.`
 - Require a plausible email format and confirm it belongs to the current booking context.
 - Use the `rate_code` and `total_price` returned by `check_room_availability`, not the earlier query price.
+
+For hotel check-in/out times, instructions and mandatory at-property fees, use the selected hotel's `get_hotel_detail` response. Show unavailable fields as `酒店未提供` rather than guessing. In Chinese, use this exact final confirmation template (translate it for other languages while preserving all fields):
+
+```markdown
+### 请确认订单信息
+
+| 项目 | 验价后信息 |
+|---|---|
+| 酒店 | {hotel_name} |
+| 房型 | {room_name} |
+| 入住日期 | {check_in_date} |
+| 退房日期 | {check_out_date} |
+| 入住/退房时间 | {checkin_begin_time_or_not_provided} 起入住；{checkout_time_or_not_provided} 前退房 |
+| 入住人 | {guest_count}位成人，{room_count}间房 |
+| 房价总额 | {checked_total_price} {currency} |
+| 取消政策 | {checked_cancellation_policy} |
+| 库存 | {checked_availability_status} |
+
+**到店费用**
+
+{mandatory_fee_summary_or_酒店未返回额外到店费用说明}
+
+我们价格已含税，但少数国家（地区）必须由酒店代收城市/旅游税，具体费用以酒店征收为准。因此在您办理入住手续时酒店可能会额外收取，请您提前知晓并做好相应准备。请您谅解！
+
+TourMind客服中心7×24小时全天候为您服务，联系我们 +86-755 3665 4666。
+
+请确认以上订单信息。确认下单请回复“确认下单”，并提供入住人的**法定全名**及**联系邮箱**；我将为您创建订单并进入支付流程。
+```
 
 After booking, return `data.agent_ref_id`. For payment, use only the public names `Stripe`, `WeChat Pay`, and `Alipay`, mapping them to the documented API values. Before Stripe, explain that Stripe - not the hotel or TourMind - adds a 3.5% payment-processing fee; show the returned fee and payable amount.
 
