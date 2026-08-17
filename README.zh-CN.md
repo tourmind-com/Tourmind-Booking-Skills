@@ -159,7 +159,7 @@
 
 - 请求字段与响应契约：[references/parameter_guide.md](references/parameter_guide.md)
 - 获取 Skill Token：[tourmind.com/user/skill-token](https://tourmind.com/user/skill-token)
-- 产品页面：[tourmind.com/skill](https://tourmind.com/skill)
+- 产品页面：[tourmind.com/skills](https://tourmind.com/skills)
 - GitHub 支持：[提交 Issue](https://github.com/tourmind-com/Tourmind-Booking-Skills/issues)
 - 酒店业务咨询：`hotel@tourmind.com`
 - 商务合作：`bp@tourmind.com`
