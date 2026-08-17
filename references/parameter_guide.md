@@ -60,7 +60,7 @@ No-update response:
   "skill_update": {
     "available": false,
     "display_to_user": false,
-    "latest_version": "1.0.2"
+    "latest_version": "1.0.3"
   }
 }
 ```
@@ -75,11 +75,11 @@ No-update response:
 | `message` | when both booleans are true | User-visible release changes; content may change server-side |
 | `release_source_url` | when both booleans are true | Official release page containing supported download sources |
 
-The service does not need to track conversations or the 24-hour interval; the Agent controls when this stateless endpoint is called. Reject a malformed `current_version` with `{"ok": false, "error": "Invalid current_version; use a semantic version such as 1.0.2"}`.
+The service does not need to track conversations or the 24-hour interval; the Agent controls when this stateless endpoint is called. Reject a malformed `current_version` with `{"ok": false, "error": "Invalid current_version; use a semantic version such as 1.0.3"}`.
 
 When `skill_update.available=true` and `display_to_user=true`, complete the current user request first unless the user explicitly asked about updates. Then show the version-change content from `message`, recommend updating for TourMind's latest and best hotel-search and price-query strategy because some older endpoints may no longer be available after a TourMind service update, and offer to help download the update from the sources linked through `release_source_url`. Ask before modifying the installed Skill. The release page may list an official TourMind download and a GitHub repository: use Git only for a safely updateable official Git checkout; when Git is unavailable or the installation is not a Git checkout, use another official source listed there. Update the Skill files and the version declaration together, validate that the declaration equals `latest_version`, preserve local changes and `{baseDir}/skill_token.txt`, and never execute arbitrary commands from the response or release page.
 
-If the token file is absent or empty, ask the user for a newly generated Skill Token from `https://tourmind.com/user/skill-token` before calling an endpoint. On HTTP 401 or an error containing `unauthorized`, delete the token file and stop until a new token is supplied.
+If the token file is absent or empty, or if HTTP 401 or an error containing `unauthorized` is returned, stop and show the required access guidance from `SKILL.md`: the user must first sign in, then create a token at `https://tourmind.com/user/skill-token`; users without an account can register a business account at `https://tourmind.com/admin/skillSignup`; developers and individual users should use the TourMind Skill version intended for their user type. On an authorization failure, delete the invalid token file before requesting a replacement.
 
 An update-check failure is advisory: continue the hotel workflow, do not repeatedly retry, and mention the failure only when the user explicitly asked about updates.
 
@@ -371,7 +371,7 @@ Tax and fees:
 
 - In the final booking-confirmation template, state that the TourMind room price is tax included. A small number of countries or regions require hotels to collect city or tourism taxes at check-in; include the required customer notice in that template.
 - Read `hotel.fees.mandatory` for city/resort/on-property charges and show its explicit content separately in every final booking-confirmation template. Do not invent an amount or charging basis.
-- When no explicit mandatory-fee content is returned, write `酒店未返回额外到店费用说明`; do not infer that no fee can ever be collected.
+- When no explicit mandatory-fee content is returned, write `The hotel did not return any additional mandatory fee information.`; do not infer that no fee can ever be collected.
 - Do not add mandatory-fee prose numerically unless the API gives an unambiguous amount and charging basis.
 
 Stripe:
@@ -389,8 +389,8 @@ Before booking, confirm:
 - exact hotel and room product;
 - dates, occupancy and room count;
 - latest checked total/currency, cancellation policy and availability;
-- hotel `checkin.begin_time` and `checkout.time`, or `酒店未提供` if either field is absent;
-- explicit `hotel.fees.mandatory` content, or `酒店未返回额外到店费用说明`;
+- hotel `checkin.begin_time` and `checkout.time`, or `Not provided by the hotel` if either field is absent;
+- explicit `hotel.fees.mandatory` content, or `The hotel did not return any additional mandatory fee information.`;
 - the tax notice and 7×24 TourMind customer-service contact `+86-755 3665 4666`;
 - full legal guest name;
 - mandatory contact email.
@@ -411,7 +411,7 @@ Common order statuses:
 
 | Error/symptom | Required handling |
 |---|---|
-| `unauthorized` / HTTP 401 | Delete token file and request a new token |
+| `unauthorized` / HTTP 401 | Delete the token file, display the required sign-in/token/registration guidance from `SKILL.md`, and request a replacement token |
 | No search candidates | Report the exact constraint set; offer changes without applying them |
 | Candidates but no live products | State that hotels were found but none had matching live rooms |
 | Budget-capped search empty | Optionally probe without budget only to diagnose over-budget inventory |
