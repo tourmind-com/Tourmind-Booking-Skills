@@ -159,7 +159,7 @@ Skills を再読み込みするか AI クライアントを再起動して、ホ
 
 - リクエスト項目とレスポンス契約：[references/parameter_guide.md](references/parameter_guide.md)
 - Skill Token：[tourmind.com/user/skill-token](https://tourmind.com/user/skill-token)
-- 製品ページ：[tourmind.com/skill](https://tourmind.com/skill)
+- 製品ページ：[tourmind.com/skills](https://tourmind.com/skills)
 - GitHub サポート：[Issue を作成](https://github.com/tourmind-com/Tourmind-Booking-Skills/issues)
 - ホテル事業に関するお問い合わせ：`hotel@tourmind.com`
 - ビジネス提携：`bp@tourmind.com`
