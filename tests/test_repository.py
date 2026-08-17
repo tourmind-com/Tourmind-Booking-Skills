@@ -31,6 +31,7 @@ DEMO_MAX_ASSET_BYTES = 4_000_000
 DEMO_MAX_TOTAL_BYTES = 10_500_000
 HERO_ASSET = ROOT / "docs" / "assets" / "hero" / "tourmind-booking-skills.png"
 HERO_TARGET = "https://tourmind.com/en-US/user/skill-token"
+PRODUCT_PAGE_URL = "https://tourmind.com/skills"
 
 
 class RepositoryContractTests(unittest.TestCase):
@@ -73,13 +74,16 @@ class RepositoryContractTests(unittest.TestCase):
                     )
                 for repository in REPOSITORIES:
                     self.assertIn(repository, text)
+                self.assertIn(PRODUCT_PAGE_URL, text)
+                self.assertNotIn("https://tourmind.com/skill)", text)
+                self.assertNotIn('https://tourmind.com/skill"', text)
 
     def test_english_readme_marketing_header(self) -> None:
         text = READMES[0].read_text(encoding="utf-8")
         self.assertIn("TourMind Booking Skills", text)
         self.assertIn("Let Your Agent Book Hotels Worldwide", text)
         self.assertIn("Bring Your Customers Into Intelligent Travel", text)
-        self.assertIn('href="https://tourmind.com/skill">Product Page</a>', text)
+        self.assertIn(f'href="{PRODUCT_PAGE_URL}">Product Page</a>', text)
         self.assertIn("<span>Live Demo</span>", text)
         self.assertIn('href="https://tourmind.com">Company</a>', text)
         self.assertIn("ClawHub_installs-1.4k", text)
