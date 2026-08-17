@@ -159,7 +159,7 @@ El valor almacenado en caché `search_hotels.min_price` es únicamente una seña
 
 - Campos y contratos de respuesta: [references/parameter_guide.md](references/parameter_guide.md)
 - Skill Token: [tourmind.com/user/skill-token](https://tourmind.com/user/skill-token)
-- Página del producto: [tourmind.com/skill](https://tourmind.com/skill)
+- Página del producto: [tourmind.com/skills](https://tourmind.com/skills)
 - Soporte en GitHub: [abrir una incidencia](https://github.com/tourmind-com/Tourmind-Booking-Skills/issues)
 - Consultas sobre hoteles: `hotel@tourmind.com`
 - Colaboración comercial: `bp@tourmind.com`

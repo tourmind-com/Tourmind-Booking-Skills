@@ -1,7 +1,7 @@
 <div align="center">
 
 <h1 style="border-bottom: none">
-  <b><a href="https://tourmind.com/skill">TourMind Booking Skills</a></b><br />
+  <b><a href="https://tourmind.com/skills">TourMind Booking Skills</a></b><br />
   <strong>Let Your Agent Book Hotels Worldwide</strong>
 </h1>
 
@@ -18,7 +18,7 @@
 <br />
 
 <div align="center">
-  <a href="https://tourmind.com/skill">Product Page</a> |
+  <a href="https://tourmind.com/skills">Product Page</a> |
   <span>Live Demo</span> |
   <a href="https://tourmind.com">Company</a>
 </div>
@@ -199,7 +199,7 @@ Cached `search_hotels.min_price` is only a candidate signal. User-visible prices
 
 - Request fields and response contracts: [references/parameter_guide.md](references/parameter_guide.md)
 - Skill Token: [tourmind.com/user/skill-token](https://tourmind.com/user/skill-token)
-- Product page: [tourmind.com/skill](https://tourmind.com/skill)
+- Product page: [tourmind.com/skills](https://tourmind.com/skills)
 - GitHub support: [open an issue](https://github.com/tourmind-com/Tourmind-Booking-Skills/issues)
 - Hotel business inquiry: `hotel@tourmind.com`
 - Business cooperation: `bp@tourmind.com`
