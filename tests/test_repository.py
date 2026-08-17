@@ -30,7 +30,7 @@ DEMO_DISPLAY_WIDTH = 720
 DEMO_MAX_ASSET_BYTES = 4_000_000
 DEMO_MAX_TOTAL_BYTES = 10_500_000
 HERO_ASSET = ROOT / "docs" / "assets" / "hero" / "tourmind-booking-skills.png"
-HERO_TARGET = "https://tourmind.com/en-US/user/skill-token"
+HERO_TARGET = "https://tourmind.com/user/skill-token"
 PRODUCT_PAGE_URL = "https://tourmind.com/skills"
 
 

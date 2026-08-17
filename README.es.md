@@ -52,7 +52,7 @@ Convierte cualquier agente de IA en un asistente integral de reservas de hotel: 
 
 ## Instalación en 1 minuto
 
-1. Genera un Skill Token en [tourmind.com/user/skill-token](https://tourmind.com/user/skill-token).
+1. Inicia sesión en tu cuenta de TourMind y crea un Skill Token en [tourmind.com/user/skill-token](https://tourmind.com/user/skill-token). Si no tienes una cuenta, regístrate en [Registro de cuenta empresarial](https://tourmind.com/admin/skillSignup). Los desarrolladores y usuarios particulares deben usar la versión de TourMind Skill correspondiente a su tipo de usuario.
 
 2. En la interfaz de Skills de tu cliente de IA, instala o importa este repositorio de GitHub:
 
@@ -127,7 +127,7 @@ El valor almacenado en caché `search_hotels.min_price` es únicamente una seña
 - Todas las llamadas a la API del Skill ToB requieren el Skill Token guardado localmente en `skill_token.txt`.
 - No incluyas el Token en prompts, registros, capturas, URL, commits ni informes de incidencias.
 - Limita el archivo del Token al usuario actual mediante `chmod 600`.
-- Si recibes HTTP 401 o `unauthorized`, elimina el Token local no válido y genera uno nuevo.
+- Si recibes HTTP 401 o `unauthorized`, elimina el Token local no válido. Para reemplazarlo, inicia sesión en tu cuenta de TourMind y crea un Skill Token en [tourmind.com/user/skill-token](https://tourmind.com/user/skill-token). Si no tienes una cuenta, regístrate en [Registro de cuenta empresarial](https://tourmind.com/admin/skillSignup). Los desarrolladores y usuarios particulares deben usar la versión del Skill correspondiente a su tipo de usuario.
 - Las sesiones `web_url` son de solo lectura y pueden abrirse varias veces hasta su vencimiento; no permiten verificar tarifas, reservar, pagar, cancelar ni acceder a páginas de cuenta o finanzas.
 - Las reservas, cancelaciones y pagos requieren confirmación explícita del usuario dentro de la conversación de IA autenticada.
 
@@ -158,7 +158,7 @@ El valor almacenado en caché `search_hotels.min_price` es únicamente una seña
 | `POST /skill/tob/pay_order` | Iniciar el pago tras confirmación |
 
 - Campos y contratos de respuesta: [references/parameter_guide.md](references/parameter_guide.md)
-- Skill Token: [tourmind.com/user/skill-token](https://tourmind.com/user/skill-token)
+- Skill Token: inicia sesión y visita [tourmind.com/user/skill-token](https://tourmind.com/user/skill-token). Si no tienes una cuenta, regístrate en [Registro de cuenta empresarial](https://tourmind.com/admin/skillSignup). Los desarrolladores y usuarios particulares deben usar la versión del Skill correspondiente a su tipo de usuario.
 - Página del producto: [tourmind.com/skills](https://tourmind.com/skills)
 - Soporte en GitHub: [abrir una incidencia](https://github.com/tourmind-com/Tourmind-Booking-Skills/issues)
 - Consultas sobre hoteles: `hotel@tourmind.com`

@@ -52,7 +52,7 @@
 
 ## 1分でインストール
 
-1. [tourmind.com/user/skill-token](https://tourmind.com/user/skill-token) で Skill Token を生成します。
+1. TourMind アカウントにログインし、[tourmind.com/user/skill-token](https://tourmind.com/user/skill-token) で Skill Token を作成します。アカウントがない場合は、[法人アカウント登録](https://tourmind.com/admin/skillSignup) を利用してください。開発者または個人ユーザーは、ユーザー種別に対応する TourMind Skill バージョンを使用してください。
 
 2. AI クライアントの Skills 画面で、次の GitHub リポジトリをインストールまたはインポートします。
 
@@ -127,7 +127,7 @@ Skills を再読み込みするか AI クライアントを再起動して、ホ
 - すべての ToB Skill API 呼び出しには、ローカルの `skill_token.txt` に保存した Skill Token が必要です。
 - Token をプロンプト、ログ、スクリーンショット、URL、コミット、Issue に含めないでください。
 - `chmod 600` を使用して、Token ファイルを現在のユーザーだけが読み書きできるようにします。
-- HTTP 401 または `unauthorized` が返された場合は、無効なローカル Token を削除して再発行します。
+- HTTP 401 または `unauthorized` が返された場合は、無効なローカル Token を削除します。再発行するには TourMind アカウントにログインし、[tourmind.com/user/skill-token](https://tourmind.com/user/skill-token) で Skill Token を作成してください。アカウントがない場合は [法人アカウント登録](https://tourmind.com/admin/skillSignup) を利用し、開発者または個人ユーザーはユーザー種別に対応する Skill バージョンを使用してください。
 - 結果の `web_url` は読み取り専用で、有効期限までは繰り返し開けます。料金再確認、予約、決済、キャンセル、アカウント・財務ページへのアクセスはできません。
 - 予約、キャンセル、決済は、認証済み AI 会話内でユーザーが明示的に確認した場合のみ実行します。
 
@@ -158,7 +158,7 @@ Skills を再読み込みするか AI クライアントを再起動して、ホ
 | `POST /skill/tob/pay_order` | 確認後の支払い開始 |
 
 - リクエスト項目とレスポンス契約：[references/parameter_guide.md](references/parameter_guide.md)
-- Skill Token：[tourmind.com/user/skill-token](https://tourmind.com/user/skill-token)
+- Skill Token：ログイン後、[tourmind.com/user/skill-token](https://tourmind.com/user/skill-token) にアクセスしてください。アカウントがない場合は [法人アカウント登録](https://tourmind.com/admin/skillSignup) を利用し、開発者または個人ユーザーはユーザー種別に対応する Skill バージョンを使用してください。
 - 製品ページ：[tourmind.com/skills](https://tourmind.com/skills)
 - GitHub サポート：[Issue を作成](https://github.com/tourmind-com/Tourmind-Booking-Skills/issues)
 - ホテル事業に関するお問い合わせ：`hotel@tourmind.com`

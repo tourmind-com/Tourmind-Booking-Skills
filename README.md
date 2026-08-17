@@ -5,7 +5,7 @@
   <strong>Let Your Agent Book Hotels Worldwide</strong>
 </h1>
 
-<a href="https://tourmind.com/en-US/user/skill-token">
+<a href="https://tourmind.com/user/skill-token">
   <img alt="TourMind Booking Skills — Get Your Token" src="docs/assets/hero/tourmind-booking-skills.png" style="width: 100%" />
 </a>
 
@@ -92,7 +92,7 @@ Turn any AI agent into an end-to-end hotel booking assistant—search global inv
 
 ## Install in 1 minute
 
-1. Generate a Skill Token at [tourmind.com/user/skill-token](https://tourmind.com/user/skill-token).
+1. Sign in to your TourMind account, then create a Skill Token at [tourmind.com/user/skill-token](https://tourmind.com/user/skill-token). If you do not have an account, register for a business account at [Business account registration](https://tourmind.com/admin/skillSignup). Developers and individual users should use the TourMind Skill version intended for their user type instead.
 
 2. In your AI client's Skills interface, install or import this GitHub repository:
 
@@ -167,7 +167,7 @@ Cached `search_hotels.min_price` is only a candidate signal. User-visible prices
 - All ToB Skill API calls require the Skill Token stored locally in `skill_token.txt`.
 - Keep the token out of prompts, logs, screenshots, URLs, commits, and issue reports.
 - Restrict the token file to the current user with `chmod 600`.
-- On HTTP 401 or an `unauthorized` response, remove the invalid local token and generate a replacement.
+- On HTTP 401 or an `unauthorized` response, remove the invalid local token. To replace it, sign in to your TourMind account and create a Skill Token at [tourmind.com/user/skill-token](https://tourmind.com/user/skill-token). If you do not have an account, register for a business account at [Business account registration](https://tourmind.com/admin/skillSignup). Developers and individual users should use the Skill version intended for their user type.
 - Result `web_url` sessions are read-only and can be opened repeatedly until they expire; they cannot verify rates, book, pay, cancel, or access account and finance pages.
 - Booking, cancellation, and payment remain explicit user-confirmed actions inside the authenticated AI conversation.
 
@@ -198,7 +198,7 @@ Cached `search_hotels.min_price` is only a candidate signal. User-visible prices
 | `POST /skill/tob/pay_order` | Start payment after confirmation |
 
 - Request fields and response contracts: [references/parameter_guide.md](references/parameter_guide.md)
-- Skill Token: [tourmind.com/user/skill-token](https://tourmind.com/user/skill-token)
+- Skill Token: sign in, then visit [tourmind.com/user/skill-token](https://tourmind.com/user/skill-token). If you do not have an account, register for a business account at [Business account registration](https://tourmind.com/admin/skillSignup). Developers and individual users should use the Skill version intended for their user type.
 - Product page: [tourmind.com/skills](https://tourmind.com/skills)
 - GitHub support: [open an issue](https://github.com/tourmind-com/Tourmind-Booking-Skills/issues)
 - Hotel business inquiry: `hotel@tourmind.com`

@@ -52,7 +52,7 @@
 
 ## 1 分钟安装
 
-1. 前往 [tourmind.com/user/skill-token](https://tourmind.com/user/skill-token) 生成 Skill Token。
+1. 请先登录 TourMind 账号，然后前往 [tourmind.com/user/skill-token](https://tourmind.com/user/skill-token) 创建 Skill Token。若没有账号，请访问 [企业账号注册](https://tourmind.com/admin/skillSignup)。开发者或个人用户请改用与其用户类型对应的 TourMind Skill 版本。
 
 2. 在你的 AI 客户端 Skills 界面中，安装或导入这个 GitHub 仓库：
 
@@ -127,7 +127,7 @@
 - 所有 ToB Skill API 调用都需要保存在本地 `skill_token.txt` 中的 Skill Token。
 - 不要在 Prompt、日志、截图、URL、Git 提交或 Issue 中暴露 Token。
 - 使用 `chmod 600` 将 Token 文件权限限制为仅当前用户可读写。
-- 收到 HTTP 401 或 `unauthorized` 响应时，删除失效的本地 Token 并重新生成。
+- 收到 HTTP 401 或 `unauthorized` 响应时，删除失效的本地 Token。如需补充 Token，请先登录 TourMind 账号，再前往 [tourmind.com/user/skill-token](https://tourmind.com/user/skill-token) 创建；若没有账号，请访问 [企业账号注册](https://tourmind.com/admin/skillSignup)。开发者或个人用户请使用与其用户类型对应的 Skill 版本。
 - 返回的 `web_url` 会话是只读的，在过期前可重复打开；页面不能验价、预订、支付、取消，也不能访问账户或财务功能。
 - 预订、取消和支付必须在已认证的 AI 对话中获得用户明确确认。
 
@@ -158,7 +158,7 @@
 | `POST /skill/tob/pay_order` | 确认后发起支付 |
 
 - 请求字段与响应契约：[references/parameter_guide.md](references/parameter_guide.md)
-- 获取 Skill Token：[tourmind.com/user/skill-token](https://tourmind.com/user/skill-token)
+- 获取 Skill Token：请先登录，再访问 [tourmind.com/user/skill-token](https://tourmind.com/user/skill-token)。若没有账号，请访问 [企业账号注册](https://tourmind.com/admin/skillSignup)；开发者或个人用户请使用与其用户类型对应的 Skill 版本。
 - 产品页面：[tourmind.com/skills](https://tourmind.com/skills)
 - GitHub 支持：[提交 Issue](https://github.com/tourmind-com/Tourmind-Booking-Skills/issues)
 - 酒店业务咨询：`hotel@tourmind.com`
