@@ -4,6 +4,32 @@
 
 あらゆる AI エージェントをエンドツーエンドのホテル予約アシスタントに変えます。世界中のホテル在庫を検索し、主要 OTA とホテルサプライヤーのリアルタイム料金を比較し、空室を確認して、TourMind との1回の会話で予約、決済、キャンセル、注文管理まで完了できます。
 
+## デモ
+
+### 1. リアルタイムでホテルを検索
+
+<div align="center">
+  <a href="https://skilloss.tourmind.com/skills/tourmind-booking/v1/demo/search-en.gif">
+    <img src="https://skilloss.tourmind.com/skills/tourmind-booking/v1/demo/search-en.gif" alt="TourMind ホテル検索デモ" width="720" />
+  </a>
+</div>
+
+### 2. 実際の客室を比較
+
+<div align="center">
+  <a href="https://skilloss.tourmind.com/skills/tourmind-booking/v1/demo/detail-en.gif">
+    <img src="https://skilloss.tourmind.com/skills/tourmind-booking/v1/demo/detail-en.gif" alt="TourMind 客室詳細デモ" width="720" />
+  </a>
+</div>
+
+### 3. 最終料金を確認して決済
+
+<div align="center">
+  <a href="https://skilloss.tourmind.com/skills/tourmind-booking/v1/demo/pay-en.gif">
+    <img src="https://skilloss.tourmind.com/skills/tourmind-booking/v1/demo/pay-en.gif" alt="TourMind 料金確認・決済デモ" width="720" />
+  </a>
+</div>
+
 ## 主な機能
 
 - 都市、ホテル、ランドマーク、駅、住所、スキー場などの POI を、座標を推測せずに解決します。

@@ -22,6 +22,13 @@ REPOSITORIES = (
 )
 DEMO_ASSET_DIR = ROOT / "docs" / "assets" / "demo"
 HERO_ASSET = ROOT / "docs" / "assets" / "hero" / "tourmind-booking-skills.png"
+OSS_ASSET_BASE = "https://skilloss.tourmind.com/skills/tourmind-booking/v1"
+HERO_ASSET_URL = f"{OSS_ASSET_BASE}/hero/tourmind-booking-skills.png"
+DEMO_ASSET_URLS = (
+    f"{OSS_ASSET_BASE}/demo/search-en.gif",
+    f"{OSS_ASSET_BASE}/demo/detail-en.gif",
+    f"{OSS_ASSET_BASE}/demo/pay-en.gif",
+)
 HERO_TARGET = "https://tourmind.com/user/skill-token"
 PRODUCT_PAGE_URL = "https://tourmind.com/skills"
 
@@ -84,14 +91,11 @@ class RepositoryContractTests(unittest.TestCase):
         )
         self.assertIn("github/v/release/tourmind-com/Tourmind-Booking-Skills", text)
         self.assertIn("github/license/tourmind-com/Tourmind-Booking-Skills", text)
-        self.assertTrue(HERO_ASSET.is_file())
-        self.assertGreater(HERO_ASSET.stat().st_size, 0)
-        self.assertLessEqual(HERO_ASSET.stat().st_size, 1_000_000)
-        hero_path = HERO_ASSET.relative_to(ROOT).as_posix()
+        self.assertFalse(HERO_ASSET.exists())
         self.assertRegex(
             text,
             rf'(?s)<a href="{re.escape(HERO_TARGET)}">\s*'
-            rf'<img alt="[^"]+" src="{re.escape(hero_path)}" '
+            rf'<img alt="[^"]+" src="{re.escape(HERO_ASSET_URL)}" '
             rf'style="width: 100%"\s*/>\s*</a>',
         )
 
@@ -105,12 +109,14 @@ class RepositoryContractTests(unittest.TestCase):
                 self.assertIn("CLIENT_SKILLS_DIR", text)
                 self.assertNotIn("~/.codex/skills/tourmind-booking", text)
 
-    def test_demo_gifs_are_not_distributed(self) -> None:
+    def test_demo_gifs_are_oss_hosted_not_distributed(self) -> None:
         self.assertFalse(DEMO_ASSET_DIR.exists())
         for readme in READMES:
             with self.subTest(readme=readme.name):
                 text = readme.read_text(encoding="utf-8")
                 self.assertNotIn("docs/assets/demo", text)
+                for asset_url in DEMO_ASSET_URLS:
+                    self.assertEqual(text.count(asset_url), 2)
 
     def test_openai_interface_metadata(self) -> None:
         metadata = (ROOT / "agents" / "openai.yaml").read_text(encoding="utf-8")
