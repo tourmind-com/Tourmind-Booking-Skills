@@ -20,15 +20,7 @@ REPOSITORIES = (
     "tourmind-com/Hotel-Booking-AI-MCP",
     "tourmind-com/Tourmind-Booking-MCP",
 )
-DEMO_ASSETS = (
-    ROOT / "docs" / "assets" / "demo" / "search-en.gif",
-    ROOT / "docs" / "assets" / "demo" / "detail-en.gif",
-    ROOT / "docs" / "assets" / "demo" / "pay-en.gif",
-)
-DEMO_READMES = READMES
-DEMO_DISPLAY_WIDTH = 720
-DEMO_MAX_ASSET_BYTES = 4_000_000
-DEMO_MAX_TOTAL_BYTES = 10_500_000
+DEMO_ASSET_DIR = ROOT / "docs" / "assets" / "demo"
 HERO_ASSET = ROOT / "docs" / "assets" / "hero" / "tourmind-booking-skills.png"
 HERO_TARGET = "https://tourmind.com/user/skill-token"
 PRODUCT_PAGE_URL = "https://tourmind.com/skills"
@@ -113,34 +105,12 @@ class RepositoryContractTests(unittest.TestCase):
                 self.assertIn("CLIENT_SKILLS_DIR", text)
                 self.assertNotIn("~/.codex/skills/tourmind-booking", text)
 
-    def test_demo_assets_exist_and_are_linked(self) -> None:
-        for asset in DEMO_ASSETS:
-            with self.subTest(asset=asset.name):
-                self.assertTrue(asset.is_file())
-                self.assertGreater(asset.stat().st_size, 0)
-                self.assertLessEqual(asset.stat().st_size, DEMO_MAX_ASSET_BYTES)
-                relative_path = asset.relative_to(ROOT).as_posix()
-                for readme in DEMO_READMES:
-                    self.assertIn(relative_path, readme.read_text(encoding="utf-8"))
-        self.assertLessEqual(
-            sum(asset.stat().st_size for asset in DEMO_ASSETS),
-            DEMO_MAX_TOTAL_BYTES,
-        )
-
-    def test_demos_are_centered_and_resized(self) -> None:
-        for readme in DEMO_READMES:
-            text = readme.read_text(encoding="utf-8")
+    def test_demo_gifs_are_not_distributed(self) -> None:
+        self.assertFalse(DEMO_ASSET_DIR.exists())
+        for readme in READMES:
             with self.subTest(readme=readme.name):
-                for asset in DEMO_ASSETS:
-                    relative_path = re.escape(asset.relative_to(ROOT).as_posix())
-                    self.assertRegex(
-                        text,
-                        rf'(?s)<div align="center">\s*'
-                        rf'<a href="{relative_path}">\s*'
-                        rf'<img src="{relative_path}" alt="[^"]+" '
-                        rf'width="{DEMO_DISPLAY_WIDTH}"\s*/>\s*'
-                        rf'</a>\s*</div>',
-                    )
+                text = readme.read_text(encoding="utf-8")
+                self.assertNotIn("docs/assets/demo", text)
 
     def test_openai_interface_metadata(self) -> None:
         metadata = (ROOT / "agents" / "openai.yaml").read_text(encoding="utf-8")

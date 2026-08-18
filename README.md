@@ -44,32 +44,6 @@
 
 Turn any AI agent into an end-to-end hotel booking assistant—search global inventory, compare live rates across leading OTAs and hotel suppliers, verify availability, and complete booking, payment, cancellation, and order management in one conversation with TourMind.
 
-## Demo
-
-### 1. Search live hotels
-
-<div align="center">
-  <a href="docs/assets/demo/search-en.gif">
-    <img src="docs/assets/demo/search-en.gif" alt="TourMind hotel search demo" width="720" />
-  </a>
-</div>
-
-### 2. Compare real room options
-
-<div align="center">
-  <a href="docs/assets/demo/detail-en.gif">
-    <img src="docs/assets/demo/detail-en.gif" alt="TourMind room detail demo" width="720" />
-  </a>
-</div>
-
-### 3. Verify the final rate and pay
-
-<div align="center">
-  <a href="docs/assets/demo/pay-en.gif">
-    <img src="docs/assets/demo/pay-en.gif" alt="TourMind rate verification and payment demo" width="720" />
-  </a>
-</div>
-
 ## Core capabilities
 
 - Resolve cities, hotels, landmarks, stations, addresses, ski areas, and other POIs without inventing coordinates.
