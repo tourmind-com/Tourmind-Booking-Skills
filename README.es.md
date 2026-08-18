@@ -4,32 +4,6 @@
 
 Convierte cualquier agente de IA en un asistente integral de reservas de hotel: busca inventario global, compara tarifas en tiempo real entre las principales OTA y proveedores hoteleros, verifica disponibilidad y completa reservas, pagos, cancelaciones y gestión de pedidos en una sola conversación con TourMind.
 
-## Demostración
-
-### 1. Buscar hoteles en tiempo real
-
-<div align="center">
-  <a href="docs/assets/demo/search-en.gif">
-    <img src="docs/assets/demo/search-en.gif" alt="Demostración de búsqueda de hoteles con TourMind" width="720" />
-  </a>
-</div>
-
-### 2. Comparar habitaciones reales
-
-<div align="center">
-  <a href="docs/assets/demo/detail-en.gif">
-    <img src="docs/assets/demo/detail-en.gif" alt="Demostración de habitaciones con TourMind" width="720" />
-  </a>
-</div>
-
-### 3. Verificar la tarifa final y pagar
-
-<div align="center">
-  <a href="docs/assets/demo/pay-en.gif">
-    <img src="docs/assets/demo/pay-en.gif" alt="Demostración de verificación y pago con TourMind" width="720" />
-  </a>
-</div>
-
 ## Capacidades principales
 
 - Resuelve ciudades, hoteles, lugares de interés, estaciones, direcciones, zonas de esquí y otros POI sin inventar coordenadas.
