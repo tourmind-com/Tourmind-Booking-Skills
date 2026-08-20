@@ -163,6 +163,7 @@ El valor almacenado en caché `search_hotels.min_price` es únicamente una seña
 - Soporte en GitHub: [abrir una incidencia](https://github.com/tourmind-com/Tourmind-Booking-Skills/issues)
 - Consultas sobre hoteles: `hotel@tourmind.com`
 - Colaboración comercial: `bp@tourmind.com`
+- Colaboración en productos de IA: `ai@tourmind.com`
 
 ## Licencia
 

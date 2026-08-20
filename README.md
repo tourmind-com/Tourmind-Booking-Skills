@@ -203,6 +203,7 @@ Cached `search_hotels.min_price` is only a candidate signal. User-visible prices
 - GitHub support: [open an issue](https://github.com/tourmind-com/Tourmind-Booking-Skills/issues)
 - Hotel business inquiry: `hotel@tourmind.com`
 - Business cooperation: `bp@tourmind.com`
+- AI product cooperation: `ai@tourmind.com`
 
 ## License
 

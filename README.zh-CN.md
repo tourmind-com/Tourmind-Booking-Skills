@@ -163,6 +163,7 @@
 - GitHub 支持：[提交 Issue](https://github.com/tourmind-com/Tourmind-Booking-Skills/issues)
 - 酒店业务咨询：`hotel@tourmind.com`
 - 商务合作：`bp@tourmind.com`
+- AI 产品合作：`ai@tourmind.com`
 
 ## 开源许可
 

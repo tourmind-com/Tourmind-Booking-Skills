@@ -163,6 +163,7 @@ Skills を再読み込みするか AI クライアントを再起動して、ホ
 - GitHub サポート：[Issue を作成](https://github.com/tourmind-com/Tourmind-Booking-Skills/issues)
 - ホテル事業に関するお問い合わせ：`hotel@tourmind.com`
 - ビジネス提携：`bp@tourmind.com`
+- AI 製品に関する提携：`ai@tourmind.com`
 
 ## ライセンス
 
