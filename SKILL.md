@@ -6,9 +6,13 @@ description: >
 
 # TourMind Booking Skill
 
-**Skill version:** `1.0.4`
+**Skill version:** `1.0.5`
 
 Use TourMind HTTP APIs for live hotel discovery, room-rate comparison, availability checks, booking, order management and payment.
+
+## Response language
+
+Respond in the language used by the user's current request unless the user explicitly asks for another language. This `SKILL.md` is written in English as the canonical source. Translate every user-visible template, label, notice, fallback, error explanation, and instruction naturally into the response language while preserving meaning, Markdown structure, variables, URLs, proper names, currency codes, opaque identifiers, and exact API field or enum/code values. Preserve the meaning of returned hotel and policy data; translate user-facing summaries without altering facts. Do not output both the English source and a translated copy unless the user requests bilingual output. When quoting a raw API error, keep the raw error text unchanged and explain it in the user's language.
 
 ## Non-negotiable rules
 
@@ -49,7 +53,7 @@ Before calling an endpoint:
 2. If it is absent or empty, do not call the API. Display the required access guidance below, ask the user to provide the newly created token, and save it to that file.
 3. If an HTTP 401 or an error containing `unauthorized` is returned, delete `{baseDir}/skill_token.txt`, stop the workflow, and display the same guidance before requesting a replacement token.
 
-Required access guidance:
+Required access guidance. The following English text is canonical source wording; translate it into the user's language while preserving both URLs and the distinction between business, developer, and individual users:
 
 > Please sign in to your TourMind account, then visit [Create a Skill Token](https://tourmind.com/user/skill-token) to create a token for this Skill.
 >
@@ -146,7 +150,7 @@ Never invent coordinates, geocode from model memory or substitute a city-wide se
 6. Apply an explicit user sort first. Otherwise rank by: verified hard/soft preference match, immediate bookability, distance, live total price, then cancellation flexibility.
 7. Select the five best verified hotels. If fewer than five qualify, show only the qualifying count; never pad the list with failures.
 8. For each selected hotel, call `get_hotel_detail` to obtain its address, hero image, facilities and any explicitly returned fee disclosures.
-9. If the user asks for all returned results, show the complete original returned candidate pool; previously excluded candidates must remain available. Separate qualifying hotels from candidates that fail hard constraints, state every failed hard constraint for each candidate, and never describe a non-match as recommended. Verify live rates before quoting any additional hotel; for candidates without a matching live product, write `No matching live room or quote` instead of using cached `min_price`.
+9. If the user asks for all returned results, show the complete original returned candidate pool; previously excluded candidates must remain available. Separate qualifying hotels from candidates that fail hard constraints, state every failed hard constraint for each candidate, and never describe a non-match as recommended. Verify live rates before quoting any additional hotel; for candidates without a matching live product, write the localized equivalent of `No matching live room or quote` instead of using cached `min_price`.
 
 If a strict price filter returns no candidates, one no-budget probe may diagnose whether inventory exists above budget. Clearly label such results as over budget and do not count them as matches. Never expand a strict radius without permission.
 
@@ -164,7 +168,7 @@ Never write vague or unsupported reasons such as "great value," "convenient loca
 
 ## Required hotel-list response template
 
-Use this English structure for every multi-hotel result. Default to five selected hotels. Keep all fixed template labels and guidance in English; do not add localized duplicate templates.
+Use this English template as the canonical structure for every multi-hotel result. Default to five selected hotels. Translate all user-facing labels, guidance, and prose into the user's language while preserving the Markdown structure, variables, numbers, URLs, and returned facts. Do not include a duplicate English version unless the user requests bilingual output.
 
 ```markdown
 Found {candidate_count} candidate hotels and verified live room products for {verified_scope}; below are the {selected_count} selected based on “{ranking_dimensions}”.
@@ -191,7 +195,7 @@ Why it matches: {reason_1}; {reason_2}; {optional_reason_3}.
 Address: {address}
 ```
 
-Set `{verified_scope}` truthfully. Say `all candidates` only after querying live room products for every candidate; otherwise say `all candidates that passed the hard constraints`. Use the default `{ranking_dimensions}` of `immediate bookability, distance, stay total, cancellation flexibility`, adding or replacing dimensions when the user supplied explicit filters or sorting preferences.
+Set `{verified_scope}` truthfully. Use the localized equivalent of `all candidates` only after querying live room products for every candidate; otherwise use the localized equivalent of `all candidates that passed the hard constraints`. The default `{ranking_dimensions}` concepts are `immediate bookability, distance, stay total, cancellation flexibility`; translate them into the user's language, adding or replacing dimensions when the user supplied explicit filters or sorting preferences.
 
 When the user sends a copied hotel-product block from that page, treat it as a hotel and room selection. Parse the hotel name and address, stay dates, room name, room count, bed and meal information, occupancy, nationality, displayed nightly price, displayed total and cancellation policy when present. Resolve the exact hotel and locate the closest matching live room product through the Skill APIs, then run `check_room_availability` before booking. The copied price and inventory are dynamic reference data, not a substitute for final verification. If multiple live products still match, present the material differences and ask the user to choose; do not guess a rate code.
 
@@ -201,9 +205,9 @@ Hero-image rendering rules for both hotel-list and hotel-detail responses:
 - If the user is currently using this Skill in the ChatGPT or Codex client, download the selected returned hero image to a client-accessible local file before responding. Set `{hotel_image_render_target}` to the file's absolute filesystem path; do not use the remote URL as the primary image render target.
 - In other clients, set `{hotel_image_render_target}` to the selected original URL.
 - Never expose the original hero-image URL as a separate link. If the local download fails or does not produce an accessible image file, omit the broken Markdown image.
-- Directly below the image, or below the unavailable-image notice, show `[View hotel details]({hotel_web_url})` using the top-level `web_url` returned by `query_room_rates` for that exact hotel. Keep this label in English.
+- Directly below the image, or below the unavailable-image notice, show the localized equivalent of `[View hotel details]({hotel_web_url})` using the top-level `web_url` returned by `query_room_rates` for that exact hotel. Translate only the link label and preserve the exact URL.
 - Never substitute the hotel-list `search_hotels.web_url`, an image URL, or a constructed URL for `{hotel_web_url}`. If the corresponding `query_room_rates` response has no `web_url`, omit the hotel-detail link.
-- If no hero-image URL exists, write `A hero image is not currently available for this hotel.` and continue with the hotel-detail link when available.
+- If no hero-image URL exists, write the localized equivalent of `A hero image is not currently available for this hotel.` and continue with the hotel-detail link when available.
 
 For each selected hotel:
 
@@ -211,7 +215,7 @@ For each selected hotel:
 - Show both per-night and stay-total price in the returned currency.
 - Show a fee or tax note only when the API explicitly returns a fee, tax amount, or inclusion status, or when the user asks about taxes and fees. Do not notify the user that fee or tax data is absent, incomplete, or unknown.
 
-End every default five-hotel list with:
+End every default five-hotel list with the localized equivalent of this English source text:
 
 > These are the {selected_count} best matches selected from {candidate_count} returned candidates. If they are not suitable, I can show the remaining {remaining_count} candidates or the complete result set; candidates that fail hard constraints will be clearly labeled with the reasons. Reply with a hotel number or name to see its room types, room images, and corresponding live quotes.
 
@@ -225,7 +229,7 @@ Include `query_room_rates.data.web_url` as a clickable read-only hotel and room-
 
 1. Show the hotel hero image by following the client-safe hero-image rules above, plus the concise address, star, distance, check-in/out and facilities. Include a fee summary only when the API explicitly returns a fee or the user asks about fees.
 2. Rank live room products by the user's request; show up to five distinct products by default and offer all remaining products.
-3. For every room product, use this structure:
+3. For every room product, use this English source structure and translate its visible labels into the user's language:
 
 ```markdown
 #### {room_name}
@@ -241,10 +245,10 @@ Room-image rules:
 
 - Prefer `query_room_rates.room_types[].basic_room_image` for the exact live room type.
 - Otherwise use the matching `get_hotel_detail.rooms[].basic_room_image` only when the room code/name maps confidently.
-- If only a generic hotel room gallery exists, label it `Generic hotel room image; not guaranteed to match the quoted room type`.
+- If only a generic hotel room gallery exists, use the localized label equivalent of `Generic hotel room image; not guaranteed to match the quoted room type`.
 - If no matching image exists, say so and omit the image. Never attach an unrelated image.
 - Do not translate `meal_type` codes into breakfast/dinner without a documented mapping. Use `meal_count` conservatively.
-- Render `Others` as `Other / room assigned at check-in`, not as a specific room.
+- Render the API value `Others` using the localized equivalent of `Other / room assigned at check-in`, not as a specific room.
 
 End with a clear next action: the user can choose a room for final availability and price verification.
 
@@ -269,11 +273,11 @@ End with a clear next action: the user can choose a room for final availability 
 Before `create_booking`:
 
 - Present the **final booking-confirmation template** below after `check_room_availability`. Obtain an explicit confirmation of the displayed order details; do not treat a room selection alone as confirmation.
-- Ask: `Please provide a contact email. It is required to place the booking and will receive booking-success, booking-failure, and cancellation notifications.`
+- Ask in the user's language, using the localized equivalent of: `Please provide a contact email. It is required to place the booking and will receive booking-success, booking-failure, and cancellation notifications.`
 - Require a plausible email format and confirm it belongs to the current booking context.
 - Use the `rate_code` and `total_price` returned by `check_room_availability`, not the earlier query price.
 
-For hotel check-in/out times, instructions and mandatory at-property fees, use the selected hotel's `get_hotel_detail` response. Show unavailable fields as `Not provided by the hotel` rather than guessing. If no explicit mandatory-fee content is returned, replace `{mandatory_fee_summary_or_fallback}` with `The hotel did not return any additional mandatory fee information.` Use this exact English final confirmation template; do not translate its fixed labels or guidance:
+For hotel check-in/out times, instructions and mandatory at-property fees, use the selected hotel's `get_hotel_detail` response. Show unavailable fields using the localized equivalent of `Not provided by the hotel` rather than guessing. If no explicit mandatory-fee content is returned, replace `{mandatory_fee_summary_or_fallback}` with the localized equivalent of `The hotel did not return any additional mandatory fee information.` Use the following English template as the canonical final-confirmation structure; translate all user-facing labels and guidance into the user's language while preserving the fields, values, Markdown structure, and confirmation semantics:
 
 ```markdown
 ### Please confirm your booking
