@@ -100,9 +100,11 @@ Currency values use ISO 4217 codes such as `CNY`, `USD`, `EUR`, `GBP` or `JPY`. 
 
 ## Location and POI resolution
 
-### Region mode
+### Region-first routing
 
-Resolve city and administrative-area names through `search_location`. Do not rely on a hardcoded region list when a live lookup is available.
+Use `search_location` and inspect `regions[]` before `place` for cities, administrative areas, neighborhoods, business districts, large attractions, scenic areas, national parks, ski areas, resorts and islands, unless the user explicitly requires distance from a precise point or supplies a radius.
+
+A region is high-confidence only when its name/full name strongly matches the complete destination phrase, its country/city context is compatible, and its `region_type` is reasonable. A positive `hotel_count`, when present, is strong support but not sufficient alone. Reject unrelated same-name results; ask one focused clarification if multiple plausible regions remain. Pass the selected string `region_id` and resolved name as `location_name`. Do not choose `place` merely because it exists when a reliable region match is available.
 
 ### Nearby mode
 
@@ -118,16 +120,13 @@ Resolve city and administrative-area names through `search_location`. Do not rel
 
 Never widen an explicit radius without permission.
 
-### Google POI resolution
+### Exact-point and broad-POI fallback
 
-Use this flow for a landmark, station, ski area, address or business district:
+Use `place` for a station, address, specific entrance, compact landmark, map pin, explicit radius, or wording that clearly requires distance from an exact point. Confirm that the returned place name, address and country/city context match the request. Preserve an explicit radius exactly; otherwise use `place.recommended_radius_km`, currently 3 km. Pass `place.latitude`, `place.longitude`, the radius and `location_name=place.name` to `search_hotels`, then state the returned `search_scope`.
 
-1. Search the complete POI phrase with `search_location`.
-2. Use the singular `data.place` returned by TourMind. The API selects the first Google Places result; do not ask the user to select another result in this version.
-3. If the user supplied a radius, preserve it exactly. Otherwise use `place.recommended_radius_km`, currently 3 km.
-4. Pass `place.latitude`, `place.longitude`, the radius, and `location_name=place.name` to `search_hotels`.
-5. State `place.search_scope` when the default radius is used.
-6. If no Google place exists, use an exact TourMind region match when available. Otherwise report that the location cannot be resolved.
+When a broad destination has no reliable region match, treat the matched `place` as a representative point rather than a boundary. With no explicit radius, begin at `place.recommended_radius_km` and probe the next larger values from `3, 5, 10, 20 km` until at least five candidates are available, the latest result reaches the 20-candidate limit, or 20 km has been searched. Merge all probe pools by string `hotel_id` and retain narrower-radius candidates. Disclose the final scope and expansion. If fewer than five candidates remain at 20 km, ask for a preferred entrance, visitor center or gateway town, or offer a wider search; do not silently jump to 50 km.
+
+If neither a reliable region nor a matching place exists, report that the location cannot be resolved.
 
 Do not derive coordinates from model knowledge, use a hotel as a proxy center, or substitute a city center while describing it as the requested POI.
 
@@ -159,7 +158,7 @@ Response data:
 - `hotels[]`: hotel identifiers and basic name/address/region fields.
 - `place`: the first Google Places result selected by TourMind, including `place_id`, `name`, `formatted_address`, `latitude`, `longitude`, `types`, `source`, `recommended_radius_km` and `search_scope`.
 
-For a nearby request, use `place` directly. The current API intentionally selects the first Google result.
+Apply the routing rules above: use a reliable region for destination-area lodging intent, and use `place` for exact-point or explicit-radius intent. The current API exposes one Google result, so validate it against the request before using it.
 
 ### `POST /skill/tob/search_hotels`
 

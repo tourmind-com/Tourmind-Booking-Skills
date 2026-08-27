@@ -1,6 +1,46 @@
-# TourMind 酒店预订 Skill
+<div align="center">
 
-[English](README.md) | [简体中文](README.zh-CN.md) | [日本語](README.ja.md) | [Español](README.es.md)
+<h1 style="border-bottom: none">
+  <b><a href="https://tourmind.com/skills">TourMind Booking Skills</a></b><br />
+  <strong>让你的 Agent 预订全球酒店</strong>
+</h1>
+
+<a href="https://tourmind.com/user/skill-token">
+  <img alt="TourMind Booking Skills - 获取 Token" src="https://skilloss.tourmind.com/skills/tourmind-booking/v1/hero/tourmind-booking-skills.png" style="width: 100%" />
+</a>
+
+<br />
+
+<p align="center">
+  把你的客户带入智能旅行
+</p>
+
+<br />
+
+<div align="center">
+  <a href="https://tourmind.com/skills">产品页面</a> |
+  <span>在线演示</span> |
+  <a href="https://tourmind.com">公司官网</a>
+</div>
+
+<br />
+
+[![ClawHub installs](https://img.shields.io/badge/ClawHub_installs-1.4k-F97316)](https://clawhub.ai/tourmind/skills/hotel-booking-ai)
+[![Release](https://img.shields.io/github/v/release/tourmind-com/Tourmind-Booking-Skills?label=release)](https://github.com/tourmind-com/Tourmind-Booking-Skills/releases/latest)
+[![License](https://img.shields.io/github/license/tourmind-com/Tourmind-Booking-Skills)](LICENSE)
+
+</div>
+
+<br />
+
+<div align="center">
+  <a href="README.md">English</a> |
+  <a href="README.zh-CN.md">简体中文</a> |
+  <a href="README.ja.md">日本語</a> |
+  <a href="README.es.md">Español</a>
+</div>
+
+<br />
 
 让任何 AI Agent 在一次对话中获得端到端酒店预订能力：搜索全球酒店资源、比较主流 OTA 与酒店供应商的实时价格、核验库存，并通过 TourMind 完成预订、支付、取消和订单管理。
 
@@ -34,8 +74,8 @@
 
 - 解析城市、酒店、地标、车站、地址、滑雪场等 POI，不凭空编造坐标。
 - 搜索最多 20 家候选酒店，查询匹配的实时房型，并选出经过验证的最佳 5 家。
-- 比较主流 OTA 和酒店供应商的实时每晚价格、总价、取消政策及库存状态。
-- 同时返回酒店与房型图片、设施、床型、餐食、费用和基于证据的推荐理由。
+- 比较主流 OTA 和酒店供应商的实时每晚价格、入住总价、取消政策及库存状态。
+- 返回酒店与房型图片、设施、床型、餐食、费用和基于证据的匹配理由。
 - 下单前重新核验所选房型的价格和库存。
 - 创建预订、查询与取消订单，并发起 Stripe、微信支付或支付宝付款。
 - 提供有时效、可重复访问的只读结果链接，同时不暴露 Skill Token。
@@ -45,10 +85,10 @@
 | 客户端 | 支持方式 |
 |---|---|
 | WorkBuddy | 将本仓库安装或导入为用户 Skill |
-| OpenAI Codex | 通过 Skills 界面或当前版本支持的本地 Skill 目录安装 |
+| OpenAI Codex | 通过 Skills 界面或当前 Codex 版本支持的本地 Skill 目录安装 |
 | Claude Code | 作为个人 Skill 安装到 `~/.claude/skills` |
 | 兼容 Agent Skills 的客户端 | 客户端能够加载根目录 `SKILL.md` 并发起 HTTPS `POST` 请求时可用 |
-| 支持 MCP 的 AI 客户端 | 使用配套的 [TourMind Booking MCP](https://github.com/tourmind-com/Tourmind-Booking-MCP) |
+| 支持 MCP 的 AI 客户端 | 使用配套的 [TourMind Booking MCP](https://github.com/tourmind-com/Tourmind-Booking-MCP) 包 |
 
 ## 1 分钟安装
 
@@ -84,18 +124,18 @@
 
 重新加载 Skills 或重启 AI 客户端，然后提出酒店需求。无需在本地运行 MCP 服务，本 Skill 会通过 HTTPS 直接调用 TourMind API。
 
-切勿提交 `skill_token.txt`；该文件已经被 `.gitignore` 排除。
+切勿提交 `skill_token.txt`。它已被 `.gitignore` 排除。
 
 ## 示例 Prompt
 
-以下示例将 Agent 自身的联网研究与行程规划能力，和 TourMind 的实时酒店搜索、验价、预订、支付及订单管理流程结合起来。
+以下示例将 Agent 自身的研究与行程规划能力，和 TourMind 的实时酒店搜索、验价、预订、支付及订单管理流程结合起来。
 
 ```text
 我和朋友两个人计划于 2027 年 4 月 9 日至 13 日去日本大阪（Osaka）玩 4 晚，从关西国际机场往返。我们想安排 1～2 天在大阪湾或淡路岛附近海钓，不租车。请先结合你自己的联网搜索和行程规划能力，比较适合游客的钓鱼区域、当季情况、合规的包船或船钓选择以及公共交通时间，再给出节奏舒适的逐日行程。然后针对最合适的住宿基地，使用 TourMind 搜索实时酒店库存。平均房价控制在每晚 18,000 日元以内，优先双床房、靠近车站、清晨前往钓鱼集合点交通方便、可免费取消；早餐需要与早出发时间兼容。请展示经过实时验证的最佳 5 家酒店，包含房型图片、入住总价和币种、接口返回的税费、取消政策、早餐、前往钓鱼点的交通方案、各自优缺点，以及可重复打开的结果链接。暂时不要预订。
 ```
 
 ```text
-请帮两位成人规划 2027 年 2 月 6 日至 12 日、共 6 晚的意大利多洛米蒂（Dolomites）滑雪旅行。我们从威尼斯马可·波罗机场到达，不自驾，滑雪水平中等。请先从机场接驳、雪道、餐饮和性价比角度比较 Cortina d’Ampezzo、Val Gardena 和 Alta Badia，推荐最适合的住宿基地，并给出可执行的逐日行程。再使用 TourMind 搜索平均每晚不超过 250 欧元的实时可售酒店，优先距离缆车步行或接驳 10 分钟以内、有雪具寄存、早餐、免费取消，最好有桑拿。请展示经过验证的最佳 5 家，包含房型和床型、图片、每晚价与入住总价、取消截止时间、餐食、库存状态、到缆车距离，并标明每家未满足的条件。我选定后，请重新核验该房型的实时价格和库存，汇总准确的最终金额及政策，并等待我明确确认后才能预订或发起支付。
+请帮两位成人规划 2027 年 2 月 6 日至 12 日、共 6 晚的意大利多洛米蒂（Dolomites）滑雪旅行。我们从威尼斯马可·波罗机场到达，不自驾，滑雪水平中等。请先从机场接驳、雪道、餐饮和性价比角度比较 Cortina d'Ampezzo、Val Gardena 和 Alta Badia，推荐最适合的住宿基地，并给出可执行的逐日行程。再使用 TourMind 搜索平均每晚不超过 250 欧元的实时可售酒店，优先距离缆车步行或接驳 10 分钟以内、有雪具寄存、早餐、免费取消，最好有桑拿。请展示经过验证的最佳 5 家，包含房型和床型、图片、每晚价与入住总价、取消截止时间、餐食、库存状态、到缆车距离，并标明每家未满足的条件。我选定后，请重新核验该房型的实时价格和库存，汇总准确的最终金额及政策，并等待我明确确认后才能预订或发起支付。
 ```
 
 ```text
@@ -120,7 +160,7 @@
   → 按需调用 pay_order / query_booking / cancel_booking
 ```
 
-`search_hotels.min_price` 只是缓存的候选信号。展示给用户的价格必须来自 `query_room_rates`，最终下单必须使用 `check_room_availability` 返回的最新价格和房价代码。
+`search_hotels.min_price` 只是缓存的候选信号。展示给用户的价格来自 `query_room_rates`，最终下单使用 `check_room_availability` 返回的最新值。
 
 ## Token 与安全说明
 
@@ -131,14 +171,14 @@
 - 返回的 `web_url` 会话是只读的，在过期前可重复打开；页面不能验价、预订、支付、取消，也不能访问账户或财务功能。
 - 预订、取消和支付必须在已认证的 AI 对话中获得用户明确确认。
 
-## Skill / MCP / ToB / ToC 选择矩阵
+## 选择合适的 TourMind 接入方式
 
 | 用户类型 | 接入方式 | 鉴权模式 | 仓库 |
 |---|---|---|---|
 | 消费者 / ToC | 直连 HTTP Skill | 搜索与验价公开；订单操作才需要 `user_key` | [Hotel Booking AI](https://github.com/tourmind-com/Hotel-Booking-AI) |
 | 企业 / ToB | 直连 HTTP Skill | 每次 API 调用都需要 Skill Token | **[TourMind Booking Skill](https://github.com/tourmind-com/Tourmind-Booking-Skills)** |
-| 消费者 / ToC | MCP + 配套 Skill | MCP 连接公开；订单操作才需要 `user_key` | [Hotel Booking AI MCP](https://github.com/tourmind-com/Hotel-Booking-AI-MCP) |
-| 企业 / ToB | MCP + 配套 Skill | MCP 连接使用 Bearer 鉴权 | [TourMind Booking MCP](https://github.com/tourmind-com/Tourmind-Booking-MCP) |
+| 消费者 / ToC | MCP 包 + 配套 Skill | MCP 连接公开；订单操作才需要 `user_key` | [Hotel Booking AI MCP](https://github.com/tourmind-com/Hotel-Booking-AI-MCP) |
+| 企业 / ToB | MCP 包 + 配套 Skill | MCP 连接使用 Bearer 鉴权 | [TourMind Booking MCP](https://github.com/tourmind-com/Tourmind-Booking-MCP) |
 
 ## API 与支持入口
 
