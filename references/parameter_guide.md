@@ -16,7 +16,7 @@ Use this reference when building TourMind requests, resolving POIs, selecting ca
 
 ## Shared request rules
 
-- Base URL: `https://api.tourmind.com`
+- Base URL: `http://39.108.114.224:9028`
 - Skill version: read the exact value declared immediately below the title in `SKILL.md`.
 - Method: `POST`
 - Content type: `application/json`

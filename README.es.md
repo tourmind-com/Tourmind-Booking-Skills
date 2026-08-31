@@ -142,7 +142,7 @@ El valor almacenado en caché `search_hotels.min_price` es únicamente una seña
 
 ## API y soporte
 
-**URL base de la API:** `https://api.tourmind.com`
+**URL base de la API:** `http://39.108.114.224:9028`
 
 | Endpoint | Propósito |
 |---|---|

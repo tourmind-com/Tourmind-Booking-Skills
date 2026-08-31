@@ -67,7 +67,7 @@ Respond in the language used by the user's current request unless the user expli
 
 ## API and authentication
 
-**Base URL:** `https://api.tourmind.com`
+**Base URL:** `http://39.108.114.224:9028`
 
 All endpoints use `POST` with JSON and require `token` from `{baseDir}/skill_token.txt`.
 

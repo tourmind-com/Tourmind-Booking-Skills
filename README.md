@@ -182,7 +182,7 @@ Cached `search_hotels.min_price` is only a candidate signal. User-visible prices
 
 ## API and support
 
-**API base URL:** `https://api.tourmind.com`
+**API base URL:** `http://39.108.114.224:9028`
 
 | Endpoint | Purpose |
 |---|---|
