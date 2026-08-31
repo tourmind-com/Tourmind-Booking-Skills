@@ -6,7 +6,7 @@ description: >
 
 # TourMind Booking Skill
 
-**Skill version:** `1.0.5`
+**Skill version:** `1.0.6`
 
 Use TourMind HTTP APIs for live hotel discovery, room-rate comparison, availability checks, booking, order management and payment.
 
@@ -58,7 +58,7 @@ Respond in the language used by the user's current request unless the user expli
 
 1. Use only TourMind API data for hotels, coordinates, rooms, images, prices, policies and availability. Never fill gaps from memory or training data.
 2. Before the first hotel-search API call, require a location, check-in date and check-out date. The scheduled update check does not require these fields. If adult count is omitted, use 1 adult per room and explicitly tell the user that the search assumes one guest; invite them to provide the guest count for multiple occupancy. Apply the safe defaults below instead of asking unnecessary questions.
-3. Treat `search_hotels.min_price` as a cached candidate signal only. Present a hotel as having a live rate product and quote a price only after `query_room_rates` returns a matching product. Describe inventory as immediately bookable only when that product has `is_on_request=false`.
+3. Treat `search_hotels.min_price` as a cached candidate signal only. Present a hotel as having a live rate product and quote a price only after `query_room_rates` or a successful `batch_query_room_rates` item returns a matching product. Describe inventory as immediately bookable only when that product has `is_on_request=false`.
 4. Respect explicit radius, budget, star, occupancy and facility requirements as hard constraints. Never silently expand a hard radius or budget.
 5. Before every `create_booking`, require the guest's full legal name and a valid `contact_email`. Email is mandatory in this skill even if the backend accepts an omitted value. Never offer a skip option, invent an email or reuse an unconfirmed email. Do not collect a phone number.
 6. Interpret cancellation policies exactly as returned. `non_refundable` or `effective_non_refundable=true` means non-refundable. `free_cancel_before_deadline` means free cancellation only through its deadline.
@@ -78,6 +78,7 @@ All endpoints use `POST` with JSON and require `token` from `{baseDir}/skill_tok
 | Search hotel candidates | `/skill/tob/search_hotels` |
 | Get hotel details and images | `/skill/tob/get_hotel_detail` |
 | Get live rooms and rates | `/skill/tob/query_room_rates` |
+| Get live rooms and rates for multiple hotels | `/skill/tob/batch_query_room_rates` |
 | Recheck rate and availability | `/skill/tob/check_room_availability` |
 | Create booking | `/skill/tob/create_booking` |
 | Query booking | `/skill/tob/query_booking` |
@@ -140,6 +141,7 @@ Do not ask for information that can be inferred safely. State every applied assu
 | Missing or vague input | Default behavior |
 |---|---|
 | `room_count` omitted | Use 1 room and disclose the assumed occupancy. If adult count is also omitted, use 1 adult for that room and tell the user: `I will search for 1 guest in 1 room; tell me if more people will stay.` Translate this message into the user's language. |
+| Children omitted | Use 0 children and an empty `children_ages` array. |
 | Date has no year | Use the next future occurrence in the user's timezone. Show the resolved `YYYY-MM-DD` dates. |
 | Relative date such as tonight or tomorrow | Resolve it to exact dates in the user's timezone. |
 | "Nearby" or "as close as possible" with no radius | Use 3 km and state that default. |
@@ -147,6 +149,8 @@ Do not ask for information that can be inferred safely. State every applied assu
 | Budget wording such as "under 2000" is ambiguous | Clarify whether it is per night or trip total before applying a hard filter. |
 
 Still ask when the location, check-in date or check-out date cannot be inferred. Never replace an adult count the user already provided. Ensure checkout is later than check-in and all dates sent to the API use `YYYY-MM-DD`.
+
+`adults`, `children`, and `children_ages` describe **each room**, while `room_count` repeats that same occupancy for all rooms. `children_ages` must contain one age from 0 through 17 for each child in one room. For example, `adults=2, room_count=2, children=1, children_ages=[8]` means two rooms, each with two adults and one eight-year-old child. If the user gives only total guests for multiple rooms, ask for the per-room occupancy before calling the API. Do not send `room_occupancies`; mixed per-room configurations are not supported.
 
 ## Location and POI resolution
 
@@ -195,7 +199,7 @@ Never invent coordinates, geocode from model memory or substitute a city-wide se
 
 ## Search, verify and select five
 
-`search_hotels` returns at most 20 candidates. Treat this as a candidate pool, not the final answer.
+Region and nearby `search_hotels` calls return at most 20 candidates that have already passed a live-rate availability probe for the requested dates and occupancy. Keyword mode remains a hotel-name lookup and does not perform that probe. Treat `min_price` as cached display data even for live-filtered candidates; use room-rate products for prices.
 
 1. Parse the user's requirements into:
    - **Hard constraints:** dates, occupancy, room count, explicit radius, strict budget, required star level, required facilities or property type.
@@ -203,8 +207,9 @@ Never invent coordinates, geocode from model memory or substitute a city-wide se
 2. Call `search_hotels` with the applicable hard search fields. Preserve the complete raw candidate pool and `distance_km` values so a later "show all" request can be fulfilled.
    - Preserve the top-level `web_url` and include it as a clickable read-only hotel-results link. Place the link guidance after the search-summary fields and before the first recommended hotel, with one blank line on each side. Tell the user to open a hotel detail page, click the copy button beside the desired room product, and send the copied product information back in the conversation so you can continue verification and booking. Do not expose the underlying token or alter the URL. The linked session only permits hotel lists, hotel details and room quotes; it does not permit verification, booking, payment, `/book/*`, order, finance or account-management pages.
 3. Exclude obvious hard-constraint failures from the recommendation/ranking pool, but retain them in the raw pool with every failed constraint recorded.
-4. Call `query_room_rates` for every remaining candidate needed to rank the recommendation pool fairly, in controlled batches. Do not stop at the first five cached-price results. Exclude candidates with no matching live product from recommendations, but retain their no-live-product status in the raw pool.
-   - Preserve each response's top-level `web_url` as that exact hotel's `hotel_web_url`. Never reuse the hotel-list `search_hotels.web_url` for an individual hotel.
+4. Call `batch_query_room_rates` once with the remaining candidate IDs needed to rank the recommendation pool fairly; each request accepts at most 20 hotels and the server owns the four-worker concurrency. Use `query_room_rates` when only one hotel needs rates. Do not create another client-side request pool. Exclude candidates with no matching live product from recommendations, but retain their no-live-product status in the raw pool.
+   - Read every batch item independently. A top-level successful batch may contain matched, empty, and failed hotel items; never discard successful items because another hotel failed.
+   - Preserve each successful batch item's `data.web_url`, or the single-hotel response's top-level `web_url`, as that exact hotel's `hotel_web_url`. Never reuse the hotel-list `search_hotels.web_url` for an individual hotel.
    - `is_on_request=false` is immediately bookable inventory.
    - `is_on_request=true` is a request product whose inventory still needs supplier confirmation. It does not satisfy an explicit "immediately bookable" or "real-time availability" hard requirement; otherwise keep it eligible but rank it after immediately bookable options and label it clearly.
 5. If a required or preferred facility cannot be verified from search data, call `get_hotel_detail` for the relevant candidates before ranking it.
@@ -319,7 +324,7 @@ End with a clear next action: the user can choose a room for final availability 
 0. Complete inputs and resolve location/POI
 1. search_location / keyword search as needed
 2. search_hotels for up to 20 candidates
-3. query_room_rates and rank verified candidates
+3. batch_query_room_rates (or query_room_rates for one hotel) and rank verified candidates
 4. Present five hotels with hero images and match reasons
 5. On hotel selection, return hotel detail + room images + live quotes
 6. check_room_availability for the chosen rate
@@ -373,7 +378,8 @@ Before cancellation, confirm the exact `agent_ref_id`. In availability cancellat
 ## Error and empty-result handling
 
 - Retry a transient network/server failure only when safe; if it still fails, quote the concrete error and stop.
-- For zero live rooms, distinguish `no candidate hotels` from `candidates found but no matching live room`.
+- Treat `reason=no_matching_live_room` as a successful business-empty result and suggest changing dates or occupancy.
+- Treat `hotel_not_found` as a missing or unavailable hotel, `upstream_timeout` as a temporary real-time pricing timeout, `upstream_error` or `hotel_detail_unavailable` as a service failure, and `invalid_request` as a request that must be corrected. Never describe timeout or service failure as no availability.
 - For fewer than five qualifying hotels, show the verified results and explain which hard constraint limited the list.
 - Offer, but never silently perform, changes to a hard radius, budget, dates or occupancy.
 - Never expose the Skill Token, internal payment codes or raw secrets in output.
