@@ -61,7 +61,7 @@ No-update response:
   "skill_update": {
     "available": false,
     "display_to_user": false,
-    "latest_version": "1.0.5"
+    "latest_version": "1.0.6"
   }
 }
 ```
@@ -94,6 +94,8 @@ An update-check failure is advisory: continue the hotel workflow, do not repeate
 - If `adults` is also omitted, default to 1 adult per room. Tell the user that the search uses 1 guest in 1 room and invite them to provide the guest count if multiple people will stay. Translate this notice into the user's language.
 - Preserve any adult count the user already provided; never replace it with the default.
 - `adults` means adults per room, not the total across all rooms.
+- `children` and `children_ages` also describe one room. The age array length must equal `children`, and every age must be from 0 through 17.
+- `room_count` repeats the same adult/child configuration for every room. Ask for the per-room occupancy when the user gives only totals for multiple rooms. Do not send `room_occupancies`; mixed configurations are unsupported.
 - Do not call live-rate endpoints until location, check-in and check-out are known. Supply the default adult count when the user omitted it.
 
 Currency values use ISO 4217 codes such as `CNY`, `USD`, `EUR`, `GBP` or `JPY`. Display the currency returned by the API; do not silently relabel it.
@@ -178,11 +180,13 @@ Priced-search fields:
 | `check_out_date` | string | yes | `YYYY-MM-DD` |
 | `adults` | integer | yes | Adults per room |
 | `room_count` | integer | no | Default 1 |
+| `children` | integer | no | Children per room; default 0 |
+| `children_ages` | integer[] | no | One age from 0–17 for each child in one room |
 | `lowest_price` | number | no | Candidate lower bound in CNY |
 | `highest_price` | number | no | Candidate upper bound in CNY |
 | `location_name` | string | priced searches | Resolved region or Google place name used to describe the result page |
 
-The endpoint returns at most 20 hotels. Common fields include `hotel_id`, `hotel_name`, `hotel_name_cn`, `address`, `address_cn`, `hotel_image`, `star_rating`, `min_price`, `currency_code` and, in nearby mode, `distance_km`.
+The endpoint returns at most 20 hotels. In region and nearby modes, the backend probes live rates with the same dates and occupancy and returns only hotels with at least one available rate. Keyword mode does not run this probe. Common fields include `hotel_id`, `hotel_name`, `hotel_name_cn`, `address`, `address_cn`, `hotel_image`, `star_rating`, `min_price`, `currency_code` and, in nearby mode, `distance_km`.
 
 Priced searches also return `search_scope`, top-level `web_url`, `web_url_expires_at` and `web_url_one_time`. Include `web_url` in the user-facing response. The link can be opened repeatedly until `web_url_expires_at`; it establishes an authenticated TourMind session marked `accessMode=skill_readonly` without exposing the Skill token. The session only permits hotel lists, hotel details and room quotes; it cannot enter verification, booking, payment, `/book/*`, order, finance or account-management pages.
 
@@ -225,6 +229,8 @@ Request:
 | `check_out_date` | string | yes |
 | `adults` | integer | yes |
 | `room_count` | integer | no |
+| `children` | integer | no; children per room |
+| `children_ages` | integer[] | no; one 0–17 age per child in one room |
 
 `data.room_types[]` contains room-level names, bed description, optional `basic_room_image` and `products[]`.
 
@@ -263,9 +269,43 @@ Do not map numeric/string `meal_type` codes to breakfast, dinner or another meal
 
 The response also includes top-level `web_url`, `web_url_expires_at` and `web_url_one_time`. The link can be opened repeatedly until `web_url_expires_at`. The linked TourMind page displays the hotel and returned room quotes in read-only mode. Preserve it with that exact hotel and show it directly below the hotel's hero image using the localized label equivalent of `[View hotel details]`; preserve the exact URL, never show the original image URL as a separate link, and never substitute the hotel-list `search_hotels.web_url`. It does not support verification, booking, payment, `/book/*`, order management, finance or account management. Use the Skill APIs in the authenticated AI conversation for those actions. If the field is unexpectedly absent, omit the hotel-detail link rather than constructing one.
 
+An empty live result is HTTP 200 with `data.room_types=[]` and `data.reason=no_matching_live_room`. Do not treat it as a system failure.
+
+### `POST /skill/tob/batch_query_room_rates`
+
+Use this endpoint to query multiple candidate hotels under one shared stay and per-room occupancy configuration.
+
+| Field | Type | Required |
+|---|---|---|
+| `token` | string | yes |
+| `hotel_ids` | string[] | yes; 1–20 hotels |
+| `check_in_date` | string | yes |
+| `check_out_date` | string | yes |
+| `adults` | integer | yes; per room |
+| `room_count` | integer | no; default 1 |
+| `children` | integer | no; per room |
+| `children_ages` | integer[] | no; one 0–17 age per child in one room |
+
+Within each request, the server uses a fixed four-worker pool and preserves input order. A client may run up to three `batch_query_room_rates` requests concurrently when multiple batches are required; never exceed three concurrent requests. Each request still accepts at most 20 hotel IDs. Top-level `ok=true` means the batch completed; inspect each item independently. Abbreviated response:
+
+```json
+{
+  "ok": true,
+  "data": {
+    "results": [
+      {"hotel_id": "23059757", "ok": true, "data": {"total": 1}},
+      {"hotel_id": "999999999", "ok": false, "reason": "hotel_not_found", "error": "hotel not found"}
+    ],
+    "summary": {"total": 2, "matched": 1, "empty": 0, "failed": 1}
+  }
+}
+```
+
+`matched` counts hotels with products, `empty` counts successful `no_matching_live_room` results, and `failed` counts per-hotel errors. The documented rate-query `reason` codes apply to each `data.results[]` item independently. Keep successful items when another item fails. Each successful item may include that hotel's read-only `web_url`.
+
 ### `POST /skill/tob/check_room_availability`
 
-Request: `token`, string `hotel_id`, `rate_code`, dates, `adults`, `room_count`.
+Request: `token`, string `hotel_id`, `rate_code`, dates, `adults`, `room_count`, `children`, `children_ages`. Occupancy fields retain the same per-room meaning.
 
 Use the selected `query_room_rates` rate code. The checked response may return a new rate code, price and cancellation details. Use the checked values—not the earlier query values—for booking.
 
@@ -283,7 +323,7 @@ Request fields:
 | `check_in_date`, `check_out_date` | yes | Confirmed dates |
 | `guest_name` | yes | User's full legal name |
 | `contact_email` | **yes** | User-supplied valid email |
-| `adults`, `room_count` | yes | Confirmed occupancy |
+| `adults`, `room_count`, `children`, `children_ages` | yes | Confirmed per-room occupancy; use 0 and `[]` when there are no children |
 | `currency`, `total_price` | yes | Latest availability check |
 
 The backend may technically accept an omitted email, but this skill must not call `create_booking` without one. Do not offer a skip option. A basic plausibility check requires one `@`, non-empty local/domain parts and a domain containing a dot; do not overclaim deliverability validation.
@@ -313,7 +353,7 @@ There is no custom return URL. Return `pay_url` to the user. For Stripe, also sh
 Use all candidates needed for a fair top-five choice; do not merely display the first five cached-price rows.
 
 1. Preserve the complete original `search_hotels` candidate pool. Exclude search-level hard failures, including explicit radius and star constraints, only from the recommendation pool; record all failed hard constraints on the original candidate.
-2. Query live rates for remaining candidates in controlled batches.
+2. Split the remaining candidates into batches of at most 20 hotel IDs and call `batch_query_room_rates`. Run one request when one batch is sufficient; when multiple batches are required, run no more than three requests concurrently. Process each item independently and retain partial successes.
 3. Filter products by occupancy, room count, strict budget, requested room/meal and other hard fields.
 4. Drop candidates with no matching live product only from the recommendation pool; retain their identifiers and `no matching live product` status in the original pool.
 5. Treat `is_on_request=true` as supplier-confirmation inventory, not immediate availability. Exclude it when the user explicitly requires immediately bookable or real-time available inventory; otherwise rank it after `is_on_request=false` and use the localized label equivalent of `Inventory requires supplier confirmation`.
@@ -387,7 +427,7 @@ Guest names should match identification documents. The service handles Chinese a
 Before booking, confirm:
 
 - exact hotel and room product;
-- dates, occupancy and room count;
+- dates, adults per room, children per room, every child's age per room, and room count;
 - latest checked total/currency, cancellation policy and availability;
 - hotel `checkin.begin_time` and `checkout.time`, or the localized equivalent of `Not provided by the hotel` if either field is absent;
 - explicit `hotel.fees.mandatory` content, or the localized equivalent of `The hotel did not return any additional mandatory fee information.`;
@@ -409,13 +449,21 @@ Common order statuses:
 
 ## Errors and performance
 
+The `reason` codes in the table below apply to `query_room_rates` responses and individual `batch_query_room_rates.data.results[]` items. Process batch item reasons independently; an item-level error does not make the whole batch unsuccessful. `invalid_request` may also be returned as a top-level error when the entire single-hotel or batch request is malformed.
+
 | Error/symptom | Required handling |
 |---|---|
 | `unauthorized` / HTTP 401 | Delete the token file, display the required sign-in/token/registration guidance from `SKILL.md`, and request a replacement token |
 | No search candidates | Report the exact constraint set; offer changes without applying them |
 | Candidates but no live products | State that hotels were found but none had matching live rooms |
+| `reason=no_matching_live_room` | Treat as a successful business-empty result and suggest changing dates or occupancy |
+| `reason=hotel_not_found` | State that the hotel is missing or unavailable |
+| `reason=upstream_timeout` | State that real-time pricing timed out and may be retried later |
+| `reason=upstream_error` | Report a temporary service failure; never describe it as no availability |
+| `reason=hotel_detail_unavailable` | Report that hotel details required for the room response are temporarily unavailable |
+| `reason=invalid_request` | Correct the request before retrying |
 | Budget-capped search empty | Optionally probe without budget only to diagnose over-budget inventory |
 | Rate check failed | Re-run availability once for the selected rate; if still failed, report it |
 | Booking creation failed | Report the error; do not retry with guessed guest/order data |
 
-Batch rate/detail calls conservatively to avoid API throttling. Parallelize independent read-only queries in small batches, but keep booking, cancellation and payment operations sequential and explicitly confirmed.
+Use `batch_query_room_rates` for multi-hotel rate retrieval, with at most 20 hotels per request and at most three concurrent batch requests per client. Keep booking, cancellation and payment operations sequential and explicitly confirmed.

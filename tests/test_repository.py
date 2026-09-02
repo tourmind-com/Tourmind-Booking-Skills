@@ -132,6 +132,7 @@ class RepositoryContractTests(unittest.TestCase):
             "search_hotels",
             "get_hotel_detail",
             "query_room_rates",
+            "batch_query_room_rates",
             "check_room_availability",
             "create_booking",
             "query_booking",
@@ -141,6 +142,55 @@ class RepositoryContractTests(unittest.TestCase):
         for endpoint in endpoints:
             with self.subTest(endpoint=endpoint):
                 self.assertIn(endpoint, text)
+
+    def test_official_skill_identity(self) -> None:
+        skill_text = SKILL.read_text(encoding="utf-8")
+        metadata = (ROOT / "agents" / "openai.yaml").read_text(encoding="utf-8")
+        self.assertIn("# TourMind Booking Skill", skill_text)
+        self.assertIn("### TourMind Booking Skill is ready", skill_text)
+        self.assertIn("name: tourmind-booking", skill_text)
+        self.assertIn('display_name: "TourMind Hotel Booking"', metadata)
+        self.assertIn("$tourmind-booking", metadata)
+        self.assertNotIn("booking_test", skill_text)
+        self.assertNotIn("tourmind-booking-test", metadata)
+
+    def test_final_confirmation_includes_child_occupancy(self) -> None:
+        text = SKILL.read_text(encoding="utf-8")
+        self.assertIn("{children_per_room}", text)
+        self.assertIn("{children_ages_per_room_or_not_applicable}", text)
+        self.assertIn("When there are no children", text)
+
+    def test_batch_rate_client_concurrency_limit(self) -> None:
+        skill_text = SKILL.read_text(encoding="utf-8")
+        reference_text = (ROOT / "references" / "parameter_guide.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("up to three `batch_query_room_rates` requests concurrently", skill_text)
+        self.assertIn("never exceed three concurrent requests", skill_text)
+        self.assertIn("at most three concurrent batch requests per client", reference_text)
+        self.assertNotIn("Do not wrap this endpoint in another client-side concurrency pool", reference_text)
+
+    def test_api_base_url_is_production(self) -> None:
+        documents = (
+            SKILL,
+            ROOT / "references" / "parameter_guide.md",
+            *READMES,
+        )
+        for document in documents:
+            with self.subTest(document=document.name):
+                text = document.read_text(encoding="utf-8")
+                self.assertIn("https://api.tourmind.com", text)
+                self.assertNotIn("http://39.108.114.224:9028", text)
+
+    def test_rate_reason_codes_have_explicit_scope(self) -> None:
+        skill_text = SKILL.read_text(encoding="utf-8")
+        reference_text = (ROOT / "references" / "parameter_guide.md").read_text(
+            encoding="utf-8"
+        )
+        for text in (skill_text, reference_text):
+            self.assertIn("`query_room_rates` responses", text)
+            self.assertIn("`batch_query_room_rates.data.results[]` items", text)
+            self.assertIn("`invalid_request` may also", text)
 
     def test_credentials_are_not_tracked(self) -> None:
         tracked = subprocess.run(
