@@ -192,6 +192,18 @@ class RepositoryContractTests(unittest.TestCase):
             self.assertIn("`batch_query_room_rates.data.results[]` items", text)
             self.assertIn("`invalid_request` may also", text)
 
+    def test_missing_hotel_business_permission_keeps_token(self) -> None:
+        skill_text = SKILL.read_text(encoding="utf-8")
+        reference_text = (ROOT / "references" / "parameter_guide.md").read_text(
+            encoding="utf-8"
+        )
+        for text in (skill_text, reference_text):
+            self.assertIn("HOTEL_BUSINESS_PERMISSION_REQUIRED", text)
+            self.assertIn("HTTP 403", text)
+        self.assertIn("Do not delete or replace the token", skill_text)
+        self.assertIn("do not retry the request", skill_text)
+        self.assertIn("Keep the token file", reference_text)
+
     def test_credentials_are_not_tracked(self) -> None:
         tracked = subprocess.run(
             ["git", "ls-files"],
