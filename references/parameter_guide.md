@@ -286,7 +286,7 @@ Use this endpoint to query multiple candidate hotels under one shared stay and p
 | `children` | integer | no; per room |
 | `children_ages` | integer[] | no; one 0–17 age per child in one room |
 
-The server uses a fixed four-worker pool and preserves input order. Do not wrap this endpoint in another client-side concurrency pool. Top-level `ok=true` means the batch completed; inspect each item independently. Abbreviated response:
+Within each request, the server uses a fixed four-worker pool and preserves input order. A client may run up to three `batch_query_room_rates` requests concurrently when multiple batches are required; never exceed three concurrent requests. Each request still accepts at most 20 hotel IDs. Top-level `ok=true` means the batch completed; inspect each item independently. Abbreviated response:
 
 ```json
 {
@@ -301,7 +301,7 @@ The server uses a fixed four-worker pool and preserves input order. Do not wrap 
 }
 ```
 
-`matched` counts hotels with products, `empty` counts successful `no_matching_live_room` results, and `failed` counts per-hotel errors. Keep successful items when another item fails. Each successful item may include that hotel's read-only `web_url`.
+`matched` counts hotels with products, `empty` counts successful `no_matching_live_room` results, and `failed` counts per-hotel errors. The documented rate-query `reason` codes apply to each `data.results[]` item independently. Keep successful items when another item fails. Each successful item may include that hotel's read-only `web_url`.
 
 ### `POST /skill/tob/check_room_availability`
 
@@ -353,7 +353,7 @@ There is no custom return URL. Return `pay_url` to the user. For Stripe, also sh
 Use all candidates needed for a fair top-five choice; do not merely display the first five cached-price rows.
 
 1. Preserve the complete original `search_hotels` candidate pool. Exclude search-level hard failures, including explicit radius and star constraints, only from the recommendation pool; record all failed hard constraints on the original candidate.
-2. Call `batch_query_room_rates` once for the remaining candidates, with at most 20 hotel IDs. Process each item independently and retain partial successes.
+2. Split the remaining candidates into batches of at most 20 hotel IDs and call `batch_query_room_rates`. Run one request when one batch is sufficient; when multiple batches are required, run no more than three requests concurrently. Process each item independently and retain partial successes.
 3. Filter products by occupancy, room count, strict budget, requested room/meal and other hard fields.
 4. Drop candidates with no matching live product only from the recommendation pool; retain their identifiers and `no matching live product` status in the original pool.
 5. Treat `is_on_request=true` as supplier-confirmation inventory, not immediate availability. Exclude it when the user explicitly requires immediately bookable or real-time available inventory; otherwise rank it after `is_on_request=false` and use the localized label equivalent of `Inventory requires supplier confirmation`.
@@ -427,7 +427,7 @@ Guest names should match identification documents. The service handles Chinese a
 Before booking, confirm:
 
 - exact hotel and room product;
-- dates, occupancy and room count;
+- dates, adults per room, children per room, every child's age per room, and room count;
 - latest checked total/currency, cancellation policy and availability;
 - hotel `checkin.begin_time` and `checkout.time`, or the localized equivalent of `Not provided by the hotel` if either field is absent;
 - explicit `hotel.fees.mandatory` content, or the localized equivalent of `The hotel did not return any additional mandatory fee information.`;
@@ -449,6 +449,8 @@ Common order statuses:
 
 ## Errors and performance
 
+The `reason` codes in the table below apply to `query_room_rates` responses and individual `batch_query_room_rates.data.results[]` items. Process batch item reasons independently; an item-level error does not make the whole batch unsuccessful. `invalid_request` may also be returned as a top-level error when the entire single-hotel or batch request is malformed.
+
 | Error/symptom | Required handling |
 |---|---|
 | `unauthorized` / HTTP 401 | Delete the token file, display the required sign-in/token/registration guidance from `SKILL.md`, and request a replacement token |
@@ -464,4 +466,4 @@ Common order statuses:
 | Rate check failed | Re-run availability once for the selected rate; if still failed, report it |
 | Booking creation failed | Report the error; do not retry with guessed guest/order data |
 
-Use `batch_query_room_rates` for multi-hotel rate retrieval, with at most 20 hotels per request. Keep booking, cancellation and payment operations sequential and explicitly confirmed.
+Use `batch_query_room_rates` for multi-hotel rate retrieval, with at most 20 hotels per request and at most three concurrent batch requests per client. Keep booking, cancellation and payment operations sequential and explicitly confirmed.

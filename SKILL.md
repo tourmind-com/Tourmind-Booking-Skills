@@ -207,7 +207,7 @@ Region and nearby `search_hotels` calls return at most 20 candidates that have a
 2. Call `search_hotels` with the applicable hard search fields. Preserve the complete raw candidate pool and `distance_km` values so a later "show all" request can be fulfilled.
    - Preserve the top-level `web_url` and include it as a clickable read-only hotel-results link. Place the link guidance after the search-summary fields and before the first recommended hotel, with one blank line on each side. Tell the user to open a hotel detail page, click the copy button beside the desired room product, and send the copied product information back in the conversation so you can continue verification and booking. Do not expose the underlying token or alter the URL. The linked session only permits hotel lists, hotel details and room quotes; it does not permit verification, booking, payment, `/book/*`, order, finance or account-management pages.
 3. Exclude obvious hard-constraint failures from the recommendation/ranking pool, but retain them in the raw pool with every failed constraint recorded.
-4. Call `batch_query_room_rates` once with the remaining candidate IDs needed to rank the recommendation pool fairly; each request accepts at most 20 hotels and the server owns the four-worker concurrency. Use `query_room_rates` when only one hotel needs rates. Do not create another client-side request pool. Exclude candidates with no matching live product from recommendations, but retain their no-live-product status in the raw pool.
+4. Call `batch_query_room_rates` with the remaining candidate IDs needed to rank the recommendation pool fairly. Put at most 20 hotels in each request. When more than one batch is required, the client may run up to three `batch_query_room_rates` requests concurrently; never exceed three concurrent requests. The server still owns the four-worker concurrency within each batch. Use `query_room_rates` when only one hotel needs rates. Exclude candidates with no matching live product from recommendations, but retain their no-live-product status in the raw pool.
    - Read every batch item independently. A top-level successful batch may contain matched, empty, and failed hotel items; never discard successful items because another hotel failed.
    - Preserve each successful batch item's `data.web_url`, or the single-hotel response's top-level `web_url`, as that exact hotel's `hotel_web_url`. Never reuse the hotel-list `search_hotels.web_url` for an individual hotel.
    - `is_on_request=false` is immediately bookable inventory.
@@ -324,11 +324,11 @@ End with a clear next action: the user can choose a room for final availability 
 0. Complete inputs and resolve location/POI
 1. search_location / keyword search as needed
 2. search_hotels for up to 20 candidates
-3. batch_query_room_rates (or query_room_rates for one hotel) and rank verified candidates
+3. batch_query_room_rates in groups of up to 20 hotels, with at most 3 concurrent batch requests (or query_room_rates for one hotel), and rank verified candidates
 4. Present five hotels with hero images and match reasons
 5. On hotel selection, return hotel detail + room images + live quotes
 6. check_room_availability for the chosen rate
-7. Present the required final booking-confirmation template, including hotel check-in/out times, tax notice, explicit mandatory fees, customer-service contact and the latest checked price/policy
+7. Present the required final booking-confirmation template, including the complete per-room adult/child occupancy, children's ages, hotel check-in/out times, tax notice, explicit mandatory fees, customer-service contact and the latest checked price/policy
 8. Obtain the user's explicit confirmation plus full legal guest name and mandatory contact_email
 9. create_booking with the checked rate_code and checked total_price
 10. Return agent_ref_id and ask for Stripe, WeChat Pay, or Alipay
@@ -343,7 +343,7 @@ Before `create_booking`:
 - Require a plausible email format and confirm it belongs to the current booking context.
 - Use the `rate_code` and `total_price` returned by `check_room_availability`, not the earlier query price.
 
-For hotel check-in/out times, instructions and mandatory at-property fees, use the selected hotel's `get_hotel_detail` response. Show unavailable fields using the localized equivalent of `Not provided by the hotel` rather than guessing. If no explicit mandatory-fee content is returned, replace `{mandatory_fee_summary_or_fallback}` with the localized equivalent of `The hotel did not return any additional mandatory fee information.` Use the following English template as the canonical final-confirmation structure; translate all user-facing labels and guidance into the user's language while preserving the fields, values, Markdown structure, and confirmation semantics:
+For hotel check-in/out times, instructions and mandatory at-property fees, use the selected hotel's `get_hotel_detail` response. Show unavailable fields using the localized equivalent of `Not provided by the hotel` rather than guessing. If no explicit mandatory-fee content is returned, replace `{mandatory_fee_summary_or_fallback}` with the localized equivalent of `The hotel did not return any additional mandatory fee information.` Always render both occupancy rows in the template. When there are no children, show the localized equivalents of `0 children` and `Not applicable` rather than omitting the fields. Use the following English template as the canonical final-confirmation structure; translate all user-facing labels and guidance into the user's language while preserving the fields, values, Markdown structure, and confirmation semantics:
 
 ```markdown
 ### Please confirm your booking
@@ -355,7 +355,8 @@ For hotel check-in/out times, instructions and mandatory at-property fees, use t
 | Check-in date | {check_in_date} |
 | Check-out date | {check_out_date} |
 | Check-in / check-out time | Check-in from {checkin_begin_time_or_not_provided}; check-out by {checkout_time_or_not_provided} |
-| Guests | {guest_count} adults, {room_count} rooms |
+| Occupancy | {adults_per_room} adults and {children_per_room} children per room; {room_count} rooms |
+| Children's ages | {children_ages_per_room_or_not_applicable} per room |
 | Room price total | {checked_total_price} {currency} |
 | Cancellation policy | {checked_cancellation_policy} |
 | Availability | {checked_availability_status} |
@@ -378,6 +379,7 @@ Before cancellation, confirm the exact `agent_ref_id`. In availability cancellat
 ## Error and empty-result handling
 
 - Retry a transient network/server failure only when safe; if it still fails, quote the concrete error and stop.
+- The `reason` codes below apply to `query_room_rates` responses and to individual `batch_query_room_rates.data.results[]` items. For a batch, handle each item's `reason` independently; do not treat an item-level failure as a failure of the whole batch. `invalid_request` may also appear as a top-level error when the entire single-hotel or batch request is malformed.
 - Treat `reason=no_matching_live_room` as a successful business-empty result and suggest changing dates or occupancy.
 - Treat `hotel_not_found` as a missing or unavailable hotel, `upstream_timeout` as a temporary real-time pricing timeout, `upstream_error` or `hotel_detail_unavailable` as a service failure, and `invalid_request` as a request that must be corrected. Never describe timeout or service failure as no availability.
 - For fewer than five qualifying hotels, show the verified results and explain which hard constraint limited the list.
