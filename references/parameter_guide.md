@@ -454,6 +454,7 @@ The `reason` codes in the table below apply to `query_room_rates` responses and 
 | Error/symptom | Required handling |
 |---|---|
 | `unauthorized` / HTTP 401 | Delete the token file, display the required sign-in/token/registration guidance from `SKILL.md`, and request a replacement token |
+| `error_code=HOTEL_BUSINESS_PERMISSION_REQUIRED` / HTTP 403 | Stop the hotel workflow. State that hotel business access is not enabled for the user's TourMind account and ask them to contact their account administrator or TourMind support. Keep the token file; replacing the token does not grant the missing permission |
 | No search candidates | Report the exact constraint set; offer changes without applying them |
 | Candidates but no live products | State that hotels were found but none had matching live rooms |
 | `reason=no_matching_live_room` | Treat as a successful business-empty result and suggest changing dates or occupancy |

@@ -86,13 +86,14 @@ All endpoints use `POST` with JSON and require `token` from `{baseDir}/skill_tok
 | Start payment | `/skill/tob/pay_order` |
 
 Success: `{"ok": true, "data": {...}}`
-Failure: `{"ok": false, "error": "..."}`
+Failure: `{"ok": false, "error_code": "...", "error": "..."}`. `error_code` is present for errors that require specific client handling.
 
 Before calling an endpoint:
 
 1. Read `{baseDir}/skill_token.txt`.
 2. If it is absent or empty, do not call the API. Display the required access guidance below, ask the user to provide the newly created token, and save it to that file.
 3. If an HTTP 401 or an error containing `unauthorized` is returned, delete `{baseDir}/skill_token.txt`, stop the workflow, and display the same guidance before requesting a replacement token.
+4. If HTTP 403 with `error_code=HOTEL_BUSINESS_PERMISSION_REQUIRED` is returned, stop the hotel workflow and tell the user that hotel business access is not enabled for their TourMind account. Ask them to contact their account administrator or TourMind support to enable it. Do not delete or replace the token, and do not retry the request, because the token itself is valid.
 
 Required access guidance. The following English text is canonical source wording; translate it into the user's language while preserving both URLs and the distinction between business, developer, and individual users:
 
