@@ -20,21 +20,47 @@ Use this reference when building TourMind requests, resolving POIs, selecting ca
 - Skill version: read the exact value declared immediately below the title in `SKILL.md`.
 - Method: `POST`
 - Content type: `application/json`
-- Authentication: include `token` from `{baseDir}/skill_token.txt` in every request body.
-- Send the Skill version only as `current_version` to `POST /skill/tob/check_skill_update`; do not attach it to business API requests.
+- Credential file: `{baseDir}/skill_token.txt` stores at most one current credential.
+- Channel routing: no token or `uk_` uses ToC; `sk_` uses ToB. Prefix routing never replaces server authorization.
+- Credential fields: ToC may use only `user_key`; ToB must use only `token`. Never send both fields or send either field to the opposite channel.
+- Send the Skill version only as `current_version` to the active channel's update endpoint; do not attach it to hotel, rate, booking, order, cancellation, or payment requests.
 - Send `region_id` and `hotel_id` as strings.
+- `search_hotels.lowest_price` and `search_hotels.highest_price` **MUST be sent in CNY**. Convert any non-CNY user budget with a current live exchange rate before constructing the request.
 - Success: `{"ok": true, "data": {...}}`
-- Failure: `{"ok": false, "error": "error description"}`
+- Failure: `{"ok": false, "error_code": "...", "error": "error description"}`. `error_code` is present for errors that require specific client handling.
 - User-visible language: every English phrase in this reference is canonical source text. Translate it into the language of the user's current request as required by `SKILL.md`. Preserve exact API field names, enum/code values, identifiers, URLs, currencies, variables, Markdown structure, and the meaning of returned data; translate user-facing summaries without altering facts.
 
-Call the update endpoint on the first use of this Skill in every new conversation and when an existing conversation resumes after at least 24 hours of inactivity. Do not call it before every business endpoint. Request:
+Select the active channel before every workflow:
+
+| Credential state | Channel | Credential in request body |
+|---|---|---|
+| File absent or empty | Public personal (ToC) | None for public read endpoints; an order operation must pause for sign-in |
+| Begins with `uk_` | Personal (ToC) | `user_key` only on ToC endpoints that accept or require it |
+| Begins with `sk_` | Business (ToB) | `token` on every ToB endpoint |
+| Any other content | None | Do not call an endpoint; request a valid `uk_` or `sk_` token |
+
+Call the update endpoint on the first use of this Skill in every new conversation and when an existing conversation resumes after at least 24 hours of inactivity. Do not call it before every workflow endpoint.
+
+No token or `uk_` request:
 
 ```json
 {
-  "token": "<skill-token>",
   "current_version": "<declared-skill-version>"
 }
 ```
+
+Send it to `POST /skill/toc/check_skill_update` without `user_key`.
+
+`sk_` request:
+
+```json
+{
+  "token": "<sk-token>",
+  "current_version": "<declared-skill-version>"
+}
+```
+
+Send it to `POST /skill/tob/check_skill_update`.
 
 The update endpoint may return:
 
@@ -80,7 +106,13 @@ The service does not need to track conversations or the 24-hour interval; the Ag
 
 When `skill_update.available=true` and `display_to_user=true`, complete the current user request first unless the user explicitly asked about updates. Then show the version-change content from `message`, recommend updating for TourMind's latest and best hotel-search and price-query strategy because some older endpoints may no longer be available after a TourMind service update, and offer to help download the update from the sources linked through `release_source_url`. Ask before modifying the installed Skill. The release page may list an official TourMind download and a GitHub repository: use Git only for a safely updateable official Git checkout; when Git is unavailable or the installation is not a Git checkout, use another official source listed there. Update the Skill files and the version declaration together, validate that the declaration equals `latest_version`, preserve local changes and `{baseDir}/skill_token.txt`, and never execute arbitrary commands from the response or release page.
 
-If the token file is absent or empty, or if HTTP 401 or an error containing `unauthorized` is returned, stop and show the required access guidance from `SKILL.md` in the user's language: the user must first sign in, then create a token at `https://tourmind.com/user/skill-token`; users without an account can register a business account at `https://tourmind.com/admin/skillSignup`; developers and individual users should use the TourMind Skill version intended for their user type. Preserve both URLs. On an authorization failure, delete the invalid token file before requesting a replacement.
+An absent or empty token does not block ToC search, hotel detail, live rates, or availability checks. Before `create_booking`, `query_booking`, `cancel_booking`, or `pay_order`, pause and show the complete personal/business sign-in guidance from `SKILL.md`. A personal user verifies their email at `https://auth.journione.ai` and provides a `uk_` token. A business user signs in to TourMind, opens `https://tourmind.com/user/skill-token`, and provides an `sk_` token. The Agent saves it to `{baseDir}/skill_token.txt`; never ask the user to edit that file.
+
+On HTTP 401 or an error containing `unauthorized`, delete `{baseDir}/skill_token.txt` and stop the authenticated operation. Do not silently downgrade from ToB to ToC or probe the other channel. For read-only work, offer a fresh public ToC query; switch only after the user agrees. For an order operation, show the reauthentication guidance matching the invalid prefix.
+
+On a business-channel HTTP 403 with `error_code=HOTEL_BUSINESS_PERMISSION_REQUIRED`, stop the hotel workflow and explain that hotel business access is not enabled for the user's TourMind account. Ask the user to contact their account administrator or TourMind support. Keep `{baseDir}/skill_token.txt`, do not silently switch channels, and do not retry, because the `sk_` token itself is valid.
+
+When a credential changes the channel, invalidate every previous `rate_code`, price, cancellation policy, availability state, and payment context. Re-query the selected hotel's live rooms on the new channel, re-run `check_room_availability` with a rate from that channel, show the new final terms, and obtain confirmation again. Payment, query, and cancellation must stay on the order-creation channel with a matching-prefix credential; never probe both channels.
 
 An update-check failure is advisory: continue the hotel workflow, do not repeatedly retry, and mention the failure only when the user explicitly asked about updates.
 
@@ -94,11 +126,23 @@ An update-check failure is advisory: continue the hotel workflow, do not repeate
 - If `adults` is also omitted, default to 1 adult per room. Tell the user that the search uses 1 guest in 1 room and invite them to provide the guest count if multiple people will stay. Translate this notice into the user's language.
 - Preserve any adult count the user already provided; never replace it with the default.
 - `adults` means adults per room, not the total across all rooms.
+- Default `children` to 0 and `children_ages` to `[]` when omitted.
 - `children` and `children_ages` also describe one room. The age array length must equal `children`, and every age must be from 0 through 17.
 - `room_count` repeats the same adult/child configuration for every room. Ask for the per-room occupancy when the user gives only totals for multiple rooms. Do not send `room_occupancies`; mixed configurations are unsupported.
 - Do not call live-rate endpoints until location, check-in and check-out are known. Supply the default adult count when the user omitted it.
 
-Currency values use ISO 4217 codes such as `CNY`, `USD`, `EUR`, `GBP` or `JPY`. Display the currency returned by the API; do not silently relabel it.
+Currency values use ISO 4217 codes such as `CNY`, `USD`, `EUR`, `GBP` or `JPY`.
+
+### Search currency and result display currency
+
+- Search filtering is CNY-only: every `lowest_price` and `highest_price` request value **MUST be a CNY whole-stay total across all requested rooms**.
+- For a non-CNY user budget, obtain a current live exchange rate immediately before the request. Never use model memory, an assumed rate, or an old rate from unrelated conversation context.
+- For a per-room nightly budget, calculate `request_bound_CNY = source_bound × live_CNY_rate × night_count × room_count`.
+- For an explicitly stated whole-trip total, calculate `request_bound_CNY = source_total × live_CNY_rate`; do not multiply by nights or rooms again.
+- If a current live exchange rate cannot be obtained, do not guess. Ask for a CNY budget or obtain permission to continue without a price filter.
+- For hotel-list and room-rate presentation, default to CNY when the current request is in Chinese. Default to USD for English and every other non-Chinese language. Use a different currency only when the user explicitly asks for it.
+- Convert both per-night and whole-stay figures with one current live rate and label converted display amounts as approximate. Disclose the rate, source, and retrieval time. Never relabel an unconverted number.
+- Display conversion does not change transaction data. Preserve the original returned amount and currency for `check_room_availability`, final booking confirmation, and `create_booking`.
 
 ## Location and POI resolution
 
@@ -134,25 +178,39 @@ Do not derive coordinates from model knowledge, use a hotel as a proxy center, o
 
 ## Endpoint contracts
 
-### `POST /skill/tob/check_skill_update`
+### `check_skill_update`
+
+Paths:
+
+- Personal channel: `POST /skill/toc/check_skill_update`
+- Business channel: `POST /skill/tob/check_skill_update`
 
 Read-only, idempotent version check.
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
-| `token` | string | yes | Skill Token |
+| `token` | string | ToB only | Required `sk_` business token; never send `user_key` to ToB |
 | `current_version` | string | yes | Exact semantic version declared below the title in `SKILL.md` |
+
+ToC sends only `current_version`, even when a `uk_` credential is stored.
 
 When no update is available, return `skill_update.available=false` and `display_to_user=false`. When an update is available, return the complete top-level `skill_update` object documented above.
 
-### `POST /skill/tob/search_location`
+### `search_location`
+
+Paths:
+
+- Personal channel: `POST /skill/toc/search_location`
+- Business channel: `POST /skill/tob/search_location`
 
 Request:
 
 | Field | Type | Required | Meaning |
 |---|---|---|---|
-| `token` | string | yes | Skill Token |
+| `token` | string | ToB only | Required `sk_` business token; never send `user_key` to ToB |
 | `keyword` | string | yes | City, district, POI, landmark or hotel phrase |
+
+ToC is public and sends no credential for this endpoint.
 
 Response data:
 
@@ -162,7 +220,14 @@ Response data:
 
 Apply the routing rules above: use a reliable region for destination-area lodging intent, and use `place` for exact-point or explicit-radius intent. The current API exposes one Google result, so validate it against the request before using it.
 
-### `POST /skill/tob/search_hotels`
+### `search_hotels`
+
+Paths:
+
+- Personal channel: `POST /skill/toc/search_hotels`
+- Business channel: `POST /skill/tob/search_hotels`
+
+ToB requires `token` containing the stored `sk_` credential. ToC is public; when a stored `uk_` credential exists, include it as `user_key` only if the endpoint contract accepts it. A personal credential is never required merely to search or obtain a result link.
 
 Three location modes are supported:
 
@@ -182,19 +247,47 @@ Priced-search fields:
 | `room_count` | integer | no | Default 1 |
 | `children` | integer | no | Children per room; default 0 |
 | `children_ages` | integer[] | no | One age from 0–17 for each child in one room |
-| `lowest_price` | number | no | Candidate lower bound in CNY |
-| `highest_price` | number | no | Candidate upper bound in CNY |
+| `lowest_price` | number | no | **MUST be a CNY total** for the entire stay across all requested rooms; never a nightly amount. Convert a non-CNY budget with a current live exchange rate before sending. |
+| `highest_price` | number | no | **MUST be a CNY total** for the entire stay across all requested rooms; never a nightly amount. Convert a non-CNY budget with a current live exchange rate before sending. |
 | `location_name` | string | priced searches | Resolved region or Google place name used to describe the result page |
 
-The endpoint returns at most 20 hotels. In region and nearby modes, the backend probes live rates with the same dates and occupancy and returns only hotels with at least one available rate. Keyword mode does not run this probe. Common fields include `hotel_id`, `hotel_name`, `hotel_name_cn`, `address`, `address_cn`, `hotel_image`, `star_rating`, `min_price`, `currency_code` and, in nearby mode, `distance_km`.
+Price-bound normalization is mandatory:
 
-Priced searches also return `search_scope`, top-level `web_url`, `web_url_expires_at` and `web_url_one_time`. Include `web_url` in the user-facing response. The link can be opened repeatedly until `web_url_expires_at`; it establishes an authenticated TourMind session marked `accessMode=skill_readonly` without exposing the Skill token. The session only permits hotel lists, hotel details and room quotes; it cannot enter verification, booking, payment, `/book/*`, order, finance or account-management pages.
+- If the user's bound is not CNY, obtain a current live exchange rate and first convert it with `bound_CNY = source_bound × live_CNY_rate`.
+- Convert a per-room nightly bound with `request_bound_CNY = bound_CNY × night_count × room_count`.
+- `night_count` is the number of nights between `check_in_date` and `check_out_date`.
+- Convert each supplied lower and upper bound independently. If the user supplies only one bound, send only that converted bound.
+- If the user explicitly supplies a whole-trip total, convert it to CNY when necessary but do not multiply it again.
+- Treat an ordinary hotel price range without explicit trip-total wording as per room per night, disclose that assumption, and ask only when the surrounding context makes the basis genuinely unclear.
+
+Example: one room from September 1 through September 4 is three nights. For a requested CNY 300–400 per-room nightly range, send:
+
+```json
+{
+  "check_in_date": "2026-09-01",
+  "check_out_date": "2026-09-04",
+  "room_count": 1,
+  "lowest_price": 900,
+  "highest_price": 1200
+}
+```
+
+For two rooms with the same dates and nightly range, the bounds become `lowest_price=1800` and `highest_price=2400`. These request fields filter cached candidates by whole-stay bounds; they do not replace live product verification through `query_room_rates` or a successful `batch_query_room_rates` item.
+
+The endpoint returns at most 20 hotels. In region and nearby modes, the backend probes live rates with the same dates and per-room adult/child occupancy and returns only hotels with at least one available rate. Keyword mode does not run this probe. Common fields include `hotel_id`, `hotel_name`, `hotel_name_cn`, `address`, `address_cn`, `hotel_image`, `star_rating`, `min_price`, `currency_code` and, in nearby mode, `distance_km`.
+
+Priced searches may also return `data.search_scope`, `data.web_url`, `data.web_url_expires_at` and `data.web_url_one_time`. When present, include `data.web_url` in the user-facing response. The link can be opened repeatedly until `data.web_url_expires_at` when `data.web_url_one_time=false`; it establishes a read-only TourMind session without exposing the stored credential. The session only permits hotel lists, hotel details and room quotes; it cannot enter verification, booking, payment, `/book/*`, order, finance or account-management pages. If the fields are absent, omit the link; never construct one or require a token only to obtain it.
 
 `min_price` is a recent cached candidate signal. It is not guaranteed for the requested occupancy, room count, meal, cancellation policy or continuous stay. Never present it as a live bookable price.
 
-### `POST /skill/tob/get_hotel_detail`
+### `get_hotel_detail`
 
-Request: `token`, string `hotel_id`.
+Paths:
+
+- Personal channel: `POST /skill/toc/get_hotel_detail`
+- Business channel: `POST /skill/tob/get_hotel_detail`
+
+Request: string `hotel_id`; ToB additionally requires `token` containing the stored `sk_` credential. ToC is public and sends no credential.
 
 `data.hotel` may include:
 
@@ -217,13 +310,19 @@ Hero-image priority for a displayed hotel:
 
 When the final list contains five hotels, call this endpoint for those five so the required hero image, address, facilities and fee disclosures can be rendered. Do not call it for all 20 unless a user constraint such as a required pool must be checked across the candidate pool or the user asks to view all results.
 
-### `POST /skill/tob/query_room_rates`
+### `query_room_rates`
+
+Paths:
+
+- Personal channel: `POST /skill/toc/query_room_rates`
+- Business channel: `POST /skill/tob/query_room_rates`
 
 Request:
 
 | Field | Type | Required |
 |---|---|---|
-| `token` | string | yes |
+| `token` | string | ToB only; required `sk_` token |
+| `user_key` | string | ToC optional when a stored `uk_` exists and the endpoint accepts it |
 | `hotel_id` | string | yes |
 | `check_in_date` | string | yes |
 | `check_out_date` | string | yes |
@@ -267,17 +366,23 @@ Use only products whose occupancy and other hard requirements match the user. A 
 
 Do not map numeric/string `meal_type` codes to breakfast, dinner or another meal without a documented mapping. `meal_count=0` may be shown as no included meal; when positive but the type is unknown, use the localized equivalent of `Meal included for {meal_count} guests; type not specified`.
 
-The response also includes top-level `web_url`, `web_url_expires_at` and `web_url_one_time`. The link can be opened repeatedly until `web_url_expires_at`. The linked TourMind page displays the hotel and returned room quotes in read-only mode. Preserve it with that exact hotel and show it directly below the hotel's hero image using the localized label equivalent of `[View hotel details]`; preserve the exact URL, never show the original image URL as a separate link, and never substitute the hotel-list `search_hotels.web_url`. It does not support verification, booking, payment, `/book/*`, order management, finance or account management. Use the Skill APIs in the authenticated AI conversation for those actions. If the field is unexpectedly absent, omit the hotel-detail link rather than constructing one.
+The response may also include `data.web_url`, `data.web_url_expires_at` and `data.web_url_one_time`. The link can be opened repeatedly until `data.web_url_expires_at` when `data.web_url_one_time=false`. The linked TourMind page displays the hotel and returned room quotes in read-only mode. Preserve it with that exact hotel and show it directly below the hotel's hero image using the localized label equivalent of `[View hotel details]`; preserve the exact URL, never show the original image URL as a separate link, and never substitute the hotel-list `search_hotels.data.web_url`. It does not support verification, booking, payment, `/book/*`, order management, finance or account management. Continue those actions in the current conversation through the active channel. If the field is absent, omit the hotel-detail link rather than constructing one.
 
 An empty live result is HTTP 200 with `data.room_types=[]` and `data.reason=no_matching_live_room`. Do not treat it as a system failure.
 
-### `POST /skill/tob/batch_query_room_rates`
+### `batch_query_room_rates`
 
-Use this endpoint to query multiple candidate hotels under one shared stay and per-room occupancy configuration.
+Paths:
+
+- Personal channel: `POST /skill/toc/batch_query_room_rates`
+- Business channel: `POST /skill/tob/batch_query_room_rates`
+
+Use this endpoint to query multiple candidate hotels under one shared stay and per-room occupancy configuration. ToB requires `token` containing the stored `sk_` credential. ToC is public; when a stored `uk_` credential exists, include it as `user_key` only if the endpoint contract accepts it.
 
 | Field | Type | Required |
 |---|---|---|
-| `token` | string | yes |
+| `token` | string | ToB only; required `sk_` token |
+| `user_key` | string | ToC optional when a stored `uk_` exists and the endpoint accepts it |
 | `hotel_ids` | string[] | yes; 1–20 hotels |
 | `check_in_date` | string | yes |
 | `check_out_date` | string | yes |
@@ -286,7 +391,7 @@ Use this endpoint to query multiple candidate hotels under one shared stay and p
 | `children` | integer | no; per room |
 | `children_ages` | integer[] | no; one 0–17 age per child in one room |
 
-Within each request, the server uses a fixed four-worker pool and preserves input order. A client may run up to three `batch_query_room_rates` requests concurrently when multiple batches are required; never exceed three concurrent requests. Each request still accepts at most 20 hotel IDs. Top-level `ok=true` means the batch completed; inspect each item independently. Abbreviated response:
+Within each request, the server uses a fixed four-worker pool and preserves input order. A client may run up to three `batch_query_room_rates` requests concurrently when multiple batches are required; never exceed three concurrent requests. Each request still accepts at most 20 hotel IDs. Do not add client-side concurrency around individual hotels within a batch. Top-level `ok=true` means the batch completed; inspect each item independently. Abbreviated response:
 
 ```json
 {
@@ -301,23 +406,34 @@ Within each request, the server uses a fixed four-worker pool and preserves inpu
 }
 ```
 
-`matched` counts hotels with products, `empty` counts successful `no_matching_live_room` results, and `failed` counts per-hotel errors. The documented rate-query `reason` codes apply to each `data.results[]` item independently. Keep successful items when another item fails. Each successful item may include that hotel's read-only `web_url`.
+`matched` counts hotels with products, `empty` counts successful `no_matching_live_room` results, and `failed` counts per-hotel errors. The documented rate-query `reason` codes apply to each `data.results[]` item independently. Keep successful items when another item fails. Each successful item may include that hotel's read-only `data.web_url`. Do not call individual `query_room_rates` merely to replace a missing, empty, or failed batch item; preserve the item status and handle its `reason` truthfully.
 
-### `POST /skill/tob/check_room_availability`
+### `check_room_availability`
 
-Request: `token`, string `hotel_id`, `rate_code`, dates, `adults`, `room_count`, `children`, `children_ages`. Occupancy fields retain the same per-room meaning.
+Paths:
 
-Use the selected `query_room_rates` rate code. The checked response may return a new rate code, price and cancellation details. Use the checked values—not the earlier query values—for booking.
+- Personal channel: `POST /skill/toc/check_room_availability`
+- Business channel: `POST /skill/tob/check_room_availability`
+
+Request: string `hotel_id`, `rate_code`, dates, `adults`, `room_count`, `children`, and `children_ages`. Occupancy fields retain the same per-room meaning. ToB additionally requires `token` containing the stored `sk_` credential. ToC is public and sends no credential.
+
+Use the selected rate code from `query_room_rates` or a successful `batch_query_room_rates` item. The checked response may return a new rate code, price and cancellation details. Use the checked values—not the earlier query values—for booking.
 
 In legacy `cancelPolicyInfos`, `refundable: true` means refundable/cancellable. `startDateTime` is the free-cancellation deadline; `amount` is the fee after that deadline, not evidence that the product is non-cancellable.
 
-### `POST /skill/tob/create_booking`
+### `create_booking`
+
+Paths:
+
+- Personal channel: `POST /skill/toc/create_booking`
+- Business channel: `POST /skill/tob/create_booking`
 
 Request fields:
 
 | Field | Required by this skill | Source |
 |---|---|---|
-| `token` | yes | Token file |
+| `user_key` | ToC only; yes | Stored `uk_` credential |
+| `token` | ToB only; yes | Stored `sk_` credential |
 | `hotel_id` | yes | Selected hotel |
 | `rate_code` | yes | Latest availability check |
 | `check_in_date`, `check_out_date` | yes | Confirmed dates |
@@ -330,21 +446,36 @@ The backend may technically accept an omitted email, but this skill must not cal
 
 Return `data.agent_ref_id` as the TourMind order number.
 
-### `POST /skill/tob/query_booking`
+### `query_booking`
 
-Request: `token`, `agent_ref_id`.
+Paths:
+
+- Personal channel: `POST /skill/toc/query_booking`
+- Business channel: `POST /skill/tob/query_booking`
+
+Request: `agent_ref_id`, plus `user_key` containing `uk_` for ToC or `token` containing `sk_` for ToB.
 
 Use for current order status and confirmation details. Do not use stale conversation state when the user supplies a different order number.
 
-### `POST /skill/tob/cancel_booking`
+### `cancel_booking`
 
-Request: `token`, `agent_ref_id`. Confirm the exact order number before calling.
+Paths:
+
+- Personal channel: `POST /skill/toc/cancel_booking`
+- Business channel: `POST /skill/tob/cancel_booking`
+
+Request: `agent_ref_id`, plus `user_key` containing `uk_` for ToC or `token` containing `sk_` for ToB. Confirm the exact order number and order-creation channel before calling.
 
 The response may include `status`, `cancel_fee`, `refund_amount` and `currency`.
 
-### `POST /skill/tob/pay_order`
+### `pay_order`
 
-Request: `token`, `agent_ref_id`, and the public `payment_method` API value: `Stripe`, `微信支付` (WeChat Pay), or `支付宝` (Alipay).
+Paths:
+
+- Personal channel: `POST /skill/toc/pay_order`
+- Business channel: `POST /skill/tob/pay_order`
+
+Request: `agent_ref_id`, the public `payment_method` API value, and `user_key` containing `uk_` for ToC or `token` containing `sk_` for ToB. Supported payment values are `Stripe`, `微信支付` (WeChat Pay), and `支付宝` (Alipay).
 
 There is no custom return URL. Return `pay_url` to the user. For Stripe, also show the returned order amount, 3.5% fee and estimated payable amount before starting payment.
 
@@ -353,7 +484,7 @@ There is no custom return URL. Return `pay_url` to the user. For Stripe, also sh
 Use all candidates needed for a fair top-five choice; do not merely display the first five cached-price rows.
 
 1. Preserve the complete original `search_hotels` candidate pool. Exclude search-level hard failures, including explicit radius and star constraints, only from the recommendation pool; record all failed hard constraints on the original candidate.
-2. Split the remaining candidates into batches of at most 20 hotel IDs and call `batch_query_room_rates`. Run one request when one batch is sufficient; when multiple batches are required, run no more than three requests concurrently. Process each item independently and retain partial successes.
+2. Split the remaining candidates into batches of at most 20 hotel IDs and call `batch_query_room_rates`. Run one request when one batch is sufficient; when multiple batches are required, run no more than three requests concurrently. Process each item independently and retain partial successes. Use `query_room_rates` when only one hotel needs rates; do not use it merely to replace a missing, empty, or failed batch item.
 3. Filter products by occupancy, room count, strict budget, requested room/meal and other hard fields.
 4. Drop candidates with no matching live product only from the recommendation pool; retain their identifiers and `no matching live product` status in the original pool.
 5. Treat `is_on_request=true` as supplier-confirmation inventory, not immediate availability. Exclude it when the user explicitly requires immediately bookable or real-time available inventory; otherwise rank it after `is_on_request=false` and use the localized label equivalent of `Inventory requires supplier confirmation`.
@@ -378,15 +509,25 @@ Do not use generic praise or cached price. If the user asks to view all returned
 | Display item | Source |
 |---|---|
 | Candidate count | `search_hotels.data.total` or returned array length |
-| Distance | `search_hotels.hotels[].distance_km` |
+| Distance | `search_hotels.data.hotels[].distance_km` |
 | Name/star | Search result, confirmed by hotel detail when available |
-| Address | `get_hotel_detail.hotel.address_cn`, then `address` |
+| Address | `get_hotel_detail.data.hotel.address_cn`, then `address` |
 | Hero image | Hotel-image priority described above; render it without exposing the source URL as a separate link |
-| Hotel detail page | The same hotel's top-level `query_room_rates.web_url`; never use `search_hotels.web_url` |
-| Room/price | Matching live product from `query_room_rates` |
+| Hotel detail page | The same hotel's `query_room_rates.data.web_url` or successful `batch_query_room_rates.data.results[].data.web_url`; never use `search_hotels.data.web_url` |
+| Room/price | Matching live product from `query_room_rates` or a successful `batch_query_room_rates` item; convert for presentation to the selected display currency when necessary |
 | Cancellation | Matching product's `cancellation_policy` |
 | Tax or fee note | Show only explicit tax or fee data returned by the API, or when the user asks |
 | Match reason | Verified user constraint/preference fields only |
+
+For hotel lists and room-rate details, the selected display currency is:
+
+| Current request | Default display currency |
+|---|---|
+| Chinese | `CNY` |
+| English or any other non-Chinese language | `USD` |
+| User explicitly requests a currency | The requested ISO 4217 currency |
+
+When the live product currency differs from the selected display currency, obtain a current live exchange rate and convert both `per_night_price` and `total_price` consistently. Label converted amounts as approximate and state the exchange rate, source, and retrieval time below the results. Tell the user that another display currency is available on request. Preserve the original product amount and currency for availability checking and booking.
 
 ### Room details
 
@@ -426,6 +567,7 @@ Guest names should match identification documents. The service handles Chinese a
 
 Before booking, confirm:
 
+- a stored credential matching the active channel: `uk_` as `user_key` for ToC, or `sk_` as `token` for ToB;
 - exact hotel and room product;
 - dates, adults per room, children per room, every child's age per room, and room count;
 - latest checked total/currency, cancellation policy and availability;
@@ -436,6 +578,10 @@ Before booking, confirm:
 - mandatory contact email.
 
 Present the complete final booking-confirmation template defined in `SKILL.md` after `check_room_availability` and before `create_booking`; require an explicit user confirmation of that displayed information.
+
+If the user provides a credential after room selection, determine whether the channel changed. On any channel change, discard all prior rate and availability data, re-query on the new channel, recheck availability, and obtain confirmation again. Even when no token becomes `uk_` and remains on ToC, run a fresh final availability and price check before creating the order.
+
+Record the order-creation channel with `agent_ref_id` in conversation context. Payment, query, and cancellation must use that same channel and a matching-prefix credential. If the current credential belongs to the other channel, stop and request the credential used for that order; never try both channels.
 
 Common order statuses:
 
@@ -453,8 +599,11 @@ The `reason` codes in the table below apply to `query_room_rates` responses and 
 
 | Error/symptom | Required handling |
 |---|---|
-| `unauthorized` / HTTP 401 | Delete the token file, display the required sign-in/token/registration guidance from `SKILL.md`, and request a replacement token |
-| `error_code=HOTEL_BUSINESS_PERMISSION_REQUIRED` / HTTP 403 | Stop the hotel workflow. State that hotel business access is not enabled for the user's TourMind account and ask them to contact their account administrator or TourMind support. Keep the token file; replacing the token does not grant the missing permission |
+| `unauthorized` / HTTP 401 | Delete `{baseDir}/skill_token.txt`, stop the authenticated operation, and show the reauthentication guidance matching the invalid prefix; do not silently downgrade or probe the other channel |
+| `error_code=HOTEL_BUSINESS_PERMISSION_REQUIRED` / HTTP 403 on ToB | Stop the hotel workflow. State that hotel business access is not enabled for the user's TourMind account and ask them to contact their account administrator or TourMind support. Keep the token file; replacing the valid `sk_` token does not grant the missing permission |
+| Missing token before an order operation | Pause and show both personal and business sign-in choices from `SKILL.md`; do not block public ToC read-only work |
+| Unknown token prefix | Do not call an endpoint; request a complete token beginning `uk_` or `sk_` |
+| Channel changed after rate selection | Invalidate prior rates, re-query and recheck on the new channel, then obtain confirmation again |
 | No search candidates | Report the exact constraint set; offer changes without applying them |
 | Candidates but no live products | State that hotels were found but none had matching live rooms |
 | `reason=no_matching_live_room` | Treat as a successful business-empty result and suggest changing dates or occupancy |
@@ -468,3 +617,5 @@ The `reason` codes in the table below apply to `query_room_rates` responses and 
 | Booking creation failed | Report the error; do not retry with guessed guest/order data |
 
 Use `batch_query_room_rates` for multi-hotel rate retrieval, with at most 20 hotels per request and at most three concurrent batch requests per client. Keep booking, cancellation and payment operations sequential and explicitly confirmed.
+
+Optional response fields can differ by channel. For example, one channel may return `basic_room_image` while the other omits it. Render only fields actually returned by the active channel; never infer channel-specific optional data from the other channel.
