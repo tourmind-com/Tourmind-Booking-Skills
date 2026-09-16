@@ -19,7 +19,7 @@
 
 <div align="center">
   <a href="https://tourmind.com/skills">製品ページ</a> |
-  <a href="https://auth.journione.ai">Token を取得</a> |
+  <a href="https://tourmind.com/admin/skillSignup">Token を取得</a> |
   <a href="https://tourmind.com">会社サイト</a>
 </div>
 
@@ -110,14 +110,14 @@ TourMind Booking Skills を導入してください。Skill リポジトリ：gi
 ### またはコマンドを1つ実行
 
 ```bash
-npx skills add tourmind-com/tourmind-booking-skills
+npx skills add tourmind-com/tourmind-booking-skills --all
 ```
 
-インストーラーは、ホテル用の `tourmind-booking` と航空券用の `flight-booking-ai` という2つの独立した Skill を検出します。表示される案内に従って両方を選択してください。選択画面を省略し、検出されたすべての Agent クライアントに両方の Skill をインストールする場合のみ、コマンドの末尾に `--all` を追加します。
+このコマンドは選択画面を省略し、ホテル用の `tourmind-booking` と航空券用の `flight-booking-ai` の両方を、検出されたすべての Agent クライアントにインストールします。
 
 ホテルの検索・比較と空港検索には Token は必要ありません。リアルタイムの航空券検索・料金確認、および実際の予約、予約状況の確認、決済には Token が必要です。
 
-TourMind アカウントをお持ちの場合は、アカウントの [Skill Token](https://tourmind.com/user/skill-token) を利用できます。開発者と個人ユーザーは [auth.journione.ai](https://auth.journione.ai) で利用可能な Token を取得できます。信頼できる Agent に、非公開の会話でのみ送信してください。
+TourMind アカウントをお持ちの場合は、アカウントの [Skill Token](https://tourmind.com/user/skill-token) を利用できます。アカウントをお持ちでない場合は、[TourMind アカウントと Token を申請](https://tourmind.com/admin/skillSignup)してください。信頼できる Agent に、非公開の会話でのみ送信してください。
 
 ```text
 AI Skill で以下の TourMind Skill Token を使用してください：
@@ -230,7 +230,7 @@ Agent がインストール済みの各 Skill 用に Token を保存・設定し
 ## ヘルプとサポート
 
 - 製品ページ：[tourmind.com/skills](https://tourmind.com/skills)
-- 開発者・個人ユーザー向け Token：[auth.journione.ai](https://auth.journione.ai)
+- TourMind アカウントと Token の申請：[TourMind 申請ページ](https://tourmind.com/admin/skillSignup)
 - GitHub サポート：[Issue を作成](https://github.com/tourmind-com/Tourmind-Booking-Skills/issues)
 - ホテルサポート：[hotel@tourmind.com](mailto:hotel@tourmind.com)
 - 航空券カスタマーサービス（24時間年中無休）：[flightcs1@tourmind.com](mailto:flightcs1@tourmind.com)

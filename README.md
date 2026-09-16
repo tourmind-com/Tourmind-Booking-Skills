@@ -19,7 +19,7 @@
 
 <div align="center">
   <a href="https://tourmind.com/skills">Product Page</a> |
-  <a href="https://auth.journione.ai">Get a Token</a> |
+  <a href="https://tourmind.com/admin/skillSignup">Get a Token</a> |
   <a href="https://tourmind.com">Company</a>
 </div>
 
@@ -110,14 +110,14 @@ Please help me install TourMind Booking Skills. Skill repository: git@github.com
 ### Or run one command
 
 ```bash
-npx skills add tourmind-com/tourmind-booking-skills
+npx skills add tourmind-com/tourmind-booking-skills --all
 ```
 
-The installer detects two separate Skills: `tourmind-booking` for hotels and `flight-booking-ai` for flights. Select both when prompted. If you intentionally want to skip the prompts and install both Skills to every detected Agent client, add `--all` to the command.
+This command installs both Skills—`tourmind-booking` for hotels and `flight-booking-ai` for flights—to all detected Agent clients without additional selection prompts.
 
 You can search and compare hotels, and look up airports, without a Token. A Token is required for live flight search and verification, and for any real booking, order, or payment action.
 
-If you already have a TourMind account, you can use its [Skill Token](https://tourmind.com/user/skill-token). Developers and individual users can get a compatible Token at [auth.journione.ai](https://auth.journione.ai). Send it only to your trusted Agent in a private conversation:
+If you already have a TourMind account, you can use its [Skill Token](https://tourmind.com/user/skill-token). If you do not have an account, [sign up for a TourMind account and Token](https://tourmind.com/admin/skillSignup). Send it only to your trusted Agent in a private conversation:
 
 ```text
 Please use the following TourMind Skill Token when calling the AI Skills:
@@ -230,7 +230,7 @@ The flight Skill currently supports airport lookup, live flight search and verif
 ## Help and support
 
 - Product page: [tourmind.com/skills](https://tourmind.com/skills)
-- Token for developers and individual users: [auth.journione.ai](https://auth.journione.ai)
+- Get a TourMind account and Token: [TourMind sign-up](https://tourmind.com/admin/skillSignup)
 - GitHub support: [open an issue](https://github.com/tourmind-com/Tourmind-Booking-Skills/issues)
 - Hotel support: [hotel@tourmind.com](mailto:hotel@tourmind.com)
 - Flight customer service (24/7): [flightcs1@tourmind.com](mailto:flightcs1@tourmind.com)

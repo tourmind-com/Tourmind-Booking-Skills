@@ -19,7 +19,7 @@
 
 <div align="center">
   <a href="https://tourmind.com/skills">产品页面</a> |
-  <a href="https://auth.journione.ai">获取 Token</a> |
+  <a href="https://tourmind.com/admin/skillSignup">获取 Token</a> |
   <a href="https://tourmind.com">公司官网</a>
 </div>
 
@@ -110,14 +110,14 @@ TourMind Booking Skills 支持 ChatGPT（Work / Codex 模式）、Claude Code、
 ### 或者使用一条命令安装
 
 ```bash
-npx skills add tourmind-com/tourmind-booking-skills
+npx skills add tourmind-com/tourmind-booking-skills --all
 ```
 
-安装器会识别两个独立 Skill：酒店使用 `tourmind-booking`，机票使用 `flight-booking-ai`。按照提示同时选中两个即可。如果你确定要跳过选择，并将两个 Skill 安装到所有已检测到的 Agent 客户端，可以在命令末尾添加 `--all`。
+该命令会跳过选择，将酒店 `tourmind-booking` 和机票 `flight-booking-ai` 两个 Skill 安装到所有已检测到的 Agent 客户端。
 
 搜索和比较酒店、查询机场不需要 Token。机票实时搜索和验价，以及任何真实预订、订单或支付操作都需要 Token。
 
-如果你已有 TourMind 账号，可以使用账号中的 [Skill Token](https://tourmind.com/user/skill-token)。开发者和个人用户也可以前往 [auth.journione.ai](https://auth.journione.ai) 获取兼容的 Token。请只在私密对话中发送给你信任的 Agent：
+如果你已有 TourMind 账号，可以使用账号中的 [Skill Token](https://tourmind.com/user/skill-token)。如果还没有账号，请前往 [TourMind 账号及 Token 申请页面](https://tourmind.com/admin/skillSignup)。请只在私密对话中发送给你信任的 Agent：
 
 ```text
 请使用以下 TourMind Skill Token 调用 AI Skill：
@@ -230,7 +230,7 @@ Agent 会自动为已安装的 Skill 保存并配置 Token，你不需要自己�
 ## 帮助与支持
 
 - 产品页面：[tourmind.com/skills](https://tourmind.com/skills)
-- 开发者与个人用户获取 Token：[auth.journione.ai](https://auth.journione.ai)
+- 申请 TourMind 账号和 Token：[TourMind 申请页面](https://tourmind.com/admin/skillSignup)
 - GitHub 支持：[提交 Issue](https://github.com/tourmind-com/Tourmind-Booking-Skills/issues)
 - 酒店支持：[hotel@tourmind.com](mailto:hotel@tourmind.com)
 - 机票 24 小时客服：[flightcs1@tourmind.com](mailto:flightcs1@tourmind.com)
