@@ -4,9 +4,9 @@ Read this reference after an authentication rejection, but only after excluding 
 
 ## Clear the rejected credential and stop
 
-Immediately clear the rejected `{baseDir}/skill_token.txt` value and remove it from reusable request headers or client state. Stop the affected operation and do not retry it automatically. Do not print any credential while reading, clearing, or saving it.
+Immediately clear the rejected credential from the recorded `{credentialFile}` from which it was loaded, whether that is the flight Skill's file or the sibling hotel Skill's file, and remove it from reusable request headers or client state. Stop the affected operation and do not retry it automatically. Do not print any credential while reading, clearing, or saving it.
 
-Never reuse the rejected credential, send an empty or guessed header, silently switch channels, change the API host or endpoint, or search another installation, workspace, archive, backup, environment variable, shell history, previous message, or account for replacement credentials. A request to hurry, accept risk, change the itinerary, or “try once” does not authorize another call with the rejected token.
+Never reuse the rejected credential, send an empty or guessed header, silently switch channels, change the API host or endpoint, or fall back to the other Skill's Token during the same recovery attempt. Do not search another installation, workspace, archive, backup, environment variable, shell history, previous message, or account for replacement credentials. A request to hurry, accept risk, change the itinerary, or “try once” does not authorize another call with the rejected Token.
 
 Public airport lookup remains available without a token. A public lookup or Skill update check does not prove flight authorization and does not resume the failed protected operation.
 
@@ -14,7 +14,7 @@ Public airport lookup remains available without a token. A public lookup or Skil
 
 Direct a personal-channel user to <https://auth.journione.ai> to obtain a new `uk_` token. Direct a business-channel user to <https://tourmind.com/user/skill-token> to obtain a new `sk_` token; if they do not have a business account, provide <https://tourmind.com/admin/skillSignup>. If the rejected credential's channel is unknown, present both choices without selecting one for the user.
 
-When the user supplies a complete replacement beginning `uk_` or `sk_`, save it securely to `{baseDir}/skill_token.txt` without echoing it. The prefix selects the channel, but receiving or saving the token does not prove authorization and does not by itself authorize any endpoint call.
+When the user supplies a complete replacement beginning `uk_` or `sk_`, save it securely to `{baseDir}/skill_token.txt` without echoing it. The current flight Skill file becomes the primary shared credential because it is checked first. The prefix selects the channel, but receiving or saving the Token does not prove authorization and does not by itself authorize any endpoint call.
 
 Do not invent a validation endpoint, call a server-internal verifier, or automatically issue a protected request solely because the replacement was saved. The replacement may be used for the next protected operation only when the user explicitly requests or approves that operation and its normal input validation, quotation freshness, channel, review, and confirmation requirements are satisfied. If the user explicitly asks to test the replacement, use only a documented read-only protected operation with complete valid inputs; never use `create_booking` or `create_payment` as a credential test.
 

@@ -18,7 +18,7 @@ User turns:
 
 Acceptance criteria:
 
-- Immediately remove A from `{baseDir}/skill_token.txt` and reusable headers, then stop the failed search.
+- Immediately remove A from the recorded source file from which it was loaded—either the flight Skill's file or the sibling hotel Skill's file—and from reusable headers, then stop the failed search.
 - Turns 1–4 produce zero protected calls. Changed criteria, urgency, or risk acceptance do not authorize reuse of A.
 - Do not search other installations, backups, environment variables, history, or accounts for credentials.
 - Turn 5 may call only public `search_airports`, without a Token.
@@ -97,10 +97,27 @@ User turns:
 Acceptance criteria:
 
 - In both response branches, `code == 20105` takes precedence over the HTTP status and message text.
-- Keep B in `{baseDir}/skill_token.txt` and reusable headers. Do not enter authentication recovery or ask for another Token.
+- Keep B in its recorded source file and reusable headers. Do not enter authentication recovery or ask for another Token.
 - Stop the permission-gated booking workflow and use the business-flight-permission template. Do not expose the raw code or message to the user.
 - Turns 1–3 produce zero protected retries, Token replacements, credential probes, or silent channel switches.
 - Turn 4 may perform one normal user-requested flight-price search with B after validating complete inputs; it does not authorize verification or booking.
 - After turn 5, do not replay the failed verification or any booking/payment creation. With the user's explicit request, run a new live search and then apply the normal verification, review, and confirmation requirements.
 - A generic 403, a text-only permission-like message, or `code == 20105` on an unexpected personal channel does not justify claiming this exact ToB entitlement state. Handle it under the applicable generic business-error rule without silently switching channels.
 - An ordinary authentication rejection without ToB `code == 20105` still clears the rejected credential under Sequences A–C.
+
+## Sequence F: shared Token discovery
+
+Run each branch before any authentication rejection is known:
+
+1. The flight Skill's `skill_token.txt` is absent or empty, while the sibling hotel Skill contains credential A.
+2. The hotel Skill's `skill_token.txt` is absent or empty, while the sibling flight Skill contains credential B.
+3. Both Token files are absent or empty.
+4. The current Skill's Token file is absent or empty and the sibling Skill directory is not installed.
+
+Acceptance criteria:
+
+- Branches 1–2 use the sibling credential without copying or displaying it and do not show Token application guidance.
+- The current Skill's non-empty Token always takes precedence over the sibling file.
+- Branches 3–4 follow the normal no-Token behavior and show the appropriate application guidance only when a protected operation requires authentication.
+- Discovery is limited to the two sibling Skill directories; do not scan other installations, workspaces, backups, environment variables, logs, or history.
+- If a sibling credential is rejected, clear its actual source file and do not fall back to the other file during that recovery attempt.

@@ -50,6 +50,11 @@ class RepositoryStructureTests(unittest.TestCase):
             versions.add(frontmatter_value(frontmatter, "version"))
         self.assertEqual(len(versions), 1)
 
+    def test_flight_metadata_has_no_client_specific_token_environment(self) -> None:
+        frontmatter = read_frontmatter(SKILLS_ROOT / "flight-booking-ai" / "SKILL.md")
+        self.assertNotIn("openclaw:", frontmatter)
+        self.assertNotIn("primaryEnv:", frontmatter)
+
     def test_local_markdown_references_exist(self) -> None:
         link_pattern = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
         for skill_name in EXPECTED_SKILLS:
