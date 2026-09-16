@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from scripts.validate_booking import (
+from scripts.validate_hotel_booking import (
     detect_kind,
     validate_booking_response,
     validate_detail_response,

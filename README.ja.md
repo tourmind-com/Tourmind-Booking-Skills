@@ -113,6 +113,8 @@ TourMind Booking Skills を導入してください。Skill リポジトリ：gi
 npx skills add tourmind-com/tourmind-booking-skills
 ```
 
+インストーラーは、ホテル用の `tourmind-booking` と航空券用の `flight-booking-ai` という2つの独立した Skill を検出します。表示される案内に従って両方を選択してください。選択画面を省略し、検出されたすべての Agent クライアントに両方の Skill をインストールする場合のみ、コマンドの末尾に `--all` を追加します。
+
 ホテルの検索・比較と空港検索には Token は必要ありません。リアルタイムの航空券検索・料金確認、および実際の予約、予約状況の確認、決済には Token が必要です。
 
 TourMind アカウントをお持ちの場合は、アカウントの [Skill Token](https://tourmind.com/user/skill-token) を利用できます。開発者と個人ユーザーは [auth.journione.ai](https://auth.journione.ai) で利用可能な Token を取得できます。信頼できる Agent に、非公開の会話でのみ送信してください。

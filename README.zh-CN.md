@@ -113,6 +113,8 @@ TourMind Booking Skills 支持 ChatGPT（Work / Codex 模式）、Claude Code、
 npx skills add tourmind-com/tourmind-booking-skills
 ```
 
+安装器会识别两个独立 Skill：酒店使用 `tourmind-booking`，机票使用 `flight-booking-ai`。按照提示同时选中两个即可。如果你确定要跳过选择，并将两个 Skill 安装到所有已检测到的 Agent 客户端，可以在命令末尾添加 `--all`。
+
 搜索和比较酒店、查询机场不需要 Token。机票实时搜索和验价，以及任何真实预订、订单或支付操作都需要 Token。
 
 如果你已有 TourMind 账号，可以使用账号中的 [Skill Token](https://tourmind.com/user/skill-token)。开发者和个人用户也可以前往 [auth.journione.ai](https://auth.journione.ai) 获取兼容的 Token。请只在私密对话中发送给你信任的 Agent：

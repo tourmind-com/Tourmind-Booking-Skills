@@ -113,6 +113,8 @@ Ayúdame a instalar TourMind Booking Skills. Repositorio del Skill: git@github.c
 npx skills add tourmind-com/tourmind-booking-skills
 ```
 
+El instalador detecta dos Skills independientes: `tourmind-booking` para hoteles y `flight-booking-ai` para vuelos. Selecciona ambos cuando se te indique. Si quieres omitir las preguntas e instalar deliberadamente los dos Skills en todos los agentes detectados, añade `--all` al final del comando.
+
 Puedes buscar y comparar hoteles, y consultar aeropuertos, sin Token. Se necesita un Token para buscar y verificar vuelos en tiempo real y para cualquier operación real de reserva, consulta del estado o pago.
 
 Si ya tienes una cuenta de TourMind, puedes usar el [Skill Token](https://tourmind.com/user/skill-token) de tu cuenta. Los desarrolladores y usuarios particulares pueden obtener un Token compatible en [auth.journione.ai](https://auth.journione.ai). Envíalo únicamente a un agente de confianza y en una conversación privada:

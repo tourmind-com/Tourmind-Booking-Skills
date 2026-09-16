@@ -1,10 +1,12 @@
 skill_token.txt
+user_key.txt
 __pycache__/
 *.py[cod]
 .DS_Store
 
 # Local review and validation artifacts; not part of the installable skill.
 SKILL.zh-CN.md
+SKILL.unified.zh-CN.draft.md
 EVAL_GUIDE.md
 TEST_REPORT.md
 evals/
