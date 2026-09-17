@@ -2,11 +2,11 @@
 
 <h1 style="border-bottom: none">
   <b><a href="https://tourmind.com/skills">TourMind Booking Skills</a></b><br />
-  <strong>Let Your Agent Book Hotels Worldwide</strong>
+  <strong>Let Your Agent Search and Book Hotels & Flights Worldwide</strong>
 </h1>
 
-<a href="https://tourmind.com/user/skill-token">
-  <img alt="TourMind Booking Skills — Get Your Token" src="https://skilloss.tourmind.com/skills/tourmind-booking/v1/hero/tourmind-booking-skills.png" style="width: 100%" />
+<a href="https://tourmind.com/skills">
+  <img alt="TourMind Booking Skills" src="https://skilloss.tourmind.com/skills/tourmind-booking/v1/hero/tourmind-booking-skills.png" style="width: 100%" />
 </a>
 
 <br />
@@ -19,13 +19,13 @@
 
 <div align="center">
   <a href="https://tourmind.com/skills">Product Page</a> |
-  <span>Live Demo</span> |
+  <a href="https://tourmind.com/admin/skillSignup">Get a Token</a> |
   <a href="https://tourmind.com">Company</a>
 </div>
 
 <br />
 
-[![ClawHub installs](https://img.shields.io/badge/ClawHub_installs-1.4k-F97316)](https://clawhub.ai/tourmind/skills/hotel-booking-ai)
+[![ClawHub installs](https://img.shields.io/badge/ClawHub_installs-2.1k-F97316)](https://clawhub.ai/tourmind/skills/hotel-booking-ai)
 [![Release](https://img.shields.io/github/v/release/tourmind-com/Tourmind-Booking-Skills?label=release)](https://github.com/tourmind-com/Tourmind-Booking-Skills/releases/latest)
 [![License](https://img.shields.io/github/license/tourmind-com/Tourmind-Booking-Skills)](LICENSE)
 
@@ -42,9 +42,11 @@
 
 <br />
 
-Turn any AI agent into an end-to-end hotel booking assistant—search global inventory, compare live rates across leading OTAs and hotel suppliers, verify availability, and complete booking, payment, cancellation, and order management in one conversation with TourMind.
+Give your AI Agent end-to-end hotel booking and worldwide flight search and booking capabilities. Without leaving your preferred Agent client, you can search global hotel and flight inventory, compare live prices from leading OTAs and suppliers, verify availability and final prices, and use TourMind Booking Skills to complete bookings and payments and check order status.
 
-## Demo
+## Hotel Skill demo
+
+The examples below show the hotel Skill experience.
 
 ### 1. Search live hotels
 
@@ -58,7 +60,7 @@ Turn any AI agent into an end-to-end hotel booking assistant—search global inv
 
 <div align="center">
   <a href="https://skilloss.tourmind.com/skills/tourmind-booking/v1/demo/detail-en.gif">
-    <img src="https://skilloss.tourmind.com/skills/tourmind-booking/v1/demo/detail-en.gif" alt="TourMind room detail demo" width="720" />
+    <img src="https://skilloss.tourmind.com/skills/tourmind-booking/v1/demo/detail-en.gif" alt="TourMind room comparison demo" width="720" />
   </a>
 </div>
 
@@ -66,144 +68,174 @@ Turn any AI agent into an end-to-end hotel booking assistant—search global inv
 
 <div align="center">
   <a href="https://skilloss.tourmind.com/skills/tourmind-booking/v1/demo/pay-en.gif">
-    <img src="https://skilloss.tourmind.com/skills/tourmind-booking/v1/demo/pay-en.gif" alt="TourMind rate verification and payment demo" width="720" />
+    <img src="https://skilloss.tourmind.com/skills/tourmind-booking/v1/demo/pay-en.gif" alt="TourMind hotel rate verification and payment demo" width="720" />
   </a>
 </div>
 
-## Core capabilities
+## What you can do
 
-- Resolve cities, hotels, landmarks, stations, addresses, ski areas, and other POIs without inventing coordinates.
-- Search up to 20 hotel candidates, query matching live room products, and select the five best verified options.
-- Compare live nightly and stay-total rates across leading OTAs and hotel suppliers, including cancellation and inventory status.
-- Return hotel and room images, facilities, beds, meals, fees, and evidence-based match reasons.
-- Recheck the selected room's price and availability before booking.
-- Create bookings, query and cancel orders, and start Stripe, WeChat Pay, or Alipay payments.
-- Provide expiring, repeatable, read-only result links without exposing the Skill Token.
+- **Hotels:** Search worldwide hotel inventory, compare live rooms and prices, view photos, facilities, meals and cancellation terms, recheck availability, and manage booking, payment and cancellation.
+- **Flights:** Find airports and live one-way, round-trip or multi-city flights; compare schedules, cabins, connections, baggage and total prices; then recheck a selected fare and continue to booking, order lookup and payment.
+- **Complete trip planning:** Ask your Agent to plan an itinerary and search both flights and hotels around your dates, budget and preferences.
+- **Safer transactions:** Searching never creates an order. Before creating a hotel or flight booking, cancelling an eligible hotel booking, or starting a payment, the Agent shows the important details and waits for your explicit confirmation.
+- **Natural conversation:** Speak to the Agent in your preferred language instead of filling out complicated search forms.
 
-## Supported AI clients
+## Supported Agent clients
 
-| Client | Support |
-|---|---|
-| WorkBuddy | Install or import this repository as a user Skill |
-| OpenAI Codex | Install from the Skills interface or a supported local skills directory |
-| Claude Code | Install as a personal Skill under `~/.claude/skills` |
-| Agent Skills-compatible clients | Compatible when the client can load a root `SKILL.md` and make outbound HTTPS `POST` requests |
-| MCP-capable AI clients | Use the companion [TourMind Booking MCP](https://github.com/tourmind-com/Tourmind-Booking-MCP) package |
-
-## Install in 1 minute
-
-1. Sign in to your TourMind account, then create a Skill Token at [tourmind.com/user/skill-token](https://tourmind.com/user/skill-token). If you do not have an account, register for a business account at [Business account registration](https://tourmind.com/admin/skillSignup). Developers and individual users should use the TourMind Skill version intended for their user type instead.
-
-2. In your AI client's Skills interface, install or import this GitHub repository:
-
-   ```text
-   https://github.com/tourmind-com/Tourmind-Booking-Skills.git
-   ```
-
-   If your client installs Skills from the filesystem, clone the repository into its personal skills directory:
-
-   ```bash
-   CLIENT_SKILLS_DIR="<your-client-skills-directory>"
-   mkdir -p "$CLIENT_SKILLS_DIR"
-   git clone https://github.com/tourmind-com/Tourmind-Booking-Skills.git "$CLIENT_SKILLS_DIR/tourmind-booking"
-   ```
-
-   Common personal Skill locations:
-
-   | Client | Directory |
-   |---|---|
-   | WorkBuddy | `~/.workbuddy/skills` |
-   | OpenAI Codex | Use the Skills interface or the local directory supported by your Codex version |
-   | Claude Code | `~/.claude/skills` |
-
-3. In the installed `tourmind-booking` folder, create `skill_token.txt` and paste only the raw Token into it. On macOS or Linux, restrict access:
-
-   ```bash
-   chmod 600 skill_token.txt
-   ```
-
-Reload Skills or restart the AI client, then ask for a hotel. No local MCP server is required; this Skill calls the TourMind API directly over HTTPS.
-
-Never commit `skill_token.txt`. It is excluded by `.gitignore`.
-
-## Example prompts
-
-These examples combine the agent's own research and itinerary-planning abilities with TourMind's live hotel search, rate verification, booking, payment, and order-management workflow.
-
-```text
-I’m planning a four-night trip for two to Osaka (Japan) from April 9 to April 13, 2027, flying in and out of Kansai International Airport. We want one or two days of sea fishing around Osaka Bay or Awaji Island and will not rent a car. First use your own web research and itinerary-planning abilities to compare practical fishing areas, seasonal considerations, licensed charter options, and public-transport times, then propose a relaxed day-by-day itinerary. For the best base, use TourMind to search live hotel inventory. Keep the average room price under JPY 18,000 per night; prefer a twin room near a station, practical early-morning transport to the fishing meeting point, free cancellation, and breakfast when it fits the departure time. Show the five best verified options with room photos, total stay price and currency, taxes and fees when returned, cancellation terms, breakfast, the transfer plan to the fishing point, key trade-offs, and a repeatable result link. Do not book yet.
-```
-
-```text
-Plan a six-night ski trip to the Dolomites (Italy) for two adults from February 6 to February 12, 2027. We will arrive at Venice Marco Polo Airport, will not drive, and are intermediate skiers. First compare Cortina d’Ampezzo, Val Gardena, and Alta Badia for airport transfers, ski terrain, dining, and value, then recommend the best base and a realistic day-by-day plan. Use TourMind to find available hotels averaging no more than EUR 250 per night, preferably within a 10-minute walk or shuttle ride of a lift, with ski storage, breakfast, free cancellation, and a sauna if possible. Return the five best verified live options with room and bed type, photos, nightly and stay-total prices, cancellation deadlines, meals, inventory status, distance to the lift, and any constraint each option misses. After I choose one, recheck its live price and availability, summarize the exact final amount and policy, and wait for my explicit confirmation before booking or starting payment.
-```
-
-```text
-Use the second hotel from the comparison. Show the hotel details and every currently bookable room product that fits two adults, including room photos, bed type, meals, cancellation policy, on-request status, nightly price, and total price. Recommend the best-value rate and explain why. Then recheck that exact rate. If anything changed, show the old and new values clearly; otherwise give me the final booking summary and ask for confirmation. Do not create the booking or payment until I explicitly say “confirm booking.”
-```
-
-```text
-Look up my booking using agent reference ID <AGENT_REF_ID>. Explain the current booking and payment status in plain language. If it is cancellable, show the cancellation deadline, penalty, and expected refundable amount before doing anything. Cancel only after I explicitly confirm, then query the booking again and show the final status. Never expose my Skill Token in the response or result link.
-```
-
-## Workflow
-
-```text
-Location or POI
-  → search_location
-  → search_hotels (up to 20 candidates)
-  → query_room_rates (live products for eligible candidates)
-  → rank and present the five best verified hotels
-  → get_hotel_detail + room images and quotes
-  → check_room_availability for the selected rate
-  → create_booking after explicit confirmation
-  → pay_order / query_booking / cancel_booking as requested
-```
-
-Cached `search_hotels.min_price` is only a candidate signal. User-visible prices come from `query_room_rates`, and the final booking uses the latest values returned by `check_room_availability`.
-
-## Token and security
-
-- All ToB Skill API calls require the Skill Token stored locally in `skill_token.txt`.
-- Keep the token out of prompts, logs, screenshots, URLs, commits, and issue reports.
-- Restrict the token file to the current user with `chmod 600`.
-- On HTTP 401 or an `unauthorized` response, remove the invalid local token. To replace it, sign in to your TourMind account and create a Skill Token at [tourmind.com/user/skill-token](https://tourmind.com/user/skill-token). If you do not have an account, register for a business account at [Business account registration](https://tourmind.com/admin/skillSignup). Developers and individual users should use the Skill version intended for their user type.
-- Result `web_url` sessions are read-only and can be opened repeatedly until they expire; they cannot verify rates, book, pay, cancel, or access account and finance pages.
-- Booking, cancellation, and payment remain explicit user-confirmed actions inside the authenticated AI conversation.
+TourMind Booking Skills can be used with ChatGPT (Work or Codex mode), Claude Code, WorkBuddy, QClaw, Marvis, OpenClaw, Kimi Work, Doubao Work Mode, Qwen Work Mode, Hermes, Cursor, and other Agent clients that support Skills.
 
 ## Choose the right TourMind integration
 
-| Audience | Integration | Authentication model | Repository |
+This Skill repository combines hotel and flight support for both personal (ToC) and business (ToB) users. MCP packages use a different structure, so choose the option that matches your use case.
+
+| Integration | Users | Capabilities | Repository |
 |---|---|---|---|
-| Consumer / ToC | Direct HTTP Skill | Public search and availability; `user_key` only for order operations | [Hotel Booking AI](https://github.com/tourmind-com/Hotel-Booking-AI) |
-| Business / ToB | Direct HTTP Skill | Skill Token required for every API call | **[TourMind Booking Skill](https://github.com/tourmind-com/Tourmind-Booking-Skills)** |
-| Consumer / ToC | MCP package + companion Skill | Public MCP connection; `user_key` only for order operations | [Hotel Booking AI MCP](https://github.com/tourmind-com/Hotel-Booking-AI-MCP) |
-| Business / ToB | MCP package + companion Skill | Bearer-authenticated MCP connection | [TourMind Booking MCP](https://github.com/tourmind-com/Tourmind-Booking-MCP) |
+| TourMind Booking Skills | ToC and ToB | Hotel and flight Skills | **[This repository](https://github.com/tourmind-com/Tourmind-Booking-Skills)** |
+| Hotel MCP — Personal (ToC) | ToC | Hotel search and booking for personal users | [Hotel Booking AI MCP](https://github.com/tourmind-com/Hotel-Booking-AI-MCP) |
+| Hotel MCP — Business (ToB) | ToB | Hotel search and booking for business users | [TourMind Booking MCP](https://github.com/tourmind-com/Tourmind-Booking-MCP) |
+| Flight MCP — Personal and Business | ToC and ToB | One flight MCP shared by personal and business users | [Flight Booking AI MCP](https://github.com/tourmind-com/flight-booking-ai-mcp.git) |
 
-## API and support
+## Install in 1 minute
 
-**API base URL:** `https://api.tourmind.com`
+Choose either of the following methods.
 
-| Endpoint | Purpose |
-|---|---|
-| `POST /skill/tob/check_skill_update` | Check for a Skill update |
-| `POST /skill/tob/search_location` | Resolve a region, POI, or hotel |
-| `POST /skill/tob/search_hotels` | Search hotel candidates |
-| `POST /skill/tob/get_hotel_detail` | Get hotel details and images |
-| `POST /skill/tob/query_room_rates` | Get live rooms and rates |
-| `POST /skill/tob/check_room_availability` | Recheck the selected rate and inventory |
-| `POST /skill/tob/create_booking` | Create a confirmed booking |
-| `POST /skill/tob/query_booking` | Query an order |
-| `POST /skill/tob/cancel_booking` | Cancel an order after confirmation |
-| `POST /skill/tob/pay_order` | Start payment after confirmation |
+### Ask your Agent to install it
 
-- Request fields and response contracts: [references/parameter_guide.md](references/parameter_guide.md)
-- Skill Token: sign in, then visit [tourmind.com/user/skill-token](https://tourmind.com/user/skill-token). If you do not have an account, register for a business account at [Business account registration](https://tourmind.com/admin/skillSignup). Developers and individual users should use the Skill version intended for their user type.
+Copy and send this message to your Agent:
+
+```text
+Please help me install TourMind Booking Skills. Skill repository: git@github.com:tourmind-com/Tourmind-Booking-Skills.git.
+```
+
+### Or run one command
+
+```bash
+npx skills add tourmind-com/tourmind-booking-skills --all
+```
+
+This command installs both Skills—`tourmind-booking` for hotels and `flight-booking-ai` for flights—to all detected Agent clients without additional selection prompts.
+
+You can search and compare hotels, and look up airports, without a Token. A Token is required for live flight search and verification, and for any real booking, order, or payment action.
+
+If you already have a TourMind account, you can use its [Skill Token](https://tourmind.com/user/skill-token). If you do not have an account, [sign up for a TourMind account and Token](https://tourmind.com/admin/skillSignup). Send it only to your trusted Agent in a private conversation:
+
+```text
+Please use the following TourMind Skill Token when calling the AI Skills:
+<YOUR_SKILL_TOKEN>
+
+This Token is only for TourMind AI Skill authentication. Do not expose the complete Token in public conversations, public code repositories, or shared documents.
+```
+
+The Agent will save and configure the Token for the installed Skills. You do not need to create or edit a Token file yourself.
+
+After installation, simply ask the Agent to find a hotel, search for a flight, or plan both together.
+
+## Try these prompts
+
+### Search for a hotel
+
+```text
+Find a hotel in Tokyo for two adults from December 9 to December 13, 2026. We want a twin room near a convenient station, an average price below JPY 18,000 per night, free cancellation, and breakfast if possible. Show me the five best live options with room photos, total stay price, meals, cancellation terms, and the main trade-offs. Do not book yet.
+```
+
+### Search for a flight
+
+```text
+Find round-trip flights from Shanghai to Tokyo for two adults, departing December 9 and returning December 13, 2026. Economy Class, preferably nonstop. Compare the available options by total price, departure and arrival times, airports, connections, duration, and baggage. Show the checked-baggage allowance for each option and highlight any that include at least one checked bag per person. Do not book yet.
+```
+
+### Plan flights and a hotel together
+
+```text
+Plan a five-day Osaka trip for two people. First compare practical round-trip flights, then find a well-located hotel that fits our dates and budget. Explain the best flight-and-hotel combinations and show the expected flight and hotel costs separately. Let me choose before you book anything.
+```
+
+### Continue with a hotel you like
+
+```text
+I like the hotel near Shinjuku Station that you just recommended. Please check which twin rooms are still available, then recheck the best-value option and show me the final price, meals, and cancellation terms. Tell me what information you need from me next and wait for my confirmation before booking.
+```
+
+### Continue with a flight you like
+
+```text
+The morning nonstop flight you just showed me works best. Please recheck its latest total price, then summarize the itinerary and checked-baggage allowance. Tell me which passenger and contact details you need, show me the complete booking summary, and wait for my confirmation before booking it.
+```
+
+### Check an order
+
+```text
+Please check the hotel or flight booking we just made and explain its current status. If it can still be paid, show me the available payment methods and final amount first, then wait for my confirmation before continuing.
+```
+
+## Booking workflows
+
+The Agent handles these steps inside the conversation. You do not need to call APIs or manage local files yourself.
+
+### Hotel search and booking
+
+```text
+Destination, dates, occupancy, room count, budget and preferences
+  → Resolve the location, POI or exact hotel (search_location / keyword search)
+  → Search up to 20 candidate hotels (search_hotels)
+  → Batch-check live rooms and stay totals (batch_query_room_rates; query_room_rates for one hotel)
+  → Rank and show up to five verified hotels
+  → Show the selected hotel's details, room images and live room options (get_hotel_detail + room-rate query)
+  → Review mandatory fees from the hotel details, then recheck the chosen room's final price, availability and cancellation terms (check_room_availability)
+  → If an order action requires authentication, configure the Token; refresh room rates first if the channel changes, then always repeat the final price and availability check with the new Token
+  → Provide the guest's full legal name and contact email
+  → Show the complete booking summary and wait for explicit confirmation
+  → Create the hotel booking (create_booking)
+  → Query the booking on request; start payment or cancel an eligible hotel booking only after separate explicit confirmation (query_booking / pay_order / cancel_booking)
+```
+
+The cached candidate price from `search_hotels` is only an initial signal. User-visible bookable prices come from the live room-rate query, and the booking uses the latest values returned by `check_room_availability`. Selecting a hotel or room does not confirm a booking. Payment and cancellation each require a separate review and confirmation. If Stripe is selected, the Agent first explains its additional 3.5% processing fee and that the charged fee is non-refundable.
+
+### Flight search and booking
+
+```text
+Route, dates, trip type, cabin, preferences and adult / child / infant counts
+  → Resolve airports and validate dates and passenger composition (search_airports)
+  → Configure the Token, then search live flights (search_flights)
+  → Compare up to the first 10 offers by schedule, airports, cabin, connections, baggage and total price
+  → Select a quotation before 20 minutes have elapsed since the search
+  → Recheck the selected flight and latest total (verify_offer)
+  → Provide passenger, travel-document and contact details
+  → Review the complete itinerary, price and traveller details, then explicitly confirm the booking
+  → Create the flight booking (create_booking)
+  → Query the order and continue only if it is still payable (query_order)
+  → Choose a payment method, review the complete payment summary and confirm payment separately
+  → Query the order again; only if it is unchanged and still payable, create one payment link (create_payment)
+  → Query the order or payment status as needed (query_order / query_payment)
+```
+
+Selecting a flight authorizes only the price recheck, not the booking. If the search criteria change or 20 minutes have passed since the search, the Agent requests approval for a new live search. A payment link is not proof of payment or ticket issuance. Stripe adds a separate 3.5% non-refundable processing fee; WeChat Pay, Alipay and Online Banking are available only for CNY orders.
+
+The flight Skill currently supports airport lookup, live flight search and verification, booking, order lookup, and third-party payment creation and lookup. It does not perform flight cancellation, changes, refund initiation, ancillary-service purchases or manual ticketing actions; contact flight customer service for those requests.
+
+## Token and security
+
+- The hotel and flight Skills use the same TourMind Skill Token. Each user only needs to obtain one Token; there is no need to apply twice.
+- When either installed Skill needs authentication, the Agent saves the same Token in that Skill's local `skill_token.txt`. Every ToB Skill API call must use the Token stored in its local file, and you do not need to create or edit the files yourself.
+- Never expose the complete Token in prompts, logs, screenshots, URLs, Git commits, or GitHub issues.
+- On macOS or Linux, the Agent runs `chmod 600 skill_token.txt` so only the current user can read or write the Token file.
+- If an authenticated request returns HTTP 401 or `unauthorized`, the Agent deletes the invalid local Token and stops the authenticated operation. A separate permission-not-enabled response is not treated as an invalid Token.
+- Returned hotel result pages are read-only and can be reopened until they expire.
+- Creating a hotel or flight booking, cancelling an eligible hotel booking, or starting a payment requires the user's explicit confirmation in an authenticated AI conversation.
+
+## FAQ
+
+[Common Questions About Using TourMind Skill](https://github.com/tourmind-com/Tourmind-Booking-Skills/issues/23#issue-5276313315)
+
+## Help and support
+
 - Product page: [tourmind.com/skills](https://tourmind.com/skills)
+- Get a TourMind account and Token: [TourMind sign-up](https://tourmind.com/admin/skillSignup)
 - GitHub support: [open an issue](https://github.com/tourmind-com/Tourmind-Booking-Skills/issues)
-- Hotel business inquiry: `hotel@tourmind.com`
-- Business cooperation: `bp@tourmind.com`
-- AI product cooperation: `ai@tourmind.com`
+- Hotel support: [hotel@tourmind.com](mailto:hotel@tourmind.com)
+- Flight customer service (24/7): [flightcs1@tourmind.com](mailto:flightcs1@tourmind.com)
+- Business cooperation: [bp@tourmind.com](mailto:bp@tourmind.com)
+- AI product cooperation: [ai@tourmind.com](mailto:ai@tourmind.com)
 
 ## License
 

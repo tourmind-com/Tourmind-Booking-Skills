@@ -1,0 +1,4 @@
+interface:
+  display_name: "Flight Booking AI"
+  short_description: "Search, verify, and book live flights"
+  default_prompt: "Use $flight-booking-ai to search for a flight and help me verify and book it."

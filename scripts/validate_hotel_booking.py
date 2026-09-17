@@ -2,11 +2,11 @@
 """Validate representative TourMind Skill API responses.
 
 Usage:
-    python3 scripts/validate_booking.py auto '<json_response>'
-    python3 scripts/validate_booking.py search '<json_response>'
-    python3 scripts/validate_booking.py rates '<json_response>'
-    python3 scripts/validate_booking.py detail '<json_response>'
-    python3 scripts/validate_booking.py booking '<json_response>'
+    python3 scripts/validate_hotel_booking.py auto '<json_response>'
+    python3 scripts/validate_hotel_booking.py search '<json_response>'
+    python3 scripts/validate_hotel_booking.py rates '<json_response>'
+    python3 scripts/validate_hotel_booking.py detail '<json_response>'
+    python3 scripts/validate_hotel_booking.py booking '<json_response>'
 
 The validator checks current ToB response shapes. It does not call live APIs or
 create bookings.

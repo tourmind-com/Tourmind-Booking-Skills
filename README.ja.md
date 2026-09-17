@@ -1,10 +1,52 @@
-# TourMind ホテル予約 Skill
+<div align="center">
 
-[English](README.md) | [简体中文](README.zh-CN.md) | [日本語](README.ja.md) | [Español](README.es.md)
+<h1 style="border-bottom: none">
+  <b><a href="https://tourmind.com/skills">TourMind Booking Skills</a></b><br />
+  <strong>AI Agent で世界中のホテルと航空券を検索・予約</strong>
+</h1>
 
-あらゆる AI エージェントをエンドツーエンドのホテル予約アシスタントに変えます。世界中のホテル在庫を検索し、主要 OTA とホテルサプライヤーのリアルタイム料金を比較し、空室を確認して、TourMind との1回の会話で予約、決済、キャンセル、注文管理まで完了できます。
+<a href="https://tourmind.com/skills">
+  <img alt="TourMind Booking Skills" src="https://skilloss.tourmind.com/skills/tourmind-booking/v1/hero/tourmind-booking-skills.png" style="width: 100%" />
+</a>
 
-## デモ
+<br />
+
+<p align="center">
+  お客様をスマートな旅へ
+</p>
+
+<br />
+
+<div align="center">
+  <a href="https://tourmind.com/skills">製品ページ</a> |
+  <a href="https://tourmind.com/admin/skillSignup">Token を取得</a> |
+  <a href="https://tourmind.com">会社サイト</a>
+</div>
+
+<br />
+
+[![ClawHub installs](https://img.shields.io/badge/ClawHub_installs-2.1k-F97316)](https://clawhub.ai/tourmind/skills/hotel-booking-ai)
+[![Release](https://img.shields.io/github/v/release/tourmind-com/Tourmind-Booking-Skills?label=release)](https://github.com/tourmind-com/Tourmind-Booking-Skills/releases/latest)
+[![License](https://img.shields.io/github/license/tourmind-com/Tourmind-Booking-Skills)](LICENSE)
+
+</div>
+
+<br />
+
+<div align="center">
+  <a href="README.md">English</a> |
+  <a href="README.zh-CN.md">简体中文</a> |
+  <a href="README.ja.md">日本語</a> |
+  <a href="README.es.md">Español</a>
+</div>
+
+<br />
+
+AI Agent に、ホテルの検索から予約までを完結できる機能と、世界中の航空券を検索・予約できる機能を追加します。普段お使いの Agent クライアントを離れることなく、世界中のホテルとフライトを検索し、主要な OTA やサプライヤーのリアルタイム料金を比較して、空室・空席状況と最終料金を確認できます。TourMind Booking Skills を通じて予約と決済を完了し、予約状況を確認できます。
+
+## ホテル Skill のデモ
+
+以下の GIF では、ホテル Skill の利用イメージをご覧いただけます。
 
 ### 1. リアルタイムでホテルを検索
 
@@ -18,7 +60,7 @@
 
 <div align="center">
   <a href="https://skilloss.tourmind.com/skills/tourmind-booking/v1/demo/detail-en.gif">
-    <img src="https://skilloss.tourmind.com/skills/tourmind-booking/v1/demo/detail-en.gif" alt="TourMind 客室詳細デモ" width="720" />
+    <img src="https://skilloss.tourmind.com/skills/tourmind-booking/v1/demo/detail-en.gif" alt="TourMind 客室比較デモ" width="720" />
   </a>
 </div>
 
@@ -26,144 +68,174 @@
 
 <div align="center">
   <a href="https://skilloss.tourmind.com/skills/tourmind-booking/v1/demo/pay-en.gif">
-    <img src="https://skilloss.tourmind.com/skills/tourmind-booking/v1/demo/pay-en.gif" alt="TourMind 料金確認・決済デモ" width="720" />
+    <img src="https://skilloss.tourmind.com/skills/tourmind-booking/v1/demo/pay-en.gif" alt="TourMind ホテル料金確認・決済デモ" width="720" />
   </a>
 </div>
 
 ## 主な機能
 
-- 都市、ホテル、ランドマーク、駅、住所、スキー場などの POI を、座標を推測せずに解決します。
-- 最大 20 件のホテル候補を検索し、条件に合うリアルタイム客室商品を照会して、検証済みの上位 5 件を選択します。
-- 主要 OTA とホテルサプライヤーの1泊料金、滞在合計、キャンセル条件、在庫状態をリアルタイムで比較します。
-- ホテル・客室画像、設備、ベッド、食事、料金情報、根拠に基づくおすすめ理由を返します。
-- 予約前に、選択した客室の料金と空室状況を再確認します。
-- 予約作成、注文照会・キャンセル、Stripe、WeChat Pay、Alipay の支払い開始に対応します。
-- Skill Token を公開せず、有効期限内に繰り返し開ける読み取り専用結果リンクを提供します。
+- **ホテル：** 世界中のホテルとリアルタイムの客室を検索し、料金、写真、設備、食事、キャンセル条件を比較できます。空室を再確認して、予約、決済、キャンセルまで進められます。
+- **航空券：** 空港を検索し、片道、往復、複数都市のフライトを比較できます。時刻、座席クラス、乗り継ぎ、手荷物、合計金額を確認し、選んだ運賃の再確認、予約、予約状況の確認、決済へ進められます。
+- **旅程をまとめて計画：** 日程、予算、希望に合わせて旅程を作り、航空券とホテルを一緒に探すよう Agent に依頼できます。
+- **安心できる取引：** 検索だけで予約が作成されることはありません。ホテルまたは航空券の予約、対象となるホテル予約のキャンセル、決済の前に、Agent が重要な内容を表示し、明示的な確認を待ちます。
+- **自然な会話：** 複雑な検索フォームを使わず、使い慣れた言語で希望を伝えられます。
 
-## 対応 AI クライアント
+## 対応 Agent クライアント
 
-| クライアント | 対応方法 |
-|---|---|
-| WorkBuddy | このリポジトリをユーザー Skill としてインストールまたはインポート |
-| OpenAI Codex | Skills 画面、または現在のバージョンが対応するローカル Skill ディレクトリからインストール |
-| Claude Code | `~/.claude/skills` に個人 Skill としてインストール |
-| Agent Skills 互換クライアント | ルートの `SKILL.md` を読み込み、HTTPS `POST` リクエストを送信できる場合に利用可能 |
-| MCP 対応 AI クライアント | 付属の [TourMind Booking MCP](https://github.com/tourmind-com/Tourmind-Booking-MCP) パッケージを使用 |
+TourMind Booking Skills は、ChatGPT（Work / Codex モード）、Claude Code、WorkBuddy、QClaw、Marvis、OpenClaw、Kimi Work、Doubao Work Mode、Qwen Work Mode、Hermes、Cursor、および Skill に対応するその他の Agent クライアントで利用できます。
+
+## 最適な TourMind 連携方法を選ぶ
+
+この Skill リポジトリは、ホテルと航空券について個人ユーザー（ToC）と法人ユーザー（ToB）の両方に対応しています。MCP は構成が異なるため、用途に合う接続先を選択してください。
+
+| 連携方法 | 対象ユーザー | 機能 | リポジトリ |
+|---|---|---|---|
+| TourMind Booking Skills | ToC・ToB | ホテル・航空券 Skills | **[このリポジトリ](https://github.com/tourmind-com/Tourmind-Booking-Skills)** |
+| ホテル MCP — 個人（ToC） | ToC | 個人ユーザー向けのホテル検索・予約 | [Hotel Booking AI MCP](https://github.com/tourmind-com/Hotel-Booking-AI-MCP) |
+| ホテル MCP — 法人（ToB） | ToB | 法人ユーザー向けのホテル検索・予約 | [TourMind Booking MCP](https://github.com/tourmind-com/Tourmind-Booking-MCP) |
+| 航空券 MCP — 個人・法人共通 | ToC・ToB | 個人・法人ユーザーで共用する航空券 MCP | [Flight Booking AI MCP](https://github.com/tourmind-com/flight-booking-ai-mcp.git) |
 
 ## 1分でインストール
 
-1. TourMind アカウントにログインし、[tourmind.com/user/skill-token](https://tourmind.com/user/skill-token) で Skill Token を作成します。アカウントがない場合は、[法人アカウント登録](https://tourmind.com/admin/skillSignup) を利用してください。開発者または個人ユーザーは、ユーザー種別に対応する TourMind Skill バージョンを使用してください。
+次のどちらかの方法を選んでください。
 
-2. AI クライアントの Skills 画面で、次の GitHub リポジトリをインストールまたはインポートします。
+### Agent にインストールを依頼
 
-   ```text
-   https://github.com/tourmind-com/Tourmind-Booking-Skills.git
-   ```
+次のメッセージをコピーして Agent に送信します。
 
-   クライアントがファイルシステムから Skill を読み込む場合は、個人 Skill ディレクトリにリポジトリをクローンします。
+```text
+TourMind Booking Skills を導入してください。Skill リポジトリ：git@github.com:tourmind-com/Tourmind-Booking-Skills.git。
+```
 
-   ```bash
-   CLIENT_SKILLS_DIR="<クライアントのSkillディレクトリ>"
-   mkdir -p "$CLIENT_SKILLS_DIR"
-   git clone https://github.com/tourmind-com/Tourmind-Booking-Skills.git "$CLIENT_SKILLS_DIR/tourmind-booking"
-   ```
+### またはコマンドを1つ実行
 
-   一般的な個人 Skill ディレクトリ：
+```bash
+npx skills add tourmind-com/tourmind-booking-skills --all
+```
 
-   | クライアント | ディレクトリ |
-   |---|---|
-   | WorkBuddy | `~/.workbuddy/skills` |
-   | OpenAI Codex | Skills 画面、または現在の Codex バージョンが対応するローカルディレクトリを使用 |
-   | Claude Code | `~/.claude/skills` |
+このコマンドは選択画面を省略し、ホテル用の `tourmind-booking` と航空券用の `flight-booking-ai` の両方を、検出されたすべての Agent クライアントにインストールします。
 
-3. インストールした `tourmind-booking` フォルダ内に `skill_token.txt` を作成し、Token 本体だけを貼り付けます。macOS または Linux ではアクセス権を制限します。
+ホテルの検索・比較と空港検索には Token は必要ありません。リアルタイムの航空券検索・料金確認、および実際の予約、予約状況の確認、決済には Token が必要です。
 
-   ```bash
-   chmod 600 skill_token.txt
-   ```
+TourMind アカウントをお持ちの場合は、アカウントの [Skill Token](https://tourmind.com/user/skill-token) を利用できます。アカウントをお持ちでない場合は、[TourMind アカウントと Token を申請](https://tourmind.com/admin/skillSignup)してください。信頼できる Agent に、非公開の会話でのみ送信してください。
 
-Skills を再読み込みするか AI クライアントを再起動して、ホテルを依頼します。ローカル MCP サーバーは不要で、この Skill は HTTPS で TourMind API を直接呼び出します。
+```text
+AI Skill で以下の TourMind Skill Token を使用してください：
+<YOUR_SKILL_TOKEN>
 
-`skill_token.txt` は絶対にコミットしないでください。このファイルは `.gitignore` で除外されています。
+この Token は TourMind AI Skill の認証専用です。公開チャット、公開コードリポジトリ、共有ドキュメントに Token 全文を記載しないでください。
+```
+
+Agent がインストール済みの各 Skill 用に Token を保存・設定します。ご自身で Token ファイルを作成・編集する必要はありません。
+
+インストール後は、ホテル探し、航空券検索、またはその両方を組み合わせた旅行計画を Agent に依頼してください。
 
 ## プロンプト例
 
-以下の例では、エージェント自身の調査・旅程作成能力と、TourMind のリアルタイムホテル検索、料金確認、予約、決済、注文管理を組み合わせています。
+### ホテルを検索
 
 ```text
-2名で、2027年4月9日から13日まで4泊の日本・大阪（Osaka）旅行を計画しています。関西国際空港を往復利用し、大阪湾または淡路島周辺で1～2日間の海釣りをしたいですが、レンタカーは使いません。まず、あなた自身のウェブ調査と旅程作成能力を使って、旅行者に現実的な釣りエリア、季節条件、適法なチャーター船や乗合船、公共交通の所要時間を比較し、無理のない日別プランを提案してください。そのうえで、最適な滞在拠点について TourMind でリアルタイムのホテル在庫を検索してください。平均1泊18,000円以内、ツインルーム、駅に近いこと、早朝に釣りの集合場所へ移動しやすいこと、無料キャンセルを優先し、朝食は出発時間に合う場合に希望します。検証済みの上位5軒について、客室写真、滞在合計と通貨、返された税・手数料、キャンセル条件、朝食、釣り場所への移動方法、主な長所と短所、繰り返し開ける結果リンクを表示してください。まだ予約はしないでください。
+2026年12月9日から13日まで、大人2名で東京に泊まるホテルを探してください。交通の便利な駅に近いツインルームで、平均1泊18,000円以下、無料キャンセルを優先し、できれば朝食付きが希望です。客室写真、滞在合計、食事、キャンセル条件、各候補の長所と短所を含めて、現在予約可能な上位5件を表示してください。まだ予約はしないでください。
 ```
+
+### 航空券を検索
 
 ```text
-大人2名で、2027年2月6日から12日まで6泊のイタリア・ドロミテ（Dolomites）スキー旅行を計画してください。ヴェネツィア・マルコポーロ空港に到着し、車は使わず、スキーレベルは中級です。まず、空港送迎、ゲレンデ、食事、費用対効果の観点から Cortina d’Ampezzo、Val Gardena、Alta Badia を比較し、最適な滞在拠点と現実的な日別プランを提案してください。次に TourMind を使い、平均1泊250ユーロ以下で、できればリフトまで徒歩またはシャトルで10分以内、スキー保管室、朝食、無料キャンセルがあり、可能ならサウナ付きの空室を検索してください。検証済みの上位5軒について、客室・ベッドタイプ、写真、1泊料金と滞在合計、キャンセル期限、食事、在庫状況、リフトまでの距離、満たしていない条件を表示してください。私が選んだ後、その客室の料金と空室を再確認し、正確な最終金額と条件をまとめ、明示的に確認するまで予約や決済を開始しないでください。
+2026年12月9日に上海から東京へ出発し、12月13日に東京から上海へ戻る大人2名の往復航空券を探してください。エコノミークラスで直行便を優先してください。利用可能なフライトを合計金額、出発・到着時刻、空港、乗り継ぎ回数、所要時間、手荷物条件で比較し、各候補の受託手荷物許容量と、1人1個以上を含む候補を示してください。まだ予約はしないでください。
 ```
+
+### 航空券とホテルをまとめて計画
 
 ```text
-比較結果の2番目のホテルを使ってください。ホテル詳細と、大人2名に適合する現在予約可能なすべての客室商品を、客室写真、ベッドタイプ、食事、キャンセル条件、リクエスト予約かどうか、1泊料金、滞在合計とともに表示してください。最も費用対効果の高い料金を推薦し、理由を説明してから、その正確な料金を再確認してください。変更があれば確認前後の値を明確に示し、変更がなければ最終予約内容をまとめて確認を求めてください。私が「予約を確定」と明示するまで、予約作成も決済開始もしないでください。
+2人で行く5日間の大阪旅行を計画してください。まず利用しやすい往復航空券を比較し、その後、日程と予算に合う便利な立地のホテルを探してください。おすすめの航空券とホテルの組み合わせを説明し、予想される航空券代とホテル代を別々に表示してください。何も予約せずに私の選択を待ってください。
 ```
+
+### 気に入ったホテルを詳しく確認
 
 ```text
-エージェント参照ID <AGENT_REF_ID> を使って予約を照会し、現在の予約状況と支払い状況を分かりやすく説明してください。キャンセル可能な場合は、操作する前にキャンセル期限、違約金、予想返金額を表示してください。私が明示的に確認した後にだけキャンセルし、その後もう一度予約を照会して最終状態を表示してください。回答や結果リンクに Skill Token を公開しないでください。
+先ほどおすすめしてくれた新宿駅近くのホテルが気に入りました。現在利用できるツインルームを確認し、最もお得なプランの最新料金、食事、キャンセル条件をもう一度確認してください。次に必要な情報を教えて、私が確認するまで予約しないでください。
 ```
 
-## ワークフロー
+### 気に入ったフライトを詳しく確認
 
 ```text
-場所または POI
-  → search_location
-  → search_hotels（最大 20 件）
-  → query_room_rates（対象候補のリアルタイム客室商品）
-  → 検証済み上位 5 ホテルを順位付けして表示
-  → get_hotel_detail + 客室画像と料金
-  → 選択料金に対して check_room_availability
-  → 明示的な確認後に create_booking
-  → 必要に応じて pay_order / query_booking / cancel_booking
+先ほど表示された午前出発の直行便が一番よさそうです。最新の合計金額を再確認してから、旅程と受託手荷物許容量をまとめてください。次に必要な搭乗者情報と連絡先情報を教え、予約内容をすべて表示して、私が確認するまで予約を確定しないでください。
 ```
 
-キャッシュされた `search_hotels.min_price` は候補選定用の参考値です。ユーザーに表示する料金は `query_room_rates` から取得し、予約には `check_room_availability` が返す最新の値を使用します。
+### 予約状況を確認
+
+```text
+先ほど予約したホテルまたは航空券の状況を確認して、現在の状態を分かりやすく説明してください。まだ支払い可能な場合は、利用できる決済方法と最終金額を先に表示し、私が確認するまで先へ進まないでください。
+```
+
+## 予約ワークフロー
+
+以下の手順は Agent が会話内で行います。ご自身で API を呼び出したり、ローカルファイルを管理したりする必要はありません。
+
+### ホテルの検索と予約
+
+```text
+目的地、日程、宿泊人数、客室数、予算、希望条件
+  → 都市、エリア、地点、または指定ホテルを特定（search_location / ホテル名検索）
+  → 最大20件の候補ホテルを検索（search_hotels）
+  → リアルタイムの客室と宿泊合計を一括確認（batch_query_room_rates、1軒の場合は query_room_rates）
+  → 検証済みホテルを順位付けし、最大5件を表示
+  → 選択したホテルの詳細、画像、リアルタイム客室を表示（get_hotel_detail + 客室料金照会）
+  → ホテル詳細の必須料金を確認してから、選択した客室の最終料金、空室、キャンセル条件を再確認（check_room_availability）
+  → 注文操作に認証が必要な場合は Token を設定し、チャネルが変わった場合は先に客室料金を再照会する。チャネル変更の有無にかかわらず、新しい Token で最終料金と空室を再確認する
+  → 宿泊者のパスポート等に記載された氏名と連絡先メールアドレスを提供
+  → 予約内容をすべて表示し、明示的な確認を待つ
+  → ホテル予約を作成（create_booking）
+  → ユーザーの依頼に応じて予約を照会し、決済または対象となるホテル予約のキャンセル前には、それぞれ明示的な確認を得る（query_booking / pay_order / cancel_booking）
+```
+
+`search_hotels` の候補料金は初期判断用です。ユーザーに表示する予約可能な料金はリアルタイムの客室料金照会から取得し、予約には `check_room_availability` の最新結果を使用します。ホテルや客室の選択は予約確認ではありません。決済とキャンセルには、それぞれ個別の内容確認と承認が必要です。Stripe を選択した場合、Agent は追加の3.5%処理手数料と、徴収後は返金されないことを事前に説明します。
+
+### 航空券の検索と予約
+
+```text
+経路、日程、旅程タイプ、座席クラス、希望条件、成人 / 子ども / 幼児の人数
+  → 空港を検索し、日付と旅客構成を確認（search_airports）
+  → Token を設定してリアルタイムのフライトを検索（search_flights）
+  → 上位10件の運賃を時刻、空港、座席クラス、乗り継ぎ、手荷物、合計金額で比較
+  → 検索結果の取得から20分未満のうちに運賃を選択
+  → 選択したフライトと最新合計金額を再確認（verify_offer）
+  → 搭乗者、渡航書類、連絡先情報を提供
+  → 旅程、料金、搭乗者情報をすべて確認し、予約を明示的に承認
+  → 航空券予約を作成（create_booking）
+  → 予約を照会し、まだ支払い可能な場合のみ続行（query_order）
+  → 決済方法を選び、決済内容をすべて確認して、決済を別途承認
+  → 予約を再照会し、内容が変わらず支払い可能な場合に限り、決済リンクを1回作成（create_payment）
+  → 必要に応じて予約または決済状況を照会（query_order / query_payment）
+```
+
+フライトの選択は料金の再確認を許可するだけで、予約の承認ではありません。検索条件が変わった場合、または検索結果の取得から20分以上経過した場合、Agent は同意を得てから新しく検索します。決済リンクは、支払い完了や発券完了の証明ではありません。Stripe には追加の3.5%の返金不可の処理手数料がかかります。WeChat Pay、Alipay、Online Banking は CNY の予約でのみ利用できます。
+
+航空券 Skill は現在、空港検索、リアルタイムのフライト検索・料金確認、予約、予約照会、第三者決済の作成・照会に対応しています。航空券のキャンセル、変更、返金申請、付帯サービスの購入、手動発券操作は行いません。これらについては航空券カスタマーサービスへお問い合わせください。
 
 ## Token とセキュリティ
 
-- すべての ToB Skill API 呼び出しには、ローカルの `skill_token.txt` に保存した Skill Token が必要です。
-- Token をプロンプト、ログ、スクリーンショット、URL、コミット、Issue に含めないでください。
-- `chmod 600` を使用して、Token ファイルを現在のユーザーだけが読み書きできるようにします。
-- HTTP 401 または `unauthorized` が返された場合は、無効なローカル Token を削除します。再発行するには TourMind アカウントにログインし、[tourmind.com/user/skill-token](https://tourmind.com/user/skill-token) で Skill Token を作成してください。アカウントがない場合は [法人アカウント登録](https://tourmind.com/admin/skillSignup) を利用し、開発者または個人ユーザーはユーザー種別に対応する Skill バージョンを使用してください。
-- 結果の `web_url` は読み取り専用で、有効期限までは繰り返し開けます。料金再確認、予約、決済、キャンセル、アカウント・財務ページへのアクセスはできません。
-- 予約、キャンセル、決済は、認証済み AI 会話内でユーザーが明示的に確認した場合のみ実行します。
+- ホテルと航空券の Skill は、同じ TourMind Skill Token を共有します。ユーザーごとに一度取得すればよく、個別に申請する必要はありません。
+- インストール済みのいずれかの Skill で認証が必要になると、Agent は同じ Token をその Skill のローカル `skill_token.txt` に保存します。すべての ToB Skill API 呼び出しでは、対応するローカルファイルに保存された Token を使用する必要があります。ファイルを自分で作成・編集する必要はありません。
+- Prompt、ログ、スクリーンショット、URL、Git コミット、Issue に Token 全文を記載しないでください。
+- macOS または Linux では、Agent が `chmod 600 skill_token.txt` を実行し、現在のユーザーだけが Token ファイルを読み書きできるようにします。
+- 認証済みリクエストが HTTP 401 または `unauthorized` を返した場合、Agent は無効なローカル Token を削除し、その認証操作を停止します。権限が未付与であることを示す別のレスポンスは、Token の無効として扱いません。
+- 返されたホテル検索結果ページは読み取り専用で、有効期限までは繰り返し開くことができます。
+- ホテルまたは航空券の予約作成、対象となるホテル予約のキャンセル、または決済の開始には、認証済みの AI 会話内でユーザーの明示的な確認が必要です。
 
-## Skill / MCP / ToB / ToC の選択
+## FAQ
 
-| 対象 | 接続方式 | 認証モデル | リポジトリ |
-|---|---|---|---|
-| コンシューマー / ToC | 直接 HTTP Skill | 検索・空室確認は公開、注文操作のみ `user_key` が必要 | [Hotel Booking AI](https://github.com/tourmind-com/Hotel-Booking-AI) |
-| ビジネス / ToB | 直接 HTTP Skill | すべての API 呼び出しに Skill Token が必要 | **[TourMind Booking Skill](https://github.com/tourmind-com/Tourmind-Booking-Skills)** |
-| コンシューマー / ToC | MCP + 付属 Skill | MCP 接続は公開、注文操作のみ `user_key` が必要 | [Hotel Booking AI MCP](https://github.com/tourmind-com/Hotel-Booking-AI-MCP) |
-| ビジネス / ToB | MCP + 付属 Skill | Bearer 認証された MCP 接続 | [TourMind Booking MCP](https://github.com/tourmind-com/Tourmind-Booking-MCP) |
+[TourMind Skill のよくある質問](https://github.com/tourmind-com/Tourmind-Booking-Skills/issues/23#issue-5276313315)
 
-## API とサポート
+## ヘルプとサポート
 
-**API ベース URL:** `https://api.tourmind.com`
-
-| エンドポイント | 用途 |
-|---|---|
-| `POST /skill/tob/check_skill_update` | Skill の更新確認 |
-| `POST /skill/tob/search_location` | 地域、POI、ホテルの解決 |
-| `POST /skill/tob/search_hotels` | ホテル候補の検索 |
-| `POST /skill/tob/get_hotel_detail` | ホテル詳細と画像の取得 |
-| `POST /skill/tob/query_room_rates` | リアルタイム客室と料金の取得 |
-| `POST /skill/tob/check_room_availability` | 選択料金と在庫の再確認 |
-| `POST /skill/tob/create_booking` | 確認済み予約の作成 |
-| `POST /skill/tob/query_booking` | 注文の照会 |
-| `POST /skill/tob/cancel_booking` | 確認後の注文キャンセル |
-| `POST /skill/tob/pay_order` | 確認後の支払い開始 |
-
-- リクエスト項目とレスポンス契約：[references/parameter_guide.md](references/parameter_guide.md)
-- Skill Token：ログイン後、[tourmind.com/user/skill-token](https://tourmind.com/user/skill-token) にアクセスしてください。アカウントがない場合は [法人アカウント登録](https://tourmind.com/admin/skillSignup) を利用し、開発者または個人ユーザーはユーザー種別に対応する Skill バージョンを使用してください。
 - 製品ページ：[tourmind.com/skills](https://tourmind.com/skills)
+- TourMind アカウントと Token の申請：[TourMind 申請ページ](https://tourmind.com/admin/skillSignup)
 - GitHub サポート：[Issue を作成](https://github.com/tourmind-com/Tourmind-Booking-Skills/issues)
-- ホテル事業に関するお問い合わせ：`hotel@tourmind.com`
-- ビジネス提携：`bp@tourmind.com`
-- AI 製品に関する提携：`ai@tourmind.com`
+- ホテルサポート：[hotel@tourmind.com](mailto:hotel@tourmind.com)
+- 航空券カスタマーサービス（24時間年中無休）：[flightcs1@tourmind.com](mailto:flightcs1@tourmind.com)
+- ビジネス提携：[bp@tourmind.com](mailto:bp@tourmind.com)
+- AI 製品提携：[ai@tourmind.com](mailto:ai@tourmind.com)
 
 ## ライセンス
 
