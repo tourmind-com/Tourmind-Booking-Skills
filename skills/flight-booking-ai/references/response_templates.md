@@ -201,12 +201,14 @@ Use only after the latest order query passes the payable-order gate.
 | Order currency | {currency} |
 | Available payment methods | {available_public_payment_method_labels} |
 
+If you choose Stripe, Stripe will charge an additional processing fee of 3.5% of the order amount. This processing fee is non-refundable if you later request a refund or cancel the order; after initiating payment, I will show the fee and total payable returned by the API.
+
 Please select one of the available payment methods. The selected method will be included in the complete payment review before any payment link is created.
 ```
 
 For `CNY`, `{available_public_payment_method_labels}` is `Stripe, WeChat Pay, Alipay, Online Banking`. For every other valid currency, it is `Stripe`; add `WeChat Pay, Alipay, and Online Banking are available only for CNY orders.` Translate that explanatory sentence into the response language.
 
-Whenever Stripe is among the displayed choices, add the translated sentence `Stripe adds a separate 3.5% payment-processing fee to the flight order total.` Do not attach this fee notice to another payment method.
+Keep the complete Stripe reminder directly below the payment-method table and before the selection instruction, including when presenting payment methods after booking creation. Translate it without omitting the rate, non-refundable rule, or post-initiation fee/total display. Do not attach the fee to another method. If the API later omits the fee breakdown, use the payment-result fallback below rather than inventing an API-returned fee.
 
 ## Payment unavailable
 
@@ -266,15 +268,17 @@ When and only when Stripe is selected, insert this block after `{payment_deadlin
 | Item | Information |
 | --- | --- |
 | Flight order total | **{currency} {total_price}** |
-| Stripe processing fee | 3.5% — {authoritative_fee_amount_or_fallback} |
-| Stripe payment total | {authoritative_payable_amount_or_fallback} |
+| Stripe processing fee (3.5%) | **{currency} {processing_fee}** |
+| Total payable including Stripe fee | **{currency} {payable_total}** |
+
+{fee_amount_source_notice}
 
 Stripe—not the airline or TourMind—adds this payment-processing fee. Once charged, the Stripe processing fee is non-refundable, even if the flight order or fare later qualifies for cancellation or a refund.
 
-Please explicitly confirm that you accept both the additional 3.5% Stripe processing fee and its non-refundable nature.
+Please explicitly confirm the Stripe processing fee of **{currency} {processing_fee}**, the total payable of **{currency} {payable_total}**, and that this processing fee is non-refundable even if you later request a refund or cancel the order.
 ```
 
-Use authoritative service-returned fee and payable amounts when available; never recompute them. Otherwise set `{authoritative_fee_amount_or_fallback}` to `The exact fee amount has not been returned; Stripe will calculate it from the flight order total.` and `{authoritative_payable_amount_or_fallback}` to `Flight order total plus the 3.5% Stripe fee; Stripe will show the final charge before payment.` Do not calculate or display a local numeric fee/payable total or invent a rounding rule. This Stripe acknowledgement is part of, not a replacement for, the complete payment review. The user must confirm both.
+Populate `{processing_fee}` and `{payable_total}` using the [fee calculation rules](parameter_guide.md#fee-calculation-before-payment-confirmation): decimal half-up rounding of `total_price * 0.035` to two places, then add the rounded fee to `total_price`. Show all three monetary values with exactly two decimal places. Set `{fee_amount_source_notice}` to `The fee and total payable above are calculated from the current order amount; after payment initiation, I will show the amounts returned by the service.` When the service has already returned an authoritative fee/payable breakdown for this order and method, use it instead and set the notice to `The fee and total payable above were returned by the service.` This Stripe acknowledgement is part of the complete payment review; the customer must confirm both.
 
 ## Booking creation result
 
@@ -323,7 +327,7 @@ If the deadline is absent, leave that cell empty.
 | Order number | {order_no} |
 | Payment status | {status} |
 | Payment method | {payment_method_label} |
-| Returned payment amount | **{currency} {amount}** |
+| Total payable returned by the service | **{currency} {amount}** |
 
 Payment link: {payment_url}
 
@@ -334,7 +338,7 @@ If no URL is returned, replace the payment-link line with `The response did not 
 
 Map the returned method through [payment-method labels](#payment-method-labels). If it is unrecognized, omit the payment-method row and append the fixed unrecognized-method fallback defined there.
 
-Never add the Stripe fee to `{amount}` after the service returns it. Unless explicit response fields define a Stripe fee breakdown, do not claim that `{amount}` either includes or excludes the fee.
+For Stripe, insert a `Stripe processing fee` row immediately before the total-payable row. Use the explicitly returned fee in the returned currency with two decimal places, or the fixed fallback `The API did not return a separate fee breakdown.` Never label a local calculation as an API-returned fee. `{amount}` is the authoritative payable total; never add a fee to it. For payments created with the current flight fee logic it already includes the Stripe fee; do not infer a fee for historical records. If a returned total or explicit fee differs from the confirmed review, show the difference and obtain confirmation before directing the customer to pay; do not create another payment.
 
 ## Payment query result
 
@@ -346,14 +350,14 @@ Never add the Stripe fee to `{amount}` after the service returns it. Unless expl
 | Order number | {order_no} |
 | Payment status | {status} |
 | Payment method | {payment_method_label} |
-| Returned payment amount | **{currency} {amount}** |
+| Total payable returned by the service | **{currency} {amount}** |
 
 The status above is exactly what the service returned. It is the only basis for reporting the payment outcome and does not by itself prove ticket issuance.
 ```
 
 Map the returned method through [payment-method labels](#payment-method-labels). If it is unrecognized, omit the payment-method row and append the fixed unrecognized-method fallback defined there.
 
-Never add the Stripe fee to `{amount}` after the service returns it. Unless explicit response fields define a Stripe fee breakdown, do not claim that `{amount}` either includes or excludes the fee.
+For Stripe, insert a `Stripe processing fee` row immediately before the total-payable row. Use the explicitly returned fee in the returned currency with two decimal places, or the fixed fallback `The API did not return a separate fee breakdown.` Never label a local calculation as an API-returned fee. `{amount}` is the authoritative payable total; never add a fee to it. For payments created with the current flight fee logic it already includes the Stripe fee; do not infer a fee for historical records. If a returned total or explicit fee differs from the confirmed review, show the difference and obtain confirmation before directing the customer to pay; do not create another payment.
 
 ## Authentication recovery
 
