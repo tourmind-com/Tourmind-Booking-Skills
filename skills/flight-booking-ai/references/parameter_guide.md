@@ -362,7 +362,13 @@ The API value is used only in request construction and internal response mapping
 
 Stripe adds a separate payment-processing fee equal to 3.5% of the flight order total. The fee applies only to Stripe and is not airfare, tax, an airline charge, or a TourMind booking surcharge. Once charged, it is non-refundable even if the flight order or fare later qualifies for cancellation or a refund. Disclose the rate and non-refundable rule and obtain explicit acknowledgement before `create_payment`.
 
-The request contract remains only `order_no` plus `payment_method`; never send a locally calculated order amount, fee, payable amount, or return URL. The payment service is responsible for calculating and applying the fee. Use authoritative service-returned fee and payable amounts when available and do not recompute them. When no authoritative pre-payment fee breakdown is returned, disclose the 3.5% rate and use the canonical fixed fallbacks; do not calculate or display a local numeric fee/payable total or invent a rounding rule. Never add 3.5% to an `amount` already returned by a payment endpoint.
+#### Fee calculation before payment confirmation
+
+For Stripe, use `total_price` and `currency` from the latest eligible `query_order` response. Calculate with decimal arithmetic: `processing_fee = round_half_up(total_price * 0.035, 2)` and `payable_total = total_price + processing_fee`. Round the fee first, then add it to the order total; display all amounts in the order currency with exactly two decimal places. This matches the flight service's `paymentServiceFee` calculation. For example, an order of `12.34` has a fee of `0.43` and a payable total of `12.77`; an order of `1.00` has a fee of `0.04` and a payable total of `1.04` (half-cent rounds up).
+
+Before `create_payment`, show the order total, 3.5% rate, numeric fee, numeric payable total, and non-refundable-fee notice in the complete payment review. Identify locally calculated values as the pre-payment calculation, not as values already returned by the payment API. Obtain explicit confirmation of the fee amount, payable total, and non-refundable nature. If an authoritative fee/payable breakdown for the same order and selected method is already returned, show those values instead. Recalculate and renew confirmation whenever the order amount, currency, or method changes. Other methods do not incur this Stripe fee.
+
+The request contract remains only `order_no` plus `payment_method`; never send a locally calculated order amount, fee, payable amount, or return URL. The payment service applies the fee. After creation or query, use the service-returned `amount` as the payable total and any explicit returned fee breakdown as authoritative; never add 3.5% again. If the returned total or explicit fee differs from the confirmed review, highlight the difference and obtain confirmation of the returned amounts before directing the customer to pay; do not create another payment to resolve the discrepancy.
 
 ### `POST /skill/flight/v1/query_payment`
 
@@ -382,7 +388,9 @@ Both payment endpoints return this `data` object on `code == 0`:
 {
   "order_no":"TM202609030001",
   "payment_method":"stripe",
-  "amount":"990.50",
+  "amount":"1024.72",
+  "pay_service_fee":"34.65",
+  "order_amount":"990.07",
   "currency":"CNY",
   "status":"created",
   "payment_url":"https://example.com/pay"
@@ -393,10 +401,14 @@ Both payment endpoints return this `data` object on `code == 0`:
 | --- | --- | --- |
 | `order_no` | string | Payment order number. |
 | `payment_method` | string | Internal API value. Map it to Stripe, WeChat Pay, Alipay, or Online Banking before any user-visible output. If it is unrecognized, do not expose or guess from the raw value. |
-| `amount` | string decimal | Payment amount returned by the service, rendered with two decimal places. Report it exactly and never add the Stripe fee again. Under the current contract, this field alone does not establish whether a Stripe fee is included or excluded. |
+| `amount` | string decimal | Total payable amount returned by the service, rendered with two decimal places. For a Stripe payment created with the current flight fee logic, this already includes the rounded 3.5% fee. Report it exactly; never add the fee again or use it as the fee calculation base. |
+| `pay_service_fee` | string decimal | Payment service fee, rendered with two decimal places, including `"0.00"` for a zero fee. |
+| `order_amount` | string decimal | Total order principal excluding the payment service fee, rendered with two decimal places. |
 | `currency` | string | Three-letter uppercase currency. |
 | `status` | string | Current payment status; report exactly as returned. |
 | `payment_url` | string, optional | Payment destination when supplied. Status `created` requires it; explicitly recognized transitional or terminal states may omit it. Its presence never proves payment success or ticket issuance. |
+
+The example is a Stripe payment for an order total of `990.07`, with a rounded fee of `34.65` and a returned payable total of `1024.72`. The current payment response schema returns the fee separately in `pay_service_fee` and the order principal in `order_amount`. Display those returned values as authoritative; if a historical or otherwise valid response omits the breakdown, use the payment-result template's missing-breakdown notice. Do not invent a fee field or describe the pre-payment calculation as an API-returned fee. Historical payments may predate the fee logic: report their stored amounts without adding a fee retroactively.
 
 Payment statuses are `init`, `created`, `paid_success`, `pay_failed`, `refund_success`, `refund_failed`, `closed`, `error`, `refund_in_process`, `timeout`, or `unknown`. This API reports refund-related source states but does not initiate refunds.
 
