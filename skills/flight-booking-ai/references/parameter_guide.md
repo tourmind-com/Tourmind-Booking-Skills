@@ -388,7 +388,7 @@ Both payment endpoints return this `data` object on `code == 0`:
 {
   "order_no":"TM202609030001",
   "payment_method":"stripe",
-  "amount":"1025.72",
+  "amount":"1024.72",
   "pay_service_fee":"34.65",
   "order_amount":"990.07",
   "currency":"CNY",
@@ -408,7 +408,7 @@ Both payment endpoints return this `data` object on `code == 0`:
 | `status` | string | Current payment status; report exactly as returned. |
 | `payment_url` | string, optional | Payment destination when supplied. Status `created` requires it; explicitly recognized transitional or terminal states may omit it. Its presence never proves payment success or ticket issuance. |
 
-The example is a Stripe payment for an order total of `990.07`, with a rounded fee of `34.65` and a returned payable total of `1025.72`. The current payment response schema has no separate fee field. If an explicit fee breakdown is returned, display it; otherwise use the payment-result template's missing-breakdown notice. Do not invent a fee field or describe the pre-payment calculation as an API-returned fee. Historical payments may predate the fee logic: report their stored amounts without adding a fee retroactively.
+The example is a Stripe payment for an order total of `990.07`, with a rounded fee of `34.65` and a returned payable total of `1024.72`. The current payment response schema returns the fee separately in `pay_service_fee` and the order principal in `order_amount`. Display those returned values as authoritative; if a historical or otherwise valid response omits the breakdown, use the payment-result template's missing-breakdown notice. Do not invent a fee field or describe the pre-payment calculation as an API-returned fee. Historical payments may predate the fee logic: report their stored amounts without adding a fee retroactively.
 
 Payment statuses are `init`, `created`, `paid_success`, `pay_failed`, `refund_success`, `refund_failed`, `closed`, `error`, `refund_in_process`, `timeout`, or `unknown`. This API reports refund-related source states but does not initiate refunds.
 
