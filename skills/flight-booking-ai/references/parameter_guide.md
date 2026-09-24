@@ -8,7 +8,7 @@ This is the request and response contract for Flight Booking AI. It is derived f
 - **Method and body:** every endpoint is `POST` with a JSON request body (`Content-Type: application/json`).
 - **Protected-request header:** `X-Skill-Token: uk_...` for the personal channel or `X-Skill-Token: sk_...` for the business channel. Never put either token in the flight request JSON body or URL.
 - **Success condition:** a response succeeds only when its envelope has `code == 0`. A nonzero `code` is a failure even if the HTTP status is 200.
-- **Business-flight permission condition:** on the business channel, `code == 20105` means the `sk_` Token was accepted but the account has not enabled flight-booking access. Handle this exact code before generic authentication or nonzero-code rules.
+- **Verification token-change condition:** `verify_offer` code 20105 means the token changed. Follow [token-change recovery](#token-change-recovery) before generic errors.
 
 ```json
 {"code":0,"message":"success","data":{}}
@@ -16,7 +16,7 @@ This is the request and response contract for Flight Booking AI. It is derived f
 
 | Credential state | Flight channel | Protected-request behavior |
 | --- | --- | --- |
-| Missing or empty | None | Airport lookup remains public; stop all other operations and show both personal and business authorization choices. |
+| Missing or empty | None | Airport lookup and flight search are available without a token. Verification and all order/payment operations require authorization. |
 | Begins with `uk_` | Personal (ToC) | Send the complete token only in `X-Skill-Token`. |
 | Begins with `sk_` | Business (ToB) | Send the complete token only in `X-Skill-Token`. |
 | Any other value | Unrecognized | Send no protected request; ask for a complete `uk_` or `sk_` token. |
@@ -24,7 +24,7 @@ This is the request and response contract for Flight Booking AI. It is derived f
 | Operation | Path | Authentication |
 | --- | --- | --- |
 | Airport lookup | `/skill/flight/v1/search_airports` | Public; do not send `X-Skill-Token`. |
-| Flight search | `/skill/flight/v1/search_flights` | Protected; send `X-Skill-Token`. |
+| Flight search | `/skill/flight/v1/search_flights` | Optional token: send the configured token for validation; omit when absent/empty. Internal agent identity is supplied by the server and is not customer-facing. |
 | Offer verification | `/skill/flight/v1/verify_offer` | Protected; send `X-Skill-Token`. |
 | Booking creation | `/skill/flight/v1/create_booking` | Protected; send `X-Skill-Token`. |
 | Payment creation | `/skill/flight/v1/create_payment` | Protected; send `X-Skill-Token`. |
@@ -33,11 +33,13 @@ This is the request and response contract for Flight Booking AI. It is derived f
 
 The personal and business channels use the same flight Base URL and endpoint paths. The server verifies `X-Skill-Token`, selects the account channel from the token, and derives `AgentCode` and `CreatorUser` before processing a protected operation. Even for a `uk_` token, do not send `user_key`, `AgentCode`, or `CreatorUser` in the JSON request.
 
-A search, quotation, verification session, booking confirmation, order, and payment context belongs to the credential channel that created it. Changing the active token, especially between `uk_` and `sk_`, invalidates pre-order quotations, sessions, and confirmations and requires a user-approved fresh search and verification. Existing order and payment operations must remain on the creation channel with a matching-prefix credential authorized to access the order; never probe both channels.
+A search and its pre-order state belong to the credential generation that produced them. A new or changed `sk_` token followed by a verification request triggers a direct fresh search and customer reselection under [token-change recovery](#token-change-recovery). Verification 20105 uses that same flow. Existing order/payment operations remain on the creation channel with a credential authorized for that order; never probe both channels.
 
 After an authentication failure, follow [authentication recovery](authentication.md): clear the rejected credential and reusable header, stop the affected operation, and do not retry it automatically. This endpoint list contains no independent public credential-validation endpoint; do not invent or call a server-internal verifier, and never use booking or payment creation to test a replacement token. A newly supplied token may be used only for the next protected operation the user explicitly requests or approves, after that operation's normal validations and confirmations. The official endpoint response is authoritative; another authentication rejection clears the replacement and restarts recovery.
 
-Do not route a ToB response with business `code == 20105` into authentication recovery, even if its HTTP status or message contains authentication-like wording. Keep `{baseDir}/skill_token.txt` and the reusable header. Stop the permission-gated booking workflow, do not retry or switch channels, and use the [business-flight-permission template](response_templates.md#business-flight-booking-access-required). The user may still request flight-price searches. After they report that access was enabled, require an explicit request and start again with a new live search before verification or booking.
+Do not route `verify_offer` business `code == 20105` into permission or authentication recovery. Keep the current token and follow [token-change recovery](#token-change-recovery). Ordinary 401/403 responses retain their existing meaning.
+
+Flight search can omit the token when none is configured. A configured token follows existing validation; invalid credentials never fall back to anonymous search. The server supplies its internal identity. Never send `AgentCode` or disclose internal agent codes or routing details to customers. Verification remains protected.
 
 ## Airport lookup
 
@@ -234,7 +236,7 @@ Apply the [passenger-composition gate](passenger_details.md#passenger-compositio
 
 The returned `offer`, `total_price`, `currency`, and `session_id` are authoritative. Verification is not booking approval: present the verified result and obtain explicit final confirmation before creating a booking.
 
-On a ToB verification response with business `code == 20105`, do not treat the Token as invalid and do not describe the offer as unavailable. The account may search price information, but it cannot proceed through verification to booking until business flight-booking access is enabled. Clear any verification or booking-confirmation state for the selected offer, keep the search result only as informational price output until its normal expiry, and follow the dedicated permission rule above.
+Before verification, a new or changed `sk_` token since search requires [token-change recovery](#token-change-recovery). Verification business `code == 20105` uses the same flow: search once with the latest token, show new quotations and wait for a new selection; never automatically match and verify the earlier choice.
 
 ## Booking creation
 
@@ -467,17 +469,40 @@ Each `segments` item has `index`, `group`, `airline`, `flight_no`, `operating_ai
 
 Nullable timestamps are omitted when absent. Empty collections are returned as `[]`, never `null`. The response intentionally excludes document data, birthdays, nationality, phone numbers, email addresses, addresses, remarks, supplier/internal identifiers, cost fields, ancillary data, and refund metadata.
 
+### Payment guidance for ticketing questions
+
+When a customer has a known order and asks about next steps, how ticket issuance proceeds, or when they will receive tickets, treat this as a request for guidance on that order. Use the immediately preceding successful `query_order` result; if no current result is available, query the known order first. A creation response, old query, or payment URL alone is not a current payment-eligibility check.
+
+Guide payment only when the current query returns `status == booking_successful`, both `paid_at` and `ticketed_at` are absent, `tickets` is empty, and any returned payment deadline is reliably interpretable and in the future. An absent deadline alone does not block this guidance. If paid/ticketed evidence is present, the order has another status, the deadline has passed or is unusable, or the query failed, report the actual status or uncertainty and use the existing query/reconciliation/support rules instead of prompting payment again.
+
+For an eligible order, use the [payment-before-ticketing notice](response_templates.md#payment-before-ticketing) and explain that the order has been created and the next step is payment before ticketing. Show the returned order amount/currency and remind the customer of the returned deadline; if absent, say no payment deadline was returned and ask them to complete payment promptly. Do not invent a cutoff or promise an issuance time, immediate ticketing, or guaranteed issuance after payment.
+
+Then continue the existing payment workflow: offer the payment methods allowed for the order currency, retain the required fee disclosures, and ask the customer to choose. If a method was already selected, show the complete current payment review and obtain explicit confirmation. The informational question, earlier booking confirmation, and payment-method choice alone do not authorize `create_payment` or replace its existing final checks. Do not create a new booking or claim to execute ticketing.
+
+If a payment has already been initiated or its creation outcome is uncertain, use `query_payment` to reconcile before offering a new payment. For a current `created` payment with a returned URL and a still-payable order, guide the customer to that complete, unmodified URL subject to the existing amount/fee confirmation rules, without duplicate creation. A paid payment requires status guidance; an unknown or failed query requires reconciliation, not a new payment invitation.
+
 ## Error actions and redaction
+
+### Token-change recovery
+
+Apply this flow before verification when the user asks to verify a quotation after configuring a new or changed `sk_` token since its search, including no-token to `sk_`, `uk_` to `sk_`, and one `sk_` value to another. Detect the change before calling `verify_offer`; do not submit the stale quotation to obtain an error. Re-saving the same token is not a credential change. A machine-readable `verify_offer` business `code == 20105` also triggers this flow for either credential channel, before generic authentication or business-error handling. Other operations returning 20105 retain their normal stage-specific error/reconciliation rules.
+
+1. Keep the original search criteria and confirmed passenger counts. Clear the entire old quotation set, quotation-number mappings, offer IDs, selected-quotation state, verification sessions, and booking confirmations. Retain known order numbers and reconciliation evidence; do not treat existing orders as a new booking. Keep the latest configured credential and its actual source file.
+2. Read the latest credential securely; for MCP, update the actual connection binding before searching. Verification still requires a token. If it is missing, stop and request authorization. Ordinary authentication rejections keep their existing recovery rules; never bypass them with anonymous search.
+3. Revalidate the original dates and criteria, then call `search_flights` once using the latest token and unchanged route, dates, cabin, flight preference, and adult/child/infant counts. The user's request to verify after changing the token already authorizes this refresh; do not ask for separate search permission. Saving a token alone is not authorization to call an endpoint. Do not call `verify_offer`, booking, or payment during this refresh.
+4. On a successful search, replace all prior results with the new offers, fresh number mappings, response time, and current nonsecret credential-generation marker. Display the normal search-results table, preserving the API order and usual first-10 pagination. Include the [quotation refresh notice](response_templates.md#token-change-quotation-refresh) in the user's language, explaining the token change and requesting a new selection. Use no internal agent codes, backend routing details, raw error codes, credential fragments, or technical diagnostics in this explanation. Claim refreshed quotations only after the new search succeeds.
+5. Stop and wait for the customer's new selection, even if exactly one new offer matches the earlier flight or its price is unchanged. The old selection and any advance instruction to reuse it do not select from the new table. Once the customer selects a fresh quotation and the credential generation is unchanged, apply normal freshness/count checks and call `verify_offer` with that new offer ID. Do not trigger another search just because the current token starts with `sk_`. Verification still requires the normal later booking review and explicit confirmation.
+6. A failed refresh or empty result stops the flow; report the failed search or no available quotations without restoring old offers or claiming a successful refresh returned quotations. Allow at most one refresh search per user verification request, including transport failures. Do not loop or automatically replay verification. If a later customer-selected verification returns 20105 again, a new bounded refresh may display new results, but must again stop for a new selection.
 
 ### Failed-quotation recovery
 
-A nonzero response `code` is a failed request, including when HTTP status is 200. Handle ToB business `code == 20105` as the dedicated permission condition before the generic recovery below. Never display its raw message or other API/transport exceptions to the customer. Explain the affected booking stage in friendly language, retain the known order/payment state, and select the recovery below.
+A nonzero response `code` is a failed request, including when HTTP status is 200. Handle `verify_offer` business `code == 20105` with token-change recovery before the generic recovery below. Never display its raw message or other API/transport exceptions to the customer. Explain the affected booking stage in friendly language, retain the known order/payment state, and select the recovery below.
 
-Except for the dedicated ToB `code == 20105` permission condition, remove any affected failed offer from selectable quotation state, its quotation-number-to-`offer_id` mapping, associated verified session, and booking confirmation. For a failed search, clear the current quotation set. Keep order numbers, payment state, and sanitized reconciliation evidence even when a quotation is removed. Do not offer the failed quotation again or ask the customer to pick another quotation from the old results table as recovery. A fresh successful search replaces the old table and its mappings with newly numbered offers.
+For verification 20105 clear the entire quotation set as specified above; for other failures remove any affected failed offer from selectable quotation state, its quotation-number-to-`offer_id` mapping, associated verified session, and booking confirmation. For a failed search, clear the current quotation set. Keep order numbers, payment state, and sanitized reconciliation evidence even when a quotation is removed. Do not offer the failed quotation again or ask the customer to pick another quotation from the old results table as recovery. A fresh successful search replaces the old table and its mappings with newly numbered offers.
 
 | Failure stage | Recovery |
 | --- | --- |
-| ToB business `code == 20105` | Keep the `sk_` Token and reusable header. Stop the permission-gated booking workflow, clear verification/booking-confirmation state for the selected offer, and use the business-flight-permission template. Do not enter authentication recovery, request a replacement Token, retry, or switch channels. User-requested price searches may continue; after access is enabled, require an explicit request and a new live search before verification or booking. |
+| `verify_offer` business `code == 20105` | Keep the current token, clear old quotations and sessions, search once, display the refreshed results with a token-change explanation, and wait for the customer to select again. Follow [token-change recovery](#token-change-recovery). |
 | Airport lookup or flight search | Explain that the lookup/search did not complete. Correct known invalid inputs; invite the user to retry lookup or run a fresh search after criteria are valid. Never fall back to an older results table. |
 | Offer verification | Delete the failed quotation, session, and confirmation; politely explain that it cannot currently be confirmed and invite a fresh search using the confirmed criteria. Do not ask for another selection from old quotations. |
 | Booking creation, with authoritative confirmation that no order was created | Delete the failed quotation/session/confirmation. Explain that booking did not complete and offer a new search; after the user authorizes it, search live, verify a newly selected quotation, and obtain a new complete booking review confirmation. |
@@ -485,14 +510,14 @@ Except for the dedicated ToB `code == 20105` permission condition, remove any af
 | Order query, payment creation, or payment query for an existing order | Preserve the real order. Explain that order/payment handling did not complete or is unconfirmed; query/reconcile or refer to customer service as appropriate. Do not turn payment/query failure into a new booking or flight search. |
 | Authentication failure at any stage | Clear the rejected credential and reusable header, stop the affected operation, and show the matching official replacement-token guidance. Do not retry automatically. A replacement may be used only for a later user-requested or approved operation after normal preconditions are satisfied; any affected failed quotation remains removed. |
 
-A nonzero business code does not authorize automatic retry or automatic fresh search. Obtain a user instruction for the new search, revalidate criteria and dates, and show only its new results. For a verification failure other than ToB `code == 20105` before any booking attempt, use the [verification failure template](response_templates.md#failure-and-reconciliation). Select the order-state statement from actual evidence for other stages. Distinguish local input validation, which must be corrected before sending, from an API rejection, which also invalidates affected quotations.
+Outside verification 20105 token-change recovery, a nonzero business code does not authorize automatic retry or automatic fresh search. Obtain a user instruction for the new search, revalidate criteria and dates, and show only its new results. For a verification failure other than verification `code == 20105` before any booking attempt, use the [verification failure template](response_templates.md#failure-and-reconciliation). Select the order-state statement from actual evidence for other stages. Distinguish local input validation, which must be corrected before sending, from an API rejection, which also invalidates affected quotations.
 
 | Condition | Required action |
 | --- | --- |
 | `code == 0` | Continue only with the returned `data`; for verification, still obtain explicit booking confirmation. |
-| ToB business `code == 20105` | Handle before every HTTP-status or error-text rule. Keep the accepted `sk_` Token and reusable header, stop the permission-gated booking workflow, and use the [business-flight-permission template](response_templates.md#business-flight-booking-access-required). Do not clear or replace the Token, retry, or switch channels. |
+| `verify_offer` business `code == 20105` | Keep the current token, clear old quotations and sessions, search once, display the refreshed results with a token-change explanation, and wait for the customer to select again. Follow [token-change recovery](#token-change-recovery). |
 | Nonzero business `code` (including HTTP 200) | Remove affected failed quotations and follow the stage-specific recovery above; invite a fresh search when appropriate instead of reselection from the old table. Retain order/payment uncertainty, and never expose the original message or retry automatically. |
-| HTTP 401, `unauthorized`, or `invalid_token`, after excluding ToB `code == 20105` | Clear the rejected credential and reusable header, stop the affected operation, and follow [authentication recovery](authentication.md). Never retry the rejected token, search for another credential, switch channels silently, or automatically replay the operation after a replacement is saved. |
+| HTTP 401, `unauthorized`, or `invalid_token`, after excluding verification `code == 20105` | Clear the rejected credential and reusable header, stop the affected operation, and follow [authentication recovery](authentication.md). Never retry the rejected token, search for another credential, switch channels silently, or automatically replay the operation after a replacement is saved. |
 | Transient transport error or HTTP 5xx during airport lookup, search, or verification, without a nonzero business response or authentication failure | Retry the identical request once only. |
 | Ambiguous booking result (for example, timeout or HTTP 5xx after the request may have been sent) | Stop creation. If a real order number is known, use `query_order` to reconcile; otherwise state that no order number was returned and creation is unknown, and provide customer service. Do not repeat booking until absence of an order is confirmed, a user-authorized fresh search and verification have completed, and the user approves the new complete booking review. |
 | Missing or unsupported payment method | Do not call payment creation. Present the methods allowed for the queried order currency and request a supported selection. |

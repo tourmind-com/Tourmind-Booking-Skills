@@ -115,7 +115,7 @@ npx skills add tourmind-com/tourmind-booking-skills --all
 
 This command installs both Skills—`tourmind-booking` for hotels and `flight-booking-ai` for flights—to all detected Agent clients without additional selection prompts.
 
-You can search and compare hotels, and look up airports, without a Token. A Token is required for live flight search and verification, and for any real booking, order, or payment action.
+You can search and compare hotels, look up airports, and search live flights without a Token. A configured flight-search Token is still validated. Verification and any real booking, order, or payment action require a Token.
 
 If you already have a TourMind account, you can use its [Skill Token](https://tourmind.com/user/skill-token). If you do not have an account, [sign up for a TourMind account and Token](https://tourmind.com/admin/skillSignup). Send it only to your trusted Agent in a private conversation:
 
@@ -196,10 +196,10 @@ The cached candidate price from `search_hotels` is only an initial signal. User-
 ```text
 Route, dates, trip type, cabin, preferences and adult / child / infant counts
   → Resolve airports and validate dates and passenger composition (search_airports)
-  → Configure the Token, then search live flights (search_flights)
+  → Search live flights (search_flights); a Token is optional
   → Compare up to the first 10 offers by schedule, airports, cabin, connections, baggage and total price
   → Select a quotation before 20 minutes have elapsed since the search
-  → Recheck the selected flight and latest total (verify_offer)
+  → Configure a Token before verification. If the business Token changed after search, the Agent retrieves updated quotations, explains the change and asks you to select again before verification (verify_offer)
   → Provide passenger, travel-document and contact details
   → Review the complete itinerary, price and traveller details, then explicitly confirm the booking
   → Create the flight booking (create_booking)

@@ -115,7 +115,7 @@ npx skills add tourmind-com/tourmind-booking-skills --all
 
 该命令会跳过选择，将酒店 `tourmind-booking` 和机票 `flight-booking-ai` 两个 Skill 安装到所有已检测到的 Agent 客户端。
 
-搜索和比较酒店、查询机场不需要 Token。机票实时搜索和验价，以及任何真实预订、订单或支付操作都需要 Token。
+搜索和比较酒店、查询机场、机票实时搜索不需要 Token。搜票时已配置的 Token 仍须校验。验价及任何真实预订、订单或支付操作仍需要 Token。
 
 如果你已有 TourMind 账号，可以使用账号中的 [Skill Token](https://tourmind.com/user/skill-token)。如果还没有账号，请前往 [TourMind 账号及 Token 申请页面](https://tourmind.com/admin/skillSignup)。请只在私密对话中发送给你信任的 Agent：
 
@@ -196,10 +196,10 @@ Agent 会自动为已安装的 Skill 保存并配置 Token，你不需要自己�
 ```text
 航线、日期、行程类型、舱等、航班偏好及成人 / 儿童 / 婴儿人数
   → 查询机场并核对日期和乘客组成（search_airports）
-  → 配置 Token 后搜索实时航班（search_flights）
+  → 搜索实时航班（search_flights），Token 可选
   → 对比前 10 个航班报价的时间、机场、舱等、中转、行李和总价
   → 在搜索结果生成后未满 20 分钟时选择一个报价
-  → 重新核验所选航班与最新总价（verify_offer）
+  → 验价前配置 Token；搜索后更换企业 Token 时，会重新获取报价并说明原因，请从新结果中重新选择后再验价（verify_offer）
   → 提供乘机人、旅行证件和联系人信息
   → 核对完整行程、价格和乘机人信息，并明确确认预订
   → 创建机票订单（create_booking）

@@ -115,7 +115,7 @@ npx skills add tourmind-com/tourmind-booking-skills --all
 
 Este comando omite las preguntas e instala ambos Skills —`tourmind-booking` para hoteles y `flight-booking-ai` para vuelos— en todos los agentes detectados.
 
-Puedes buscar y comparar hoteles, y consultar aeropuertos, sin Token. Se necesita un Token para buscar y verificar vuelos en tiempo real y para cualquier operación real de reserva, consulta del estado o pago.
+Puedes buscar y comparar hoteles, consultar aeropuertos y buscar vuelos en tiempo real sin Token. Si hay un Token configurado para vuelos, se valida. La verificación y las operaciones de reserva, consulta del estado o pago siguen requiriendo un Token.
 
 Si ya tienes una cuenta de TourMind, puedes usar el [Skill Token](https://tourmind.com/user/skill-token) de tu cuenta. Si todavía no tienes una cuenta, [solicita una cuenta y un Token de TourMind](https://tourmind.com/admin/skillSignup). Envíalo únicamente a un agente de confianza y en una conversación privada:
 
@@ -196,10 +196,10 @@ El precio candidato almacenado por `search_hotels` es solo una señal inicial. L
 ```text
 Ruta, fechas, tipo de viaje, cabina, preferencias y número de adultos / niños / bebés
   → Resolver aeropuertos y validar fechas y composición de pasajeros (search_airports)
-  → Configurar el Token y buscar vuelos en tiempo real (search_flights)
+  → Buscar vuelos en tiempo real (search_flights); el Token es opcional
   → Comparar hasta las 10 primeras ofertas por horarios, aeropuertos, cabina, escalas, equipaje y precio total
   → Elegir una cotización antes de que transcurran 20 minutos desde la búsqueda
-  → Volver a comprobar el vuelo elegido y el total más reciente (verify_offer)
+  → Configurar un Token antes de verificar. Si cambia el Token empresarial después de buscar, el Agent obtiene nuevas cotizaciones, explica el cambio y pide elegir de nuevo antes de verificar (verify_offer)
   → Proporcionar datos de pasajeros, documentos de viaje y contacto
   → Revisar el itinerario, el precio y los datos completos de los viajeros, y confirmar expresamente la reserva
   → Crear la reserva de vuelo (create_booking)
