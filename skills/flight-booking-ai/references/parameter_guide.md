@@ -86,7 +86,7 @@ For a flight-search leg, use the matched city's `city_code` when the user accept
 
 ### `POST /skill/flight/v1/search_flights`
 
-Protected request example:
+Request example with an optional configured token; omit the header entirely when no token is configured:
 
 ```http
 X-Skill-Token: uk_or_sk_redacted
