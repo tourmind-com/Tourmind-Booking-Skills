@@ -1,6 +1,6 @@
 # Authentication failure and recovery
 
-Read this reference after an authentication rejection, but only after excluding the dedicated ToB business-permission condition. A business-channel response with `code == 20105` means the `sk_` Token was accepted but business flight-booking access is not enabled; keep the Token and follow the permission rule in `SKILL.md`, even if its HTTP status or message also resembles an authentication failure. For every other HTTP 401, `unauthorized`, or `invalid_token` result, authentication recovery takes precedence over transport retries and ordinary retry requests.
+Read this reference after an authentication rejection, after excluding a machine-readable `verify_offer` business `code == 20105`. That verification code means the token changed: keep the current credential, discard old quotations, and follow [token-change recovery](parameter_guide.md#token-change-recovery). It applies to either credential channel. Ordinary HTTP 401, `unauthorized`, or `invalid_token` results still invoke the existing authentication recovery; do not downgrade a rejected-token search to anonymous search.
 
 ## Clear the rejected credential and stop
 
@@ -8,7 +8,7 @@ Immediately clear the rejected credential from the recorded `{credentialFile}` f
 
 Never reuse the rejected credential, send an empty or guessed header, silently switch channels, change the API host or endpoint, or fall back to the other Skill's Token during the same recovery attempt. Do not search another installation, workspace, archive, backup, environment variable, shell history, previous message, or account for replacement credentials. A request to hurry, accept risk, change the itinerary, or “try once” does not authorize another call with the rejected Token.
 
-Public airport lookup remains available without a token. A public lookup or Skill update check does not prove flight authorization and does not resume the failed protected operation.
+Public airport lookup remains available without a token. Tokenless flight search is available when no token is configured and no authentication-recovery stop is active; it must not bypass a rejected token. A public lookup or Skill update check does not prove flight authorization and does not resume the failed protected operation.
 
 ## Obtain and use a replacement token
 
@@ -18,11 +18,11 @@ When the user supplies a complete replacement beginning `uk_` or `sk_`, save it 
 
 Do not invent a validation endpoint, call a server-internal verifier, or automatically issue a protected request solely because the replacement was saved. The replacement may be used for the next protected operation only when the user explicitly requests or approves that operation and its normal input validation, quotation freshness, channel, review, and confirmation requirements are satisfied. If the user explicitly asks to test the replacement, use only a documented read-only protected operation with complete valid inputs; never use `create_booking` or `create_payment` as a credential test.
 
-Treat the official endpoint response as authoritative. First exclude the exact ToB `code == 20105` permission condition, which keeps the credential. If the response instead returns any other HTTP 401, `unauthorized`, or `invalid_token`, clear the replacement credential and restart this recovery flow. Otherwise, handle the response under its normal success, business-error, or transport-error rules without claiming more authorization than the response establishes.
+Treat the official endpoint response as authoritative. First exclude verification `code == 20105`, which keeps the current credential and runs one refresh search followed by customer reselection. If the response instead returns any other HTTP 401, `unauthorized`, or `invalid_token`, clear the replacement credential and restart this recovery flow. Otherwise, handle the response under its normal success, business-error, or transport-error rules without claiming more authorization than the response establishes.
 
 ## Resume the business workflow safely
 
-Replacing a token invalidates pre-order quotations, verification sessions, passenger/contact confirmations, and payment context as required by `SKILL.md`. Obtain approval for a fresh search and repeat verification before any later booking. An existing order remains bound to its creation channel and requires a matching-prefix credential authorized to access it; never probe the other channel.
+Replacing a token invalidates pre-order quotations, verification sessions, passenger/contact confirmations, and payment context as required by `SKILL.md`. Once authentication recovery permits the requested operation, a new `sk_` followed by a verification request authorizes the refresh search directly; show its new results and wait for a new selection. Otherwise obtain approval for a fresh search. Verify a newly selected quotation before any later booking. An existing order remains bound to its creation channel and requires a matching-prefix credential authorized to access it; never probe the other channel.
 
 Never automatically replay `create_booking` or `create_payment` after authentication recovery. If an earlier creation result was ambiguous, reconcile it before considering another creation. Any later booking or payment creation must satisfy the complete current review and explicit-confirmation flow.
 

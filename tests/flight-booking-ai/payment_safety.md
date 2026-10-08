@@ -81,3 +81,19 @@ Acceptance criteria:
 - The `create_payment` request contains no locally calculated amount, fee, payable amount, or return URL.
 - When authoritative fee/payable values are returned, use them without recomputation. When they are absent, show the 3.5% rate and fixed fallback without calculating or displaying any local numeric fee/payable total or inventing a rounding rule.
 - Never add 3.5% to a payment `amount` returned by `create_payment` or `query_payment`, and never claim whether that field includes the fee unless explicit response fields establish it.
+
+## Ticketing questions after booking creation
+
+Offline only: use synthetic orders, intercept all proposed API calls, and never read credentials or contact real endpoints.
+
+The customer has a known newly created order and asks, "What happens next? When will my ticket be issued?" The latest successful `query_order` returns `booking_successful`, CNY 1000.00, no `paid_at` or `ticketed_at`, empty `tickets`, and a reliably interpreted future payment deadline. No payment method has been selected.
+
+Expected behavior:
+
+- Explain that the order has been created and payment is the next step before ticketing. Show only the returned amount/currency and deadline, and offer the normal permitted payment-method choices with the existing fee disclosures.
+- Do not answer only that ticketing is unsupported or send the customer directly to customer service. Do not promise an issuance time or say payment or ticket issuance is already complete.
+- Ask the customer to select a payment method; no `create_payment` is authorized by the ticketing question alone. Continue only through the existing complete review and explicit confirmation flow.
+- If there is no current successful order query, query the known order first. A booking-creation response or old query alone must not be treated as a current payable-order check.
+- Repeat with `payment_successful`, `ticketing`, `ticket_issued`, and with populated payment/ticket evidence despite `booking_successful`: explain the actual progress, without asking for another payment or creating another link.
+- Repeat with an expired or unparseable deadline and a failed order query: no payment invitation or creation; explain the returned/unconfirmed state and the appropriate recovery step. An absent deadline alone does not block payment guidance; explicitly say no deadline was returned instead of inventing one.
+- If payment has already been initiated, query that payment. A current `created` response with its returned URL may guide completion of that payment, subject to normal amount/fee review; no duplicate creation. Paid or ambiguous results must not prompt another payment.

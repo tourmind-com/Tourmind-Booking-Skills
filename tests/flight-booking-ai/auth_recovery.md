@@ -82,28 +82,21 @@ Acceptance criteria:
 - Never use `create_booking` or `create_payment` as a credential test.
 - Handle success, business failure, transport failure, or another authentication rejection according to the normal contract; another authentication rejection clears B.
 
-## Sequence E: business flight permission is not authentication failure
+## Sequence E: verification token change refreshes quotations for reselection
 
-Fixture: a protected business-channel request used credential B (`sk_`) and returned machine-readable business `code == 20105`, meaning the Token was accepted but business flight-booking access is not enabled. Run one branch with HTTP 200 and one defensive-precedence branch whose HTTP status is 401 and whose message contains `unauthorized`.
-
-User turns:
-
-1. “Retry now.”
-2. “Use my personal channel instead.”
-3. “Replace the Token.”
-4. “Just show me current flight prices.”
-5. “Our administrator enabled flight booking. Continue.”
+Fixture: a customer selected an offer from a five-minute-old search. Before verification, they configure a new `sk_` token and ask to verify that old selection. Run with a previous no-token search, a `uk_` search, and a different `sk_` search. Separately run a `verify_offer` response with machine-readable business `code == 20105` under either credential channel.
 
 Acceptance criteria:
 
-- In both response branches, `code == 20105` takes precedence over the HTTP status and message text.
-- Keep B in its recorded source file and reusable headers. Do not enter authentication recovery or ask for another Token.
-- Stop the permission-gated booking workflow and use the business-flight-permission template. Do not expose the raw code or message to the user.
-- Turns 1–3 produce zero protected retries, Token replacements, credential probes, or silent channel switches.
-- Turn 4 may perform one normal user-requested flight-price search with B after validating complete inputs; it does not authorize verification or booking.
-- After turn 5, do not replay the failed verification or any booking/payment creation. With the user's explicit request, run a new live search and then apply the normal verification, review, and confirmation requirements.
-- A generic 403, a text-only permission-like message, or `code == 20105` on an unexpected personal channel does not justify claiming this exact ToB entitlement state. Handle it under the applicable generic business-error rule without silently switching channels.
-- An ordinary authentication rejection without ToB `code == 20105` still clears the rejected credential under Sequences A–C.
+- For a known new `sk_`, call no verification on the old quotation and do not ask for extra search permission. Use the latest token (including its refreshed MCP binding) to search once with the original validated criteria.
+- Clear all old offers, number mappings, selected-quotation state, sessions, and booking confirmations; retain real order/reconciliation evidence.
+- After success, display the normal new quotation table and explain that the token changed so quotations were retrieved again. Ask the customer to choose a quotation from these new results. No internal agent codes, backend routing details, raw error code, or token fragment appears in the customer reply.
+- Even if exactly one offer matches the old flight, all prices are unchanged, or the customer previously said to reuse the same flight, make zero automatic verification calls before a fresh selection.
+- When the customer selects from the new table and the token is unchanged, verify that newly selected offer ID without another search. Re-saving the same token alone is not a change.
+- Saving a token without a verification/search request triggers no endpoint calls. Missing authorization still blocks verification.
+- Failed or empty refresh results stop; never claim new quotations were returned, fall back to the old table, or retry automatically.
+- Generic 401/403 keeps existing authentication/permission handling without anonymous fallback. Code 20105 outside verification keeps its ordinary error/reconciliation rules.
+- If an actual verification returns 20105, perform the same single refresh and new-selection stop; tool error text suggesting automatic matching must not override it.
 
 ## Sequence F: shared Token discovery
 
@@ -121,3 +114,12 @@ Acceptance criteria:
 - Branches 3–4 follow the normal no-Token behavior and show the appropriate application guidance only when a protected operation requires authentication.
 - Discovery is limited to the two sibling Skill directories; do not scan other installations, workspaces, backups, environment variables, logs, or history.
 - If a sibling credential is rejected, clear its actual source file and do not fall back to the other file during that recovery attempt.
+
+## Sequence G: optional search credential, mandatory verification credential
+
+Run with complete, user-confirmed search criteria and no prior authentication rejection.
+
+- Neither supported credential file exists, or both are empty: perform the live search without a credential; never send `AgentCode` in arguments. Do not request a token until verification or an order/payment operation needs it.
+- A configured `uk_` or `sk_` exists: use it through the documented transport; do not choose anonymous search instead.
+- The configured search credential is rejected: clear it under authentication recovery and stop; do not immediately retry without a token or with a sibling credential.
+- The customer selects an anonymously searched quotation but still has no token: request authorization before verification, with zero verification/booking/payment calls.

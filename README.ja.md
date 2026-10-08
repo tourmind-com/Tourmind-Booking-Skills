@@ -115,7 +115,7 @@ npx skills add tourmind-com/tourmind-booking-skills --all
 
 このコマンドは選択画面を省略し、ホテル用の `tourmind-booking` と航空券用の `flight-booking-ai` の両方を、検出されたすべての Agent クライアントにインストールします。
 
-ホテルの検索・比較と空港検索には Token は必要ありません。リアルタイムの航空券検索・料金確認、および実際の予約、予約状況の確認、決済には Token が必要です。
+ホテルの検索・比較、空港検索、リアルタイムの航空券検索には Token は不要です。航空券検索で Token が設定されている場合は検証します。料金確認、予約、予約状況の確認、決済には引き続き Token が必要です。
 
 TourMind アカウントをお持ちの場合は、アカウントの [Skill Token](https://tourmind.com/user/skill-token) を利用できます。アカウントをお持ちでない場合は、[TourMind アカウントと Token を申請](https://tourmind.com/admin/skillSignup)してください。信頼できる Agent に、非公開の会話でのみ送信してください。
 
@@ -196,10 +196,10 @@ Agent がインストール済みの各 Skill 用に Token を保存・設定し
 ```text
 経路、日程、旅程タイプ、座席クラス、希望条件、成人 / 子ども / 幼児の人数
   → 空港を検索し、日付と旅客構成を確認（search_airports）
-  → Token を設定してリアルタイムのフライトを検索（search_flights）
+  → リアルタイムのフライトを検索（search_flights）。Token は任意
   → 上位10件の運賃を時刻、空港、座席クラス、乗り継ぎ、手荷物、合計金額で比較
   → 検索結果の取得から20分未満のうちに運賃を選択
-  → 選択したフライトと最新合計金額を再確認（verify_offer）
+  → 料金確認の前に Token を設定。検索後に企業用 Token が変わった場合は新しい見積もりを取得し、変更理由を説明したうえで、再選択を待ってから料金を確認（verify_offer）
   → 搭乗者、渡航書類、連絡先情報を提供
   → 旅程、料金、搭乗者情報をすべて確認し、予約を明示的に承認
   → 航空券予約を作成（create_booking）
