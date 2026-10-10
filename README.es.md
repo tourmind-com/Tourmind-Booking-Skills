@@ -6,7 +6,7 @@
 </h1>
 
 <a href="https://tourmind.com/skills">
-  <img alt="TourMind Booking Skills" src="https://skilloss.tourmind.com/skills/tourmind-booking/v1/hero/tourmind-booking-skills.png" style="width: 100%" />
+  <img alt="TourMind Booking Skills" src="https://storage.googleapis.com/aps-storage-prod/tourmind-booking-skills/hero/tourmind-booking-skills.png" style="width: 100%" />
 </a>
 
 <br />
@@ -51,24 +51,24 @@ Los siguientes GIF muestran la experiencia del Skill de hoteles.
 ### 1. Buscar hoteles en tiempo real
 
 <div align="center">
-  <a href="https://skilloss.tourmind.com/skills/tourmind-booking/v1/demo/search-en.gif">
-    <img src="https://skilloss.tourmind.com/skills/tourmind-booking/v1/demo/search-en.gif" alt="Demostración de búsqueda de hoteles con TourMind" width="720" />
+  <a href="https://storage.googleapis.com/aps-storage-prod/tourmind-booking-skills/demo/search-en.gif">
+    <img src="https://storage.googleapis.com/aps-storage-prod/tourmind-booking-skills/demo/search-en.gif" alt="Demostración de búsqueda de hoteles con TourMind" width="720" />
   </a>
 </div>
 
 ### 2. Comparar habitaciones reales
 
 <div align="center">
-  <a href="https://skilloss.tourmind.com/skills/tourmind-booking/v1/demo/detail-en.gif">
-    <img src="https://skilloss.tourmind.com/skills/tourmind-booking/v1/demo/detail-en.gif" alt="Demostración de comparación de habitaciones con TourMind" width="720" />
+  <a href="https://storage.googleapis.com/aps-storage-prod/tourmind-booking-skills/demo/detail-en.gif">
+    <img src="https://storage.googleapis.com/aps-storage-prod/tourmind-booking-skills/demo/detail-en.gif" alt="Demostración de comparación de habitaciones con TourMind" width="720" />
   </a>
 </div>
 
 ### 3. Verificar la tarifa final y pagar
 
 <div align="center">
-  <a href="https://skilloss.tourmind.com/skills/tourmind-booking/v1/demo/pay-en.gif">
-    <img src="https://skilloss.tourmind.com/skills/tourmind-booking/v1/demo/pay-en.gif" alt="Demostración de verificación y pago de hotel con TourMind" width="720" />
+  <a href="https://storage.googleapis.com/aps-storage-prod/tourmind-booking-skills/demo/pay-en.gif">
+    <img src="https://storage.googleapis.com/aps-storage-prod/tourmind-booking-skills/demo/pay-en.gif" alt="Demostración de verificación y pago de hotel con TourMind" width="720" />
   </a>
 </div>
 
