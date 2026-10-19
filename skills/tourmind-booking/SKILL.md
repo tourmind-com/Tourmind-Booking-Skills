@@ -391,9 +391,9 @@ If `query_room_rates.data.web_url` exists, include it as a clickable read-only h
 
 ![{room_name} room image]({basic_room_image})
 
-| Bed type | Maximum occupancy | Meal | Per night | Stay total | Cancellation | Inventory status |
-|---|---:|---|---:|---:|---|---|
-| {bed_type} | {max_occupancy} | {meal_summary} | {per_night_price} | {total_price} | {cancellation_summary} | {bookable_or_on_request} |
+| Bed type | Capacity per room (adults + children) | Meal | Per night | Stay total | Cancellation | Inventory status |
+|---|---|---|---:|---:|---|---|
+| {bed_type} | {adult_child_capacity_summary} | {meal_summary} | {per_night_price} | {total_price} | {cancellation_summary} | {bookable_or_on_request} |
 ```
 
 Room-image rules:
@@ -402,7 +402,8 @@ Room-image rules:
 - Otherwise use the matching `get_hotel_detail.rooms[].basic_room_image` only when the room code/name maps confidently.
 - If only a generic hotel room gallery exists, use the localized label equivalent of `Generic hotel room image; not guaranteed to match the quoted room type`.
 - If no matching image exists, say so and omit the image. Never attach an unrelated image.
-- Do not translate `meal_type` codes into breakfast/dinner without a documented mapping. Use `meal_count` conservatively.
+- Interpret meals using [Meal type mapping](references/parameter_guide.md#meal-type-mapping), including numeric and string codes 1–19. `meal_type=2` means breakfast for the booked guests; `meal_type=4` means two breakfasts. `meal_count` is supplementary and must not override a known type, including when it is zero.
+- Match and display capacity using [Adult and child capacity](references/parameter_guide.md#adult-and-child-capacity). `maxOccupancy` / `max_occupancy` limits adults; a returned `maxChildren` / `max_children` permits additional children. For `2` and `1`, show `Up to 2 adults + 1 child per room`; compare adult and child counts separately for every room and retain the requested child ages through availability checking.
 - Render the API value `Others` using the localized equivalent of `Other / room assigned at check-in`, not as a specific room.
 
 End with a clear next action: the user can choose a room for final availability and price verification. Then include the same localized currency note used by the hotel-list template so the user knows which currency is shown and can request another display currency.
