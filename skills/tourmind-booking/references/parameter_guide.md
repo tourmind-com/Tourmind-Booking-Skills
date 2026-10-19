@@ -383,7 +383,50 @@ Each product represents a room/occupancy/meal/cancellation combination and conta
 
 Use only products whose occupancy and other hard requirements match the user. A non-empty product with `is_on_request=true` is a request/confirmation product, not immediate inventory; label it clearly.
 
-Do not map numeric/string `meal_type` codes to breakfast, dinner or another meal without a documented mapping. `meal_count=0` may be shown as no included meal; when positive but the type is unknown, use the localized equivalent of `Meal included for {meal_count} guests; type not specified`.
+#### Adult and child capacity
+
+Capacity fields describe **one room**. Apply these rules to single-hotel rates, every successful batch item, and returned availability-check capacity fields. Read the field spelling actually returned; `maxOccupancy` / `max_occupancy` have the same meaning, as do `maxChildren` / `max_children`.
+
+| Returned field | Meaning | Matching rule |
+|---|---|---|
+| `maxOccupancy` / `max_occupancy` | Maximum **adults** allowed in one room | Require requested `adults <= maxOccupancy` per room |
+| `maxChildren` / `max_children` | Maximum **additional children** allowed in that room when this field is returned | Separately require requested `children <= maxChildren` per room; an explicit zero allows no additional children |
+
+For example, `maxOccupancy=2, maxChildren=1` supports **2 adults and 1 child per room**, subject to the returned product's child-age conditions and the final availability check. Do not compare `adults + children` with `maxOccupancy`, subtract children from the adult capacity, or reject that product merely because three guests exceed an adult limit of two. With `adults=2, children=1, children_ages=[6], room_count=2`, match each room to those limits; the booking covers 4 adults and 2 children in total.
+
+If a child-capacity field is absent, do not treat its absence as zero, infer a child limit from the adult limit, or invent additional child capacity. Use explicit live product/availability evidence for the requested child count and ages, or state that child capacity is not specified. `allotment`, when returned, is room inventory, not an adult or child capacity.
+
+Show the capacity with separate labels, for example `Up to 2 adults + 1 child per room`, rather than an ambiguous `2 guests`.
+
+#### Meal type mapping
+
+Apply this mapping to `meal_type` whether the value is a JSON number or a numeric string (for example, `4` or `"4"`). It applies to single-hotel rates, every successful batch item, and returned availability-check meal fields.
+
+| Value | Constant | Meaning |
+|---|---|---|
+| 1 | `MealType_No_Breakfast` | No breakfast / room only |
+| 2 | `MealType_Free_Breakfast` | Breakfast included; quantity follows the booked guest count |
+| 3 | `MealType_ONE_Breakfast` | 1 breakfast |
+| 4 | `MealType_TWO_Breakfast` | 2 breakfasts |
+| 5 | `MealType_THREE_Breakfast` | 3 breakfasts |
+| 6 | `MEALTYPE_FOUR_BREAKFAST` | 4 breakfasts |
+| 7 | `MEALTYPE_FIVES_BREAKFAST` | 5 breakfasts |
+| 8 | `MEALTYPE_SIX_BREAKFAST` | 6 breakfasts |
+| 9 | `MEALTYPE_SEVEN_BREAKFAST` | 7 breakfasts |
+| 10 | `MEALTYPE_EIGHT_BREAKFAST` | 8 breakfasts |
+| 11 | `MealType_Lunch` | Lunch only |
+| 12 | `MealType_Dinner` | Dinner only |
+| 13 | `MealType_LunchAndDinner` | Lunch and dinner |
+| 14 | `MealType_HalfBoard` | Half board: breakfast and one main meal |
+| 15 | `MealType_FullBoard` | Full board: breakfast, lunch, and dinner |
+| 16 | `MealType_AllInclusive` | All inclusive |
+| 17 | `MealType_SelfCatering` | Buffet, according to the current code's Chinese description |
+| 18 | `MealType_BreakfastAndLunch` | Breakfast and lunch |
+| 19 | `MealType_BreakfastAndDinner` | Breakfast and dinner |
+
+Use the mapped meal name when filtering and displaying products. In particular, `meal_type=2` confirms breakfast included for the booked guests, and `meal_type=4` confirms two breakfasts; neither is an unspecified meal. For type 2, use the booked occupancy rather than the room's maximum capacity. Types 3–10 specify the fixed breakfast quantities listed above. Type 17 does not establish breakfast inclusion or a self-catering kitchen; preserve its documented buffet meaning and do not infer a meal time.
+
+`meal_count` is supplementary quantity information. Do not use it alone to identify a meal, override a known `meal_type`, or label a known breakfast product as room only merely because `meal_count=0`. For an absent or unrecognized `meal_type`, do not guess breakfast: if `meal_count>0`, use the localized equivalent of `Meal included for {meal_count} guests; type not specified`; otherwise state that the meal type was not provided.
 
 The response may also include `data.web_url`, `data.web_url_expires_at` and `data.web_url_one_time`. The link can be opened repeatedly until `data.web_url_expires_at` when `data.web_url_one_time=false`. The linked TourMind page displays the hotel and returned room quotes in read-only mode. Apply **Returned result-page URL language**, preserve it with that exact hotel, and show it directly below the hotel's hero image using the localized label equivalent of `[View hotel details]`. Apart from the required locale-path substitution, preserve the URL exactly; never show the original image URL as a separate link and never substitute the hotel-list `search_hotels.data.web_url`. It does not support verification, booking, payment, `/book/*`, order management, finance or account management. Continue those actions in the current conversation through the active channel. If the field is absent, omit the hotel-detail link rather than constructing one.
 
@@ -557,7 +600,7 @@ Room image priority:
 3. generic room gallery with an explicit non-correspondence label
 4. no image message
 
-For a Chinese response, use `name_cn` when non-empty; otherwise use `name`. For other response languages, use `name` when non-empty and fall back to `name_cn`. Render an empty/`Others` name using the localized equivalent of `Other / room assigned at check-in`. Show bed, maximum occupancy, conservative meal text, per-night price, total price, cancellation and `is_on_request` status together.
+For a Chinese response, use `name_cn` when non-empty; otherwise use `name`. For other response languages, use `name` when non-empty and fall back to `name_cn`. Render an empty/`Others` name using the localized equivalent of `Other / room assigned at check-in`. Show bed, separate adult/child capacity, the documented meal-type name and quantity, per-night price, total price, cancellation and `is_on_request` status together. Apply [Adult and child capacity](#adult-and-child-capacity) and [Meal type mapping](#meal-type-mapping).
 
 ## Cancellation, tax and payment semantics
 
