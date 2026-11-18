@@ -3,7 +3,7 @@ name: flight-booking-ai
 description: Use when a user wants to resolve airports, search live flight offers, verify a selected airfare, create a flight booking, query a flight order, or safely create or query a third-party payment through TourMind.
 metadata:
   author: TourMind
-  version: "1.0.8"
+  version: "1.1.0"
 ---
 
 # Flight Booking AI

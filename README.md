@@ -115,7 +115,7 @@ npx skills add tourmind-com/tourmind-booking-skills --all
 
 This command installs both Skills—`tourmind-booking` for hotels and `flight-booking-ai` for flights—to all detected Agent clients without additional selection prompts.
 
-You can search and compare hotels, look up airports, and search live flights without a Token. A configured flight-search Token is still validated. Verification and any real booking, order, or payment action require a Token.
+You can search and compare hotels, look up airports, and search live flights without a Token. A configured flight-search Token is still validated. Public hotel prices and availability can be reviewed without signing in. Hotel coupon lookup, flight fare verification, booking, order management and payment require a Token.
 
 If you already have a TourMind account, you can use its [Skill Token](https://tourmind.com/user/skill-token). If you do not have an account, [sign up for a TourMind account and Token](https://tourmind.com/admin/skillSignup). Send it only to your trusted Agent in a private conversation:
 
@@ -179,7 +179,9 @@ Destination, dates, occupancy, room count, budget and preferences
   → Resolve the location, POI or exact hotel (search_location / keyword search)
   → Search up to 20 candidate hotels (search_hotels)
   → Batch-check live rooms and stay totals (batch_query_room_rates; query_room_rates for one hotel)
-  → Rank and show up to five verified hotels
+  → When signed in, verify each comparable quote and check eligible coupons unless the user declines them
+  → When signed out or browsing without coupons, compare original live rates and verify the selected room before booking
+  → Apply the budget and sort to the comparable totals and show up to five verified hotels
   → Show the selected hotel's details, room images and live room options (get_hotel_detail + room-rate query)
   → Review mandatory fees from the hotel details, then recheck the chosen room's final price, availability and cancellation terms (check_room_availability)
   → If an order action requires authentication, configure the Token; refresh room rates first if the channel changes, then always repeat the final price and availability check with the new Token
