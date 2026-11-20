@@ -177,7 +177,10 @@ Display the following review using the latest verified quote and policy. A signe
 
 Our prices include taxes. However, in a small number of countries or regions, city or tourism taxes must be collected directly by the hotel. The final amount is determined by the hotel and may be charged when you check in. Please be aware of this possible additional charge and plan accordingly. Thank you for your understanding.
 
-TourMind Customer Service is available 24/7. Contact us at +86-755 3665 4666.
+TourMind Customer Service
+
+- **+86-021-67572867** — 08:00–23:59 (UTC+8)
+- **+1-833-5504358** — 24/7
 
 Please review the booking details above. To proceed, reply **“Confirm booking”** and provide the guest's **full legal name** and **contact email**. I will then create the booking and continue to payment.
 ```
